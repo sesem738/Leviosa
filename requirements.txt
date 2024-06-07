@@ -1,3 +1,4 @@
 # project requirements
 pyaudio
 openai-whisper
+pydub
