@@ -30,6 +30,11 @@ y = r * np.sin(theta)
 # Generate z values (linearly increasing)
 z = np.linspace(0, 10, loops * points_per_loop)
 
+
+# The X Y Z produce algebraic expressions for waypoints, not 8th order
+waypoints = np.asarray([x, y, z])
+waypoints = waypoints.T
+
 # 3D Plot
 fig = plt.figure(figsize=(10, 10))
 ax = fig.add_subplot(111, projection='3d')
