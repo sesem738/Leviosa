@@ -112,7 +112,7 @@ class MicrophoneRecorder:
                                       input_device_index=self.device_index,
                                       frames_per_buffer=1024)
 
-        logging.info("Audio stream started.")
+        logging.info("Audio stream started. Press Ctrl+C to stop.")
 
         if callback:
             try:
