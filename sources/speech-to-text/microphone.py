@@ -1,6 +1,7 @@
 import logging
 import os
 import wave
+
 import pyaudio
 
 # Configure logging
@@ -8,10 +9,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 
 class MicrophoneRecorder:
-
     """
     Class to record audio from a microphone using PyAudio.
     """
+
     def __init__(self, sample_rate: int = 44100, channels: int = 1, device_index: int = None):
         """
         Initialize the MicrophoneRecorder.
