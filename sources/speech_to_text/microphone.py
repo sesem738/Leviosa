@@ -1,7 +1,7 @@
 import logging
 import os
 import wave
-
+from typing import Optional, Callable
 import pyaudio
 
 # Configure logging
@@ -88,7 +88,7 @@ class MicrophoneRecorder:
         count = self.audio.get_device_count()
         return 0 <= index < count
 
-    def start_stream(self, callback=None) -> None:
+    def start_stream(self, callback: Callable = None, save_path: Optional[str] = None) -> None:
         """
         Start the audio stream, either recording to a file or streaming with a callback.
 
@@ -133,21 +133,28 @@ class MicrophoneRecorder:
                     frames.append(data)
             except KeyboardInterrupt:
                 logging.info("Recording finished.")
-                dir_path = "data/audios"
-                self.save_audio(frames, dir_path)
+                if save_path:
+                    self.save_audio(frames, save_path)
+                else:
+                    dir_path = "data/audios"
+                    self.save_audio(frames, dir_path)
 
-    def save_audio(self, frames: list, dir_path: str) -> None:
+    def save_audio(self, frames: list, path: str) -> None:
         """
         Save the recorded audio frames to a file.
 
         :param frames: List of audio frames.
-        :param dir_path: Directory path to save the audio file.
+        :param path: Directory path or file path to save the audio file.
         """
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
-            logging.info(f"Created directory: {dir_path}")
+        if os.path.isdir(path):
+            if not os.path.exists(path):
+                os.makedirs(path)
+                logging.info(f"Created directory: {path}")
 
-        output_file = f"{dir_path}/output.wav"
+            output_file = f"{path}/output.wav"
+        else:
+            output_file = path
+
         with wave.open(output_file, 'wb') as wf:
             wf.setnchannels(self.channels)
             wf.setsampwidth(self.audio.get_sample_size(pyaudio.paInt16))

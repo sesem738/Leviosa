@@ -2,3 +2,6 @@
 pyaudio
 openai-whisper
 pydub
+
+# issues related to whisper, particularly ffmpeg
+# https://github.com/openai/whisper
