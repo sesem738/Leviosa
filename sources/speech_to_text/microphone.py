@@ -2,6 +2,7 @@ import logging
 import os
 import wave
 from typing import Optional, Callable
+
 import pyaudio
 
 # Configure logging
@@ -94,10 +95,12 @@ class MicrophoneRecorder:
 
         :param callback: Function to call with each chunk of audio data if streaming.
         """
+        # Check if a microphone is available
         if not self.check_microphone():
             logging.error("No microphone is available. Please check your microphone connection and try again.")
             return
 
+        # Get the device information
         if self.device_index is not None:
             device_info = self.audio.get_device_info_by_index(self.device_index)
             logging.info(f"Selected device: {device_info['name']}")
@@ -105,39 +108,33 @@ class MicrophoneRecorder:
             device_info = self.audio.get_default_input_device_info()
             logging.info(f"Using default device: {device_info['name']}")
 
-        self.stream = self.audio.open(format=pyaudio.paInt16,
-                                      channels=self.channels,
-                                      rate=self.sample_rate,
-                                      input=True,
-                                      input_device_index=self.device_index,
-                                      frames_per_buffer=1024)
+        # Start the audio stream
+        self.stream = self.audio.open(
+            format=pyaudio.paInt16,
+            channels=self.channels,
+            rate=self.sample_rate,
+            input=True,
+            input_device_index=self.device_index,
+            frames_per_buffer=1024
+        )
 
         logging.info("Audio stream started. Press Ctrl+C to stop.")
 
-        if callback:
-            try:
-                while True:
-                    data = self.stream.read(1024)
-                    callback(data)
-            except KeyboardInterrupt:
-                logging.info("Streaming stopped.")
-            finally:
-                self.stop_stream()
-        else:
-            frames = []
-            logging.info("Recording...")
+        frames = []
 
-            try:
-                while True:
-                    data = self.stream.read(1024)
-                    frames.append(data)
-            except KeyboardInterrupt:
+        try:
+            while True:
+                data = self.stream.read(1024)
+                frames.append(data)
+                if callback:
+                    callback(data)
+        except KeyboardInterrupt:
+            logging.info("Streaming stopped.")
+        finally:
+            self.stop_stream()
+            if not callback:
                 logging.info("Recording finished.")
-                if save_path:
-                    self.save_audio(frames, save_path)
-                else:
-                    dir_path = "data/audios"
-                    self.save_audio(frames, dir_path)
+                self.save_audio(frames, save_path if save_path else "data/audios")
 
     def save_audio(self, frames: list, path: str) -> None:
         """
@@ -155,6 +152,7 @@ class MicrophoneRecorder:
         else:
             output_file = path
 
+        # Save the audio frames to a WAV file
         with wave.open(output_file, 'wb') as wf:
             wf.setnchannels(self.channels)
             wf.setsampwidth(self.audio.get_sample_size(pyaudio.paInt16))

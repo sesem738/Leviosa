@@ -2,7 +2,9 @@ import logging
 import os
 from typing import Optional
 
+import numpy as np
 import whisper
+from scipy.signal import resample
 
 from abstract_service import SpeechToTextService
 
@@ -22,6 +24,8 @@ class WhisperService(SpeechToTextService):
         if weights_path and not os.path.exists(weights_path):
             os.makedirs(weights_path)
             logging.info(f"Created directory for weights: {weights_path}")
+
+        self.model_name = model_name
 
         if weights_path:
             self.model = whisper.load_model(model_name, download_root=weights_path)
@@ -43,11 +47,26 @@ class WhisperService(SpeechToTextService):
         Transcribe a stream of audio data to text.
 
         :param data: Chunk of audio data.
-        :return: Transcribed text or None. Whisper does not support direct streaming transcription
-                 in this simplified example. This function would require a more complex implementation
-                 or a different approach.
+        :return: Transcribed text or None.
         """
-        return None
+        # Convert byte data to numpy array
+        audio_data = np.frombuffer(data, dtype=np.int16).astype(np.float32) / 32768.0
+
+        # Resample audio data to 16kHz
+        audio_data_resampled = resample(audio_data, int(len(audio_data) * 16000 / 44100))
+
+        # Create a buffer with a size expected by the Whisper model
+        buffer_size = int(16000 * 30)  # 30 seconds buffer
+        if len(audio_data_resampled) < buffer_size:
+            audio_data_resampled = np.pad(audio_data_resampled, (0, buffer_size - len(audio_data_resampled)), 'constant')
+
+        # Assuming data is 16-bit PCM, mono, 16kHz
+        mel = whisper.log_mel_spectrogram(audio_data_resampled[:buffer_size])
+
+        # Use Whisper model to transcribe the audio
+        options = whisper.DecodingOptions(fp16=False, language="en" if ".en" in self.model_name else None)
+        result = whisper.decode(self.model, mel, options)
+        return result.text
 
     @staticmethod
     def display_model_options():
