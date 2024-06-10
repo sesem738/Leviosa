@@ -3,6 +3,9 @@ pyaudio
 openai-whisper
 pydub
 scipy
+numpy
+matplotlib
+openai
 
 # issues related to whisper, particularly ffmpeg
 # https://github.com/openai/whisper
