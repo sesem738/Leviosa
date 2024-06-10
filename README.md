@@ -34,6 +34,9 @@ python sources/speech_to_text/test.py
 
 ## Trajectory To Controls
 
-- [ ] Implement ...
+- [x] Implement Trajectory Tracking
+- [x] Implement Waypoint Tracking
+- [ ] Simulator for Testing on Crazyflie
+- [ ] Simulator for agile flight 
 
 
