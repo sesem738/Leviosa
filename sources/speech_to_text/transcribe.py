@@ -15,7 +15,8 @@ class SpeechToText:
     Encapsulates the Speech to Text functionality using a specified service.
     """
 
-    def __init__(self, service_class: Type[SpeechToTextService], model_name: str = "base.en", weights_path: Optional[str] = None):
+    def __init__(self, service_class: Type[SpeechToTextService], model_name: str = "base.en",
+                 weights_path: Optional[str] = None):
         """
         Initialize the SpeechToText with a specific service class, model, and weights path.
 
@@ -46,7 +47,6 @@ class SpeechToText:
 
         # Transcribe the audio file
         return self.service.transcribe(audio_file)
-
 
     def transcribe_audio_stream(self, data: bytes) -> None:
         """
