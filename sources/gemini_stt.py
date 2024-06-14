@@ -7,11 +7,7 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 
 from speech_to_text.microphone import MicrophoneRecorder
-from text_to_trajectory.trajectory import (
-    extract_code_from_response,
-    execute_waypoints_code,
-    plot_3d_trajectory
-)
+from text_to_trajectory.trajectory import process_waypoints
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -77,6 +73,7 @@ def main():
     # Define the path to save the recorded audio file with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_path = f"data/audios/output_{timestamp}.wav"
+    traj_plot_path = f"data/plots/waypoints_{timestamp}.png"
 
     # Specify the device index if needed
     choice_device = 2  # specific to my system
@@ -92,23 +89,8 @@ def main():
 
     # Fetch the Python code for generating waypoints using the OpenAI API
     code_response = fetch_waypoints_code_from_gemini(output_path)
-    if code_response:
-        # Extract the code from the response
-        code = extract_code_from_response(code_response)
-        if code:
-            # Execute the extracted Python code to get the waypoints
-            waypoints = execute_waypoints_code(code)
-            if waypoints:
-                print(f"Derived waypoints: {waypoints}")
-
-                # Plot the 3D trajectory based on the derived waypoints
-                plot_3d_trajectory(waypoints)
-            else:
-                print("Failed to derive waypoints.")
-        else:
-            print("Failed to extract Python code.")
-    else:
-        print("Failed to generate Python code.")
+    # Process the waypoints code to generate the waypoints
+    waypoints = process_waypoints(code_response, save_path=traj_plot_path)
 
 
 if __name__ == "__main__":

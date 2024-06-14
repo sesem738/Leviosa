@@ -1,11 +1,13 @@
 import os
 import re
 import time
-
+import logging
 import matplotlib.pyplot as plt
 import numpy as np
 import openai
 from dotenv import load_dotenv
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Load environment variables from .env file
 load_dotenv()
@@ -119,12 +121,14 @@ def execute_waypoints_code(code):
     return waypoints
 
 
-def plot_3d_trajectory(waypoints):
+def plot_3d_trajectory(waypoints, plot: bool = True, save_path: str = None):
     """
     Plots a 3D trajectory based on the given waypoints.
     
     Args:
         waypoints (list): List of waypoints where each waypoint is a list of [x, y, z].
+        plot (bool): Whether to display the plot.
+        save_path (str): Path to save the plot image, if provided.
     """
     waypoints = np.array(waypoints)
     x = waypoints[:, 0]
@@ -139,7 +143,50 @@ def plot_3d_trajectory(waypoints):
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     ax.legend()
-    plt.show()
+
+    if save_path:
+        plt.savefig(save_path)
+        logging.info(f"trajectory path saved at {save_path}")
+
+
+    if plot:
+        plt.show()
+
+
+def process_waypoints(code_response, plot=False, save_path=None):
+    """
+    Processes the code response to derive waypoints and optionally plot them.
+
+    Args:
+        code_response: The response containing the Python code.
+        plot (bool): Whether to display the plot.
+        save_path (str): Path to save the plot image, if provided.
+
+    Returns:
+        list: Derived waypoints or None if the process fails.
+    """
+    if not code_response:
+        print("Failed to generate Python code.")
+        return None
+
+    # Extract the code from the response
+    code = extract_code_from_response(code_response)
+    if not code:
+        print("Failed to extract Python code.")
+        return None
+
+    # Execute the extracted Python code to get the waypoints
+    waypoints = execute_waypoints_code(code)
+    if not waypoints:
+        print("Failed to derive waypoints.")
+        return None
+
+    print(f"Derived waypoints: {waypoints}")
+
+    # Plot the 3D trajectory based on the derived waypoints
+    plot_3d_trajectory(waypoints, plot=plot, save_path=save_path)
+
+    return waypoints
 
 
 def main(file_path):
