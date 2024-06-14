@@ -31,6 +31,8 @@ def fetch_waypoints_code_from_gemini(audio_file: str):
     :param audio_file: Path to the audio file.
     :return: the code response from the AI model
     """
+    # Start Timer
+    start_time = time.perf_counter()  # Use perf_counter for higher precision timing
     # upload the audio file
     audio = genai.upload_file(path=audio_file)
     # prompt the model with the audio file
@@ -52,8 +54,7 @@ def fetch_waypoints_code_from_gemini(audio_file: str):
     Listen carefully to the following audio file, tell me back the command you understand I said, and 
     convert the audio command into Python code for generating waypoints.
     """
-    # Start Timer
-    start_time = time.perf_counter()  # Use perf_counter for higher precision timing
+
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     response = model.generate_content([prompt, audio])
     code_text = response.text  # Extract the code from the response
