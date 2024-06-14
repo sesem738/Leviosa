@@ -1,1 +1,1 @@
-Execute an upward spiral.
+Execute a spiral

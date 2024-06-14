@@ -5,6 +5,7 @@ import openai
 from dotenv import load_dotenv
 import os
 import time
+import re
 
 # Load environment variables from .env file
 load_dotenv()
@@ -25,44 +26,40 @@ def read_latest_command(file_path):
             return lines[-1].strip()
         return None
 
-def fetch_polynomial_coefficients(client, command):
+def fetch_waypoints_code(client, command):
     """
-    Uses the OpenAI API in chat mode to convert a text command into polynomial coefficients.
+    Uses the OpenAI API in chat mode to convert a text command into Python code for generating waypoints.
     
     Args:
         client (OpenAI): OpenAI client initialized with the API key.
         command (str): Text command describing the desired trajectory.
     
     Returns:
-        dict: Coefficients of the polynomials if successful, None otherwise.
+        str: Python code for generating the waypoints.
     """
     try:
         # Start timing the API call
         start_time = time.time()
 
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": """
-                 You are an AI assistant that converts text commands into 8th order polynomial coefficients used for drone trajectories.
-                 You will need to generate 3 sets of coefficients, one for each axis.
-                 When you receive a user prompt reason step-by-step.
-                 Assume the unit of measurement is meters.
-                 The coefficients you provide should be for 8th order polynomials that can be plotted in 3D to form a single trajectory desired by the user. 
-                 To make your output easy to parse for further processing, please provide the coefficients as a comma-separated list of floats, each list is is for one axis and surrounded by square brackets [] like this: 
-
-                    x_coeff : [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
-                    y_coeff : [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
-                    z_coeff : [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
-                 
-                 Make sure that the coefficients are in the correct order and that you provide exactly 8 coefficients for each axis, no less and no more.
-                 Also, never use a variable name that is not explicitly mentioned in the prompt. For exmaple, the coefficients below are invalid:
-
-                 z_coeff : [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, current_altitude]
-
-                 Always always always! use floating point numbers for the coefficients. If the coefficients represents a fixed altitude, always assume the altitude is 2.
-                 """},
-                {"role": "user", "content": f"Convert the following command into an 8th order polynomial coefficients: '{command}'"}
+                You are an AI assistant that converts text commands into Python code for generating a list of waypoints for drone trajectories.
+                You will need to generate Python code that outputs a list of waypoints, each specified as [x, y, z].
+                When you receive a user prompt, reason step-by-step.
+                Assume the unit of measurement is meters.
+                The waypoints should start from [0, 0, 1] and create a continuous trajectory.
+                The code should generate waypoints in the following format and be enclosed within triple backticks:
+                ```python
+                
+                ```
+                 The code you write should not define a function that gets called. It should directly generate the waypoints.
+                 Executing the code should output a list of waypoints. I should not need to call a function you write to get the waypoints.
+                 Make sure to import all the necessary libraries you use in the code.
+                 No need to use a return statement since we are not defining a function.
+                """},
+                {"role": "user", "content": f"Convert the following command into Python code for generating waypoints: '{command}'"}
             ]
         )
 
@@ -72,42 +69,58 @@ def fetch_polynomial_coefficients(client, command):
         print(f"Time taken for API call: {duration:.2f} seconds")
 
         # Extract and print the response
-        coefficients_text = response.choices[0].message.content
-        print(f"Polynomial coefficients text: {coefficients_text}")
+        code_text = response.choices[0].message.content
+        print(f"Generated Python code: {code_text}")
 
-        # Parse the coefficients text
-        x_coeff = coefficients_text.split('x_coeff : ')[1].split(']')[0][1:]
-        y_coeff = coefficients_text.split('y_coeff : ')[1].split(']')[0][1:]
-        z_coeff = coefficients_text.split('z_coeff : ')[1].split(']')[0][1:]
-
-        x_coeff = list(map(float, x_coeff.split(',')))
-        y_coeff = list(map(float, y_coeff.split(',')))
-        z_coeff = list(map(float, z_coeff.split(',')))
-
-        return {'x': x_coeff, 'y': y_coeff, 'z': z_coeff}
+        return code_text
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
 
-def plot_3d_trajectory(coefficients):
+def extract_code_from_response(response):
     """
-    Plots a 3D trajectory based on the given polynomial coefficients.
+    Extracts the Python code enclosed in triple backticks from the response.
     
     Args:
-        coefficients (dict): Dictionary containing lists of polynomial coefficients for x, y, and z.
+        response (str): The response text containing the Python code.
+    
+    Returns:
+        str: Extracted Python code.
     """
-    # Define the parameter t
-    t = np.linspace(-10, 10, 1000)
+    code_pattern = re.compile(r'```python(.*?)```', re.DOTALL)
+    match = code_pattern.search(response)
+    if match:
+        return match.group(1).strip()
+    return None
 
-    # Extract coefficients for x, y, and z
-    x_coeff = coefficients['x']
-    y_coeff = coefficients['y']
-    z_coeff = coefficients['z']
+def execute_waypoints_code(code):
+    """
+    Executes the generated Python code to produce waypoints.
+    
+    Args:
+        code (str): Python code for generating the waypoints.
+    
+    Returns:
+        list: List of waypoints.
+    """
+    print('Executing Python code...')
+    print(code)
+    local_vars = {}
+    exec(code, {}, local_vars)
+    waypoints = local_vars.get('waypoints', [])
+    return waypoints
 
-    # Calculate x, y, z values based on the polynomial coefficients
-    x = sum(c * t**i for i, c in enumerate(x_coeff))
-    y = sum(c * t**i for i, c in enumerate(y_coeff))
-    z = sum(c * t**i for i, c in enumerate(z_coeff))
+def plot_3d_trajectory(waypoints):
+    """
+    Plots a 3D trajectory based on the given waypoints.
+    
+    Args:
+        waypoints (list): List of waypoints where each waypoint is a list of [x, y, z].
+    """
+    waypoints = np.array(waypoints)
+    x = waypoints[:, 0]
+    y = waypoints[:, 1]
+    z = waypoints[:, 2]
 
     # Create the 3D plot
     fig = plt.figure()
@@ -121,7 +134,7 @@ def plot_3d_trajectory(coefficients):
 
 def main(file_path):
     """
-    Main function to read the latest command and convert it into polynomial coefficients.
+    Main function to read the latest command and convert it into waypoints.
     
     Args:
         file_path (str): Path to the file containing the voice-to-text commands.
@@ -139,15 +152,25 @@ def main(file_path):
     if command:
         print(f"Processing command: {command}")
 
-        # Fetch the polynomial coefficients using the OpenAI API
-        coefficients = fetch_polynomial_coefficients(client, command)
-        if coefficients:
-            print(f"Derived coefficients: {coefficients}")
+        # Fetch the Python code for generating waypoints using the OpenAI API
+        code_response = fetch_waypoints_code(client, command)
+        if code_response:
+            # Extract the code from the response
+            code = extract_code_from_response(code_response)
+            if code:
+                # Execute the extracted Python code to get the waypoints
+                waypoints = execute_waypoints_code(code)
+                if waypoints:
+                    print(f"Derived waypoints: {waypoints}")
 
-            # Plot the 3D trajectory based on the derived coefficients
-            plot_3d_trajectory(coefficients)
+                    # Plot the 3D trajectory based on the derived waypoints
+                    plot_3d_trajectory(waypoints)
+                else:
+                    print("Failed to derive waypoints.")
+            else:
+                print("Failed to extract Python code.")
         else:
-            print("Failed to derive coefficients.")
+            print("Failed to generate Python code.")
     else:
         print("No commands found in the file.")
 
@@ -155,4 +178,3 @@ def main(file_path):
 if __name__ == "__main__":
     FILE_PATH = "command.txt"
     main(FILE_PATH)
-
