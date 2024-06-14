@@ -1,14 +1,15 @@
-import numpy as np
+import os
+import re
+import time
+
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
 import openai
 from dotenv import load_dotenv
-import os
-import time
-import re
 
 # Load environment variables from .env file
 load_dotenv()
+
 
 def read_latest_command(file_path):
     """
@@ -25,6 +26,7 @@ def read_latest_command(file_path):
         if lines:
             return lines[-1].strip()
         return None
+
 
 def fetch_waypoints_code(client, command):
     """
@@ -44,7 +46,9 @@ def fetch_waypoints_code(client, command):
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": """
+                {
+                    "role": "system",
+                    "content": """
                 You are an AI assistant that converts text commands into Python code for generating a list of waypoints for drone trajectories.
                 You will need to generate Python code that outputs a list of waypoints, each specified as [x, y, z].
                 When you receive a user prompt, reason step-by-step.
@@ -58,8 +62,10 @@ def fetch_waypoints_code(client, command):
                  Executing the code should output a list of waypoints. I should not need to call a function you write to get the waypoints.
                  Make sure to import all the necessary libraries you use in the code.
                  No need to use a return statement since we are not defining a function.
-                """},
-                {"role": "user", "content": f"Convert the following command into Python code for generating waypoints: '{command}'"}
+                """
+                },
+                {"role": "user",
+                 "content": f"Convert the following command into Python code for generating waypoints: '{command}'"}
             ]
         )
 
@@ -77,6 +83,7 @@ def fetch_waypoints_code(client, command):
         print(f"An error occurred: {e}")
         return None
 
+
 def extract_code_from_response(response):
     """
     Extracts the Python code enclosed in triple backticks from the response.
@@ -92,6 +99,7 @@ def extract_code_from_response(response):
     if match:
         return match.group(1).strip()
     return None
+
 
 def execute_waypoints_code(code):
     """
@@ -109,6 +117,7 @@ def execute_waypoints_code(code):
     exec(code, {}, local_vars)
     waypoints = local_vars.get('waypoints', [])
     return waypoints
+
 
 def plot_3d_trajectory(waypoints):
     """
@@ -131,6 +140,7 @@ def plot_3d_trajectory(waypoints):
     ax.set_zlabel('Z')
     ax.legend()
     plt.show()
+
 
 def main(file_path):
     """
@@ -173,6 +183,7 @@ def main(file_path):
             print("Failed to generate Python code.")
     else:
         print("No commands found in the file.")
+
 
 # Example usage
 if __name__ == "__main__":
