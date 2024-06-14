@@ -6,6 +6,8 @@ scipy
 numpy
 matplotlib
 openai
+google-generativeai
+python-dotenv
 
 # issues related to whisper, particularly ffmpeg
 # https://github.com/openai/whisper
