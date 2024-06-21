@@ -55,7 +55,13 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     response = model.generate_content([base_prompt, audio])
-    code_text = response.text  # Extract the code from the response
+
+    # print("response: ", response)
+    code_text = None
+    try:
+        code_text = response.text  # Extract the code from the response
+    except ValueError as e:
+        logging.error(f"An error occurred while extracting the code from the response: {e}\n Exiting...")
 
     # Stop Timer and Calculate Elapsed Time
     end_time = time.perf_counter()
@@ -119,8 +125,7 @@ def main():
     # Process the waypoints with retry mechanism
     waypoints = process_waypoints_with_retry(output_path, max_retries=3, save_path=traj_plot_path)
     if waypoints:
-        logging.info(f"Successfully processed waypoints: {waypoints}")
-        print(f"Trajectory plot saved to: {traj_plot_path}")
+        logging.info(f"Successfully processed waypoints")
     else:
         logging.error("Failed to process waypoints after maximum retries.")
 

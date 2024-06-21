@@ -218,7 +218,7 @@ def main(file_path):
                 # Execute the extracted Python code to get the waypoints
                 waypoints = execute_waypoints_code(code)
                 if waypoints:
-                    print(f"Derived waypoints: {waypoints}")
+                    # print(f"Derived waypoints: {waypoints}")
 
                     # Plot the 3D trajectory based on the derived waypoints
                     plot_3d_trajectory(waypoints)
