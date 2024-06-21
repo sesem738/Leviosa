@@ -97,7 +97,6 @@ def extract_code_from_response(response):
         str: Extracted Python code.
     """
     code_pattern = re.compile(r'```python(.*?)```', re.DOTALL)
-    # return code_pattern.search(response).group(0)
     match = code_pattern.search(response)
     if match:
         return match.group(1).strip()
