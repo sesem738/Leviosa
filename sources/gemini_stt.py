@@ -20,12 +20,15 @@ if not GOOGLE_API_KEY:
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
+
 def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     """
     Fetches the Python code for generating waypoints using the Google AI API.
     :param audio_file: Path to the audio file.
     :param error: Error message from previous code execution, if any.
     :return: the code response from the AI model
+
+    TODO: add few shots examples to help, 3 for now
     """
     # Start Timer
     start_time = time.perf_counter()  # Use perf_counter for higher precision timing
@@ -40,7 +43,7 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     The waypoints should start from [0, 0, 1] and create a continuous trajectory.
     The code should generate waypoints in the following format and be enclosed within triple backticks:
     ```python
-    
+
     ```
     The code you write should not define a function that gets called. It should directly generate the waypoints.
     Executing the code should output a list of waypoints. I should not need to call a function you write to get the waypoints.
@@ -51,12 +54,11 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     convert the audio command into Python code for generating waypoints.
     """
     if error:
-        base_prompt += f"\n\nThe previous code generated the following error:\n{error}\nPlease correct the code based on this error. Again, ensure that the code generates a list of waypoints. and is enclosed within triple backticks: ```python\n\n```\n\n"
+        base_prompt += f"\n\nThe previous code generated the following error:\n{error}\nPlease correct the code based on this error. Again, ensure that the code generates a list of waypoints and is enclosed within triple backticks: ```python\n\n```\n\n"
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     response = model.generate_content([base_prompt, audio])
 
-    # print("response: ", response)
     code_text = None
     try:
         code_text = response.text  # Extract the code from the response
@@ -73,6 +75,45 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     return code_text
 
 
+def analyze_plot_with_gemini(audio_file: str, image_path: str):
+    """
+    Analyze the plot image using Gemini and provide feedback.
+    :param audio_file: Path to the audio file.
+    :param image_path: Path to the plot image.
+    :return: Feedback from the AI model.
+    """
+    # Start Timer
+    start_time = time.perf_counter()  # Use perf_counter for higher precision timing
+    # Upload the image file and audio file
+    audio = genai.upload_file(path=audio_file)
+    image = genai.upload_file(path=image_path)
+
+    # Prompt the model with the image file and audio command
+    base_prompt = """
+    You are an AI assistant that analyzes drone trajectory plots. I have provided an audio file with a command and an image file containing the trajectory plot.
+    Please analyze the plot and provide feedback on the trajectory. Specifically, look for continuity, completeness, and any anomalies based on the command from the audio file.
+    If the trajectory is correct, please respond with the phrase "--VALID TRAJECTORY--" and comments why you think it is valid.
+    If the trajectory is incorrect, provide suggestions on how to correct it.
+    """
+    model = genai.GenerativeModel('models/gemini-1.5-flash')
+    response = model.generate_content([base_prompt, audio, image])
+
+    feedback = None
+    try:
+        feedback = response.text  # Extract the feedback from the response
+    except ValueError as e:
+        logging.error(f"An error occurred while extracting the feedback from the response: {e}\n Exiting...")
+
+    # Stop Timer and Calculate Elapsed Time
+    end_time = time.perf_counter()
+    elapsed_time_ms = (end_time - start_time) * 1000  # Convert to milliseconds
+
+    logging.info(f"Feedback from plot analysis:\n\n {feedback}")
+    logging.info(f"Total time taken for plot analysis: {elapsed_time_ms:.2f} ms")
+
+    return feedback
+
+
 def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_path: str = None):
     """
     Process the waypoints with a retry mechanism.
@@ -82,18 +123,23 @@ def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_pat
     :return: List of waypoints or None if the process fails.
     """
     error = None
+    feedback = None
     for attempt in range(max_retries):
-        code_response = fetch_waypoints_code_from_gemini(audio_file, error)
+        code_response = fetch_waypoints_code_from_gemini(audio_file, error or feedback)
         try:
             waypoints = process_waypoints(code_response, save_path=save_path)
-            return waypoints
+
+            # Analyze the generated plot image with Gemini
+            feedback = analyze_plot_with_gemini(audio_file, save_path)
+            if "--VALID TRAJECTORY--" in feedback:
+                return waypoints
+            # logging.info(f"Feedback from plot analysis: {feedback}")
         except Exception as e:
             logging.error(f"An error occurred while processing waypoints: {e}")
             error = str(e)
-            logging.info(f"Retrying... ({attempt + 1}/{max_retries})")
+        logging.info(f"Retrying... ({attempt + 1}/{max_retries})")
     logging.error("Maximum number of retries reached. Failed to process waypoints.")
     return None
-
 
 
 def main():
@@ -111,7 +157,7 @@ def main():
     os.makedirs(os.path.dirname(traj_plot_path), exist_ok=True)
 
     # Specify the device index if needed
-    choice_device = 1 # specific to my system
+    choice_device = 2  # specific to my system
     recorder = MicrophoneRecorder(device_index=choice_device)
 
     # Record audio to a file
@@ -122,13 +168,18 @@ def main():
         recorder.stop_stream()
         logging.info(f"Recording stopped. Audio saved to {output_path}")
 
-    # Process the waypoints with retry mechanism
-    waypoints = process_waypoints_with_retry(output_path, max_retries=3, save_path=traj_plot_path)
+    # Time the process_waypoints_with_retry function
+    start_time = time.perf_counter()
+    waypoints = process_waypoints_with_retry(output_path, max_retries=50, save_path=traj_plot_path)
+    end_time = time.perf_counter()
+    elapsed_time = end_time - start_time
+
     if waypoints:
         logging.info(f"Successfully processed waypoints")
     else:
         logging.error("Failed to process waypoints after maximum retries.")
 
+    logging.info(f"Total time taken for process_waypoints_with_retry: {elapsed_time:.2f} seconds")
 
 
 if __name__ == "__main__":

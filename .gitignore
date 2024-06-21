@@ -1,3 +1,5 @@
 # weights are large files and are not included in the repo
 data/weights
+data/audios
+data/plots
 .env
