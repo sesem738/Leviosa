@@ -20,6 +20,44 @@ if not GOOGLE_API_KEY:
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
+few_shot_examples = ""
+# """"
+# Example 1:
+# Audio command: "Execute a figure eight"
+# ```python
+# import numpy as np
+# t = np.linspace(0, 2*np.pi, 100)
+# x = np.sin(t)
+# y = np.sin(2*t)
+# z = np.ones_like(t) * 3
+# waypoints = np.column_stack((x, y, z))
+# ```
+#
+# Example 2:
+# Audio command: "Perform a circle"
+# ```python
+# import numpy as np
+# t = np.linspace(0, 2*np.pi, 100)
+# x = 5 * np.cos(t)
+# y = 5 * np.sin(t)
+# z = np.ones_like(t) * 2
+# waypoints = np.column_stack((x, y, z))
+# ```
+#
+# Example 3:
+# Audio command: "Do a square"
+# ```python
+# import numpy as np
+# waypoints = np.array([
+#     [0, 0, 1],
+#     [4, 0, 1],
+#     [4, 4, 1],
+#     [0, 4, 1],
+#     [0, 0, 1]
+# ])
+# ```
+# """
+
 
 def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     """
@@ -35,7 +73,7 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     # upload the audio file
     audio = genai.upload_file(path=audio_file)
     # prompt the model with the audio file
-    base_prompt = """
+    base_prompt = f"""
     You are an AI assistant that converts natural audio commands into Python code for generating a list of waypoints for drone trajectories.
     You will need to generate Python code that outputs a list of waypoints, each specified as [x, y, z].
     When you receive a user prompt, reason step-by-step.
@@ -52,6 +90,8 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
 
     Listen carefully to the following audio file, tell me back the command you understand I said, and 
     convert the audio command into Python code for generating waypoints.
+    
+    {few_shot_examples}
     """
     if error:
         base_prompt += f"\n\nThe previous code generated the following error:\n{error}\nPlease correct the code based on this error. Again, ensure that the code generates a list of waypoints and is enclosed within triple backticks: ```python\n\n```\n\n"
@@ -92,6 +132,7 @@ def analyze_plot_with_gemini(audio_file: str, image_path: str):
     base_prompt = """
     You are an AI assistant that analyzes drone trajectory plots. I have provided an audio file with a command and an image file containing the trajectory plot.
     Please analyze the plot and provide feedback on the trajectory. Specifically, look for continuity, completeness, and any anomalies based on the command from the audio file.
+    Think step by step and be detailed in your analysis.
     If the trajectory is correct, please respond with the phrase "--VALID TRAJECTORY--" and comments why you think it is valid.
     If the trajectory is incorrect, provide suggestions on how to correct it.
     """
