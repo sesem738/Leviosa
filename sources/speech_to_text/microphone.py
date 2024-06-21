@@ -26,6 +26,7 @@ class MicrophoneRecorder:
         self.channels = channels
         self.device_index = device_index
         self.audio = pyaudio.PyAudio()
+        # self.display_devices_info()
         self.channels = self.check_channels(channels)
         self.stream = None
 
