@@ -1,5 +1,7 @@
 # Leviosa
 
+<img src="./logo/leviosa.webp" alt="Leviosa Logo" width="300">
+
 Speech To Trajectory Using Large Large Models
 
 [//]: # (Working document)

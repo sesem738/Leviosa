@@ -97,6 +97,7 @@ def extract_code_from_response(response):
         str: Extracted Python code.
     """
     code_pattern = re.compile(r'```python(.*?)```', re.DOTALL)
+    # return code_pattern.search(response).group(0)
     match = code_pattern.search(response)
     if match:
         return match.group(1).strip()
@@ -218,7 +219,7 @@ def main(file_path):
                 # Execute the extracted Python code to get the waypoints
                 waypoints = execute_waypoints_code(code)
                 if waypoints:
-                    # print(f"Derived waypoints: {waypoints}")
+                    print(f"Derived waypoints: {waypoints}")
 
                     # Plot the 3D trajectory based on the derived waypoints
                     plot_3d_trajectory(waypoints)
