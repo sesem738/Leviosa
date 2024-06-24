@@ -6,7 +6,7 @@ Speech To Trajectory Using Large Large Models
 
 ## Journal Paper To Do List
 These are the articles that we will be modeling our paper after:
-https://arxiv.org/pdf/2310.11604
+https://arxiv.org/pdf/2310.11604\
 https://arxiv.org/pdf/2406.09640
 
 - [ ] Abstract (Godwyll Aikins)
