@@ -5,6 +5,8 @@
 Speech To Trajectory Using Large Large Models
 
 ## Journal Paper To Do List
+Overleaf: https://www.overleaf.com/7196944559gmdnbqrcyqfj#f7bb23
+
 These are the articles that we will be modeling our paper after:
 
 Language Models as Zero-Shot Trajectory Generators \
