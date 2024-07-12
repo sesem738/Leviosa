@@ -1,7 +1,9 @@
-import pybullet as p
-import time
-import pybullet_data
 import random
+import time
+
+import pybullet as p
+import pybullet_data
+
 
 def create_forest_environment(num_trees):
     """
@@ -30,24 +32,27 @@ def create_forest_environment(num_trees):
     # Create trees randomly within a specified area
     for _ in range(num_trees):
         # Randomize tree position (adjust area as needed)
-        x = random.uniform(-10, 10) 
+        x = random.uniform(-10, 10)
         y = random.uniform(-10, 10)
         tree_height = random.uniform(tree_height_min, tree_height_max)
 
         # Create a cuboid as a tree
-        tree_visual = p.createVisualShape(p.GEOM_BOX, halfExtents=[tree_width/2, tree_width/2, tree_height/2], rgbaColor=[0.4, 0.2, 0, 1]) # Brown color
-        tree_collision = p.createCollisionShape(p.GEOM_BOX, halfExtents=[tree_width/2, tree_width/2, tree_height/2]) 
+        tree_visual = p.createVisualShape(p.GEOM_BOX, halfExtents=[tree_width / 2, tree_width / 2, tree_height / 2],
+                                          rgbaColor=[0.4, 0.2, 0, 1])  # Brown color
+        tree_collision = p.createCollisionShape(p.GEOM_BOX,
+                                                halfExtents=[tree_width / 2, tree_width / 2, tree_height / 2])
         tree_id = p.createMultiBody(baseMass=0,  # Make trees static (or adjust mass)
-                                   baseCollisionShapeIndex=tree_collision,
-                                   baseVisualShapeIndex=tree_visual,
-                                   basePosition=[x, y, tree_height/2]) 
+                                    baseCollisionShapeIndex=tree_collision,
+                                    baseVisualShapeIndex=tree_visual,
+                                    basePosition=[x, y, tree_height / 2])
 
     return physicsClient
+
 
 # Example usage: Create a forest with 50 trees
 physics_client_id = create_forest_environment(50)
 
 # Keep the simulation running (or add other actions)
 while True:
-    p.stepSimulation(physics_client_id) 
-    time.sleep(1/240.) 
+    p.stepSimulation(physics_client_id)
+    time.sleep(1 / 240.)

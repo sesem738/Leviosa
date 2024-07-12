@@ -1,6 +1,7 @@
+import time
+
 import pybullet as p
 import pybullet_data
-import time
 
 # Connect to PyBullet
 client_id = p.connect(p.GUI)
@@ -16,7 +17,8 @@ cube_id = p.loadURDF("cube.urdf", [1, 0, 0.5])
 # Step simulation to initialize
 p.stepSimulation()
 
-time.sleep(1/240)
+time.sleep(1 / 240)
+
 
 # Function to check for collisions
 def check_collisions(agent_id):
@@ -27,6 +29,7 @@ def check_collisions(agent_id):
             print(f"Contact with body {point[2]} at link {point[4]}")
     else:
         print("No collision detected.")
+
 
 # Check for collisions
 check_collisions(robot_id)
