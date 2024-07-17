@@ -9,7 +9,7 @@ p.connect(p.GUI)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
 # Load the SDF file
-sdf_path = 'D:/Research/Leviosa/simulation/env_trials/maze.sdf'  # Update this path to your actual path
+sdf_path = '/sources/simulation/env_trials/maze.sdf'  # Update this path to your actual path
 p.loadSDF(sdf_path)
 
 # Optionally, set the gravity in the simulation

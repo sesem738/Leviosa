@@ -16,8 +16,8 @@ if __name__ == "__main__":
     p.resetDebugVisualizerCamera(cameraDistance=3, cameraYaw=-30, cameraPitch=-30, cameraTargetPosition=[0.0,0.0,0.0], physicsClientId=PYB_CLIENT)
     p.setGravity(0, 0, 0, physicsClientId=PYB_CLIENT) # Make objects weightless
 
-    ROBOT_1 = p.loadURDF("../assets/box.urdf",[0,0,0], p.getQuaternionFromEuler([0,0,0]), physicsClientId=PYB_CLIENT)
-    ROBOT_2 = p.loadURDF("../assets/box.urdf",[0,0,0], p.getQuaternionFromEuler([0,0,0]), physicsClientId=PYB_CLIENT)
+    ROBOT_1 = p.loadURDF("../assets/box.urdf", [0, 0, 0], p.getQuaternionFromEuler([0, 0, 0]), physicsClientId=PYB_CLIENT)
+    ROBOT_2 = p.loadURDF("../assets/box.urdf", [0, 0, 0], p.getQuaternionFromEuler([0, 0, 0]), physicsClientId=PYB_CLIENT)
     
     p.resetBasePositionAndOrientation(ROBOT_1,
                                       posObj=[-.2,-.2,.5], 
