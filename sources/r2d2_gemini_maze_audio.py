@@ -7,8 +7,9 @@ import google.generativeai as genai
 import numpy as np
 import pybullet as p
 import pybullet_data
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from dotenv import load_dotenv
+
 from speech_to_text.microphone import MicrophoneRecorder
 
 # Configure logging
@@ -61,7 +62,7 @@ def get_llm_feedback(observations: str, rgb_image_path: str, depth_image_path: s
     Please provide your feedback based on the attached images and audio. 
     List types of info available to you to guide this robot to exit the maze. 
     Under each type of info, describe what you see and understand from it.
-    
+
     The audio is the voice of your master. Answer the command from the audio.
     """
 
@@ -75,6 +76,34 @@ def get_llm_feedback(observations: str, rgb_image_path: str, depth_image_path: s
 
     logging.info(f"Time taken by Gemini: {elapsed_time_ms:.2f} ms")
     return feedback
+
+
+def save_image_with_grid(image: np.ndarray, path: str, maze_layout: np.ndarray) -> None:
+    """
+    Save the image as a PNG file with a grid of numbers overlayed.
+
+    Args:
+        image (np.ndarray): The image data.
+        path (str): The path where the image will be saved.
+        maze_layout (np.ndarray): The maze layout with the grid numbers.
+    """
+    img = Image.fromarray(image)
+    draw = ImageDraw.Draw(img)
+    font = ImageFont.load_default()  # You can specify a path to a TTF file for a different font
+
+    # Calculate the size of each cell
+    cell_width = img.width // len(maze_layout[0])
+    cell_height = img.height // len(maze_layout)
+
+    for i, row in enumerate(maze_layout):
+        for j, cell in enumerate(row):
+            text = str(cell)
+            # Calculate position to draw the text
+            text_x = j * cell_width + cell_width // 2
+            text_y = i * cell_height + cell_height // 2
+            draw.text((text_x, text_y), text, font=font, fill=(255, 0, 0))
+
+    img.save(path)
 
 
 def save_image(image: np.ndarray, path: str) -> None:
@@ -150,9 +179,10 @@ def get_keyboard_events():
     return move_x, move_y, yaw_change
 
 
-def create_maze_environment() -> None:
+def create_maze_environment() -> np.ndarray:
     """
     Creates a PyBullet simulation environment with a plane and a maze.
+    Returns the maze layout with unique numbers for each cell.
 
     Args:
         None
@@ -172,6 +202,13 @@ def create_maze_environment() -> None:
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ]
+
+    numbered_maze_layout = np.zeros_like(maze_layout)
+    counter = 1
+    for i in range(len(maze_layout)):
+        for j in range(len(maze_layout[0])):
+            numbered_maze_layout[i, j] = counter
+            counter += 1
 
     for i, row in enumerate(maze_layout):
         for j, cell in enumerate(row):
@@ -194,9 +231,11 @@ def create_maze_environment() -> None:
                                   baseVisualShapeIndex=wall_visual,
                                   basePosition=[j - len(row) / 2, i - len(maze_layout) / 2, wall_height / 2])
 
+    return numbered_maze_layout
+
 
 # Create the maze environment
-create_maze_environment()
+numbered_maze_layout = create_maze_environment()
 
 # Directory to save images
 image_dir = "r2d2_images"
@@ -206,6 +245,8 @@ os.makedirs(image_dir, exist_ok=True)
 recorder = MicrophoneRecorder(device_index=2)  # Adjust the device index if needed
 
 # Run the simulation for 1000 steps and get feedback periodically
+overlay_grid = True  # Set to False to disable the grid overlay
+
 for i in range(1000):
     # Get keyboard events
     move_x, move_y, yaw_change = get_keyboard_events()
@@ -267,7 +308,12 @@ for i in range(1000):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         rgb_image_path = os.path.join(image_dir, f"r2d2_rgb_step_{i}_{timestamp}.png")
         depth_image_path = os.path.join(image_dir, f"r2d2_depth_step_{i}_{timestamp}.png")
-        save_image(rgb_img, rgb_image_path)
+
+        if overlay_grid:
+            save_image_with_grid(rgb_img, rgb_image_path, numbered_maze_layout)
+        else:
+            save_image(rgb_img, rgb_image_path)
+
         save_depth_image(depth_img, depth_image_path)  # Save depth image correctly
 
         # Record audio for Gemini
