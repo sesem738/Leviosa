@@ -8,6 +8,6 @@ matplotlib
 openai
 google-generativeai
 python-dotenv
-
+pybullet
 # issues related to whisper, particularly ffmpeg
 # https://github.com/openai/whisper
