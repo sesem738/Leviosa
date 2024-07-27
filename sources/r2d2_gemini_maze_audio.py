@@ -2,6 +2,7 @@ import logging
 import os
 import time
 from datetime import datetime
+from typing import Optional
 
 import google.generativeai as genai
 import numpy as np
@@ -9,8 +10,6 @@ import pybullet as p
 import pybullet_data
 from PIL import Image, ImageDraw, ImageFont
 from dotenv import load_dotenv
-
-from speech_to_text.microphone import MicrophoneRecorder
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -25,7 +24,7 @@ if not GOOGLE_API_KEY:
 genai.configure(api_key=GOOGLE_API_KEY)
 
 
-def get_llm_feedback(observations: str, rgb_image_path: str, depth_image_path: str, audio_path: str) -> str:
+def get_llm_feedback(observations: str, rgb_image_path: str, depth_image_path: str, audio_path: Optional[str]) -> str:
     """
     Sends observations, an RGB image, a depth image, and an audio file to the Gemini model and retrieves feedback.
 
@@ -38,36 +37,60 @@ def get_llm_feedback(observations: str, rgb_image_path: str, depth_image_path: s
     Returns:
         str: The feedback from the Gemini model.
     """
-    # Start timer
+
+    model = genai.GenerativeModel('models/gemini-1.5-flash')
     start_time = time.perf_counter()
 
     # Upload the image files and audio file
     rgb_image = genai.upload_file(path=rgb_image_path)
     depth_image = genai.upload_file(path=depth_image_path)
-    audio = genai.upload_file(path=audio_path)
 
-    prompt = f"""
-    You are an AI assistant that analyzes observations from a robot in a maze simulation environment.
-    Below are the observations from the environment along with an RGB image, a depth image, and an audio file. 
-    Provide comments about these observations.
+    if audio_path:  # If audio file is provided
+        audio = genai.upload_file(path=audio_path)
+        prompt = f"""
+        You are an AI assistant that analyzes observations from a robot in a maze simulation environment.
+        Below are the observations from the environment along with an RGB image, a depth image, and an audio file. 
+        Provide comments about these observations.
+    
+        Observations:
+        {observations}
+    
+        Attached Images:
+        - RGB Image: {rgb_image_path}
+        - Depth Image: {depth_image_path}
+        - Audio File: {audio_path}
+    
+        Please provide your feedback based on the attached images and audio. 
+        List types of info available to you to guide this robot to exit the maze. 
+        Under each type of info, describe what you see and understand from it.
+    
+        The audio is the voice of your master. Answer the command from the audio.
+        """
+        response = model.generate_content([prompt, rgb_image, depth_image, audio])
+    else:
+        prompt = f"""
+        You are an AI assistant that analyzes observations from a robot in a maze simulation environment.
+        Below are the observations from the environment along with an RGB image and a depth image. 
+        Provide comments about these observations.
+    
+        Observations:
+        {observations}
+    
+        Attached Images:
+        - RGB Image: {rgb_image_path}
+        - Depth Image: {depth_image_path}
+    
+        Please provide your feedback based on the attached images. 
+        List types of info available to you to guide this robot to exit the maze. 
+        Under each type of info, describe what you see and understand from it.
+        
+        Finally, based on the grid of number provided in the rgb image
+            1. identify the exit point of the maze.
+            2. guide the robot towards the exit point by providing the list of numbers the robot should follow.
+            3. Think step by step and be succint in your response.
+        """
+        response = model.generate_content([prompt, rgb_image, depth_image])
 
-    Observations:
-    {observations}
-
-    Attached Images:
-    - RGB Image: {rgb_image_path}
-    - Depth Image: {depth_image_path}
-    - Audio File: {audio_path}
-
-    Please provide your feedback based on the attached images and audio. 
-    List types of info available to you to guide this robot to exit the maze. 
-    Under each type of info, describe what you see and understand from it.
-
-    The audio is the voice of your master. Answer the command from the audio.
-    """
-
-    model = genai.GenerativeModel('models/gemini-1.5-flash')
-    response = model.generate_content([prompt, rgb_image, depth_image, audio])
     feedback = response.text if response else "No response from the model."
 
     # Stop timer and calculate elapsed time
@@ -87,6 +110,7 @@ def save_image_with_grid(image: np.ndarray, path: str, maze_layout: np.ndarray) 
         path (str): The path where the image will be saved.
         maze_layout (np.ndarray): The maze layout with the grid numbers.
     """
+    image = image.astype(np.uint8)  # Convert to uint8
     img = Image.fromarray(image)
     draw = ImageDraw.Draw(img)
     font = ImageFont.load_default()  # You can specify a path to a TTF file for a different font
@@ -114,6 +138,7 @@ def save_image(image: np.ndarray, path: str) -> None:
         image (np.ndarray): The image data.
         path (str): The path where the image will be saved.
     """
+    image = image.astype(np.uint8)  # Convert to uint8
     img = Image.fromarray(image)
     img.save(path)
 
@@ -213,23 +238,37 @@ def create_maze_environment() -> np.ndarray:
     for i, row in enumerate(maze_layout):
         for j, cell in enumerate(row):
             if cell == 1:
-                wall_visual = p.createVisualShape(p.GEOM_BOX, halfExtents=[0.5, wall_thickness / 2, wall_height / 2],
-                                                  rgbaColor=[0.7, 0.7, 0.7, 1])
-                wall_collision = p.createCollisionShape(p.GEOM_BOX,
-                                                        halfExtents=[0.5, wall_thickness / 2, wall_height / 2])
-                p.createMultiBody(baseMass=0,
-                                  baseCollisionShapeIndex=wall_collision,
-                                  baseVisualShapeIndex=wall_visual,
-                                  basePosition=[j - len(row) / 2, i - len(maze_layout) / 2, wall_height / 2])
+                wall_visual = p.createVisualShape(
+                    p.GEOM_BOX,
+                    halfExtents=[0.5, wall_thickness / 2, wall_height / 2],
+                    rgbaColor=[0.7, 0.7, 0.7, 1]
+                )
+                wall_collision = p.createCollisionShape(
+                    p.GEOM_BOX,
+                    halfExtents=[0.5, wall_thickness / 2, wall_height / 2]
+                )
+                p.createMultiBody(
+                    baseMass=0,
+                    baseCollisionShapeIndex=wall_collision,
+                    baseVisualShapeIndex=wall_visual,
+                    basePosition=[j - len(row) / 2, i - len(maze_layout) / 2, wall_height / 2]
+                )
 
-                wall_visual = p.createVisualShape(p.GEOM_BOX, halfExtents=[wall_thickness / 2, 0.5, wall_height / 2],
-                                                  rgbaColor=[0.7, 0.7, 0.7, 1])
-                wall_collision = p.createCollisionShape(p.GEOM_BOX,
-                                                        halfExtents=[wall_thickness / 2, 0.5, wall_height / 2])
-                p.createMultiBody(baseMass=0,
-                                  baseCollisionShapeIndex=wall_collision,
-                                  baseVisualShapeIndex=wall_visual,
-                                  basePosition=[j - len(row) / 2, i - len(maze_layout) / 2, wall_height / 2])
+                wall_visual = p.createVisualShape(
+                    p.GEOM_BOX,
+                    halfExtents=[wall_thickness / 2, 0.5, wall_height / 2],
+                    rgbaColor=[0.7, 0.7, 0.7, 1]
+                )
+                wall_collision = p.createCollisionShape(
+                    p.GEOM_BOX,
+                    halfExtents=[wall_thickness / 2, 0.5, wall_height / 2]
+                )
+                p.createMultiBody(
+                    baseMass=0,
+                    baseCollisionShapeIndex=wall_collision,
+                    baseVisualShapeIndex=wall_visual,
+                    basePosition=[j - len(row) / 2, i - len(maze_layout) / 2, wall_height / 2]
+                )
 
     return numbered_maze_layout
 
@@ -242,7 +281,7 @@ image_dir = "r2d2_images"
 os.makedirs(image_dir, exist_ok=True)
 
 # Initialize the audio recorder
-recorder = MicrophoneRecorder(device_index=2)  # Adjust the device index if needed
+# recorder = MicrophoneRecorder(device_index=2)  # Adjust the device index if needed
 
 # Run the simulation for 1000 steps and get feedback periodically
 overlay_grid = True  # Set to False to disable the grid overlay
@@ -317,20 +356,21 @@ for i in range(1000):
         save_depth_image(depth_img, depth_image_path)  # Save depth image correctly
 
         # Record audio for Gemini
-        audio_path = f"data/audios/gemini_audio_{timestamp}.wav"
-        os.makedirs(os.path.dirname(audio_path), exist_ok=True)
-        logging.info("Recording audio for Gemini feedback...")
-        recorder.start_stream(save_path=audio_path)
-        time.sleep(5)  # Record for 5 seconds
-        recorder.stop_stream()
-        logging.info(f"Audio recording stopped. Audio saved to {audio_path}")
+        # audio_path = f"data/audios/gemini_audio_{timestamp}.wav"
+        # os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+        # logging.info("Recording audio for Gemini feedback...")
+        # recorder.start_stream(save_path=audio_path)
+        # time.sleep(5)  # Record for 5 seconds
+        # recorder.stop_stream()
+        # logging.info(f"Audio recording stopped. Audio saved to {audio_path}")
 
         # Format observations
         observations = f"Position: {pos}, Orientation: {euler}"
         print(f"Observations at step {i}:\n{observations}")
 
         # Get LLM feedback
-        feedback = get_llm_feedback(observations, rgb_image_path, depth_image_path, audio_path)
+        # feedback = get_llm_feedback(observations, rgb_image_path, depth_image_path, audio_path)
+        feedback = get_llm_feedback(observations, rgb_image_path, depth_image_path, None)
         print(f"LLM Feedback at step {i}:\n{feedback}")
 
     # Step simulation
