@@ -1,11 +1,13 @@
+import logging
 import os
 import re
 import time
-import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
 import openai
 from dotenv import load_dotenv
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -124,7 +126,7 @@ def execute_waypoints_code(code):
 def plot_3d_trajectory(waypoints, plot: bool = True, save_path: str = None):
     """
     Plots a 3D trajectory based on the given waypoints.
-    
+
     Args:
         waypoints (list): List of waypoints where each waypoint is a list of [x, y, z].
         plot (bool): Whether to display the plot.
@@ -148,9 +150,49 @@ def plot_3d_trajectory(waypoints, plot: bool = True, save_path: str = None):
         plt.savefig(save_path)
         logging.info(f"trajectory path saved at {save_path}")
 
+    if plot:
+        plt.show()
+
+
+def plot_multi_drone_3d_trajectory(waypoints_list, plot=True, save_path=None):
+    """
+    Plots 3D trajectories for multiple drones based on the given waypoints.
+
+    Args:
+        waypoints_list (list): List of waypoint lists for each drone.
+        plot (bool): Whether to display the plot.
+        save_path (str): Path to save the plot image, if provided.
+    """
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Generate a color map for the number of drones
+    colors = plt.cm.rainbow(np.linspace(0, 1, len(waypoints_list)))
+
+    for i, waypoints in enumerate(waypoints_list):
+        waypoints = np.array(waypoints)
+        x = waypoints[:, 0]
+        y = waypoints[:, 1]
+        z = waypoints[:, 2]
+
+        ax.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
+        ax.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
+        ax.text(x[0], y[0], z[0], f'Start {i + 1}')
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.legend()
+    plt.title('Multi-Drone Trajectories')
+
+    if save_path:
+        plt.savefig(save_path)
+        logging.info(f"Trajectory plot saved at {save_path}")
 
     if plot:
         plt.show()
+
+    plt.close()
 
 
 def process_waypoints(code_response, plot=False, save_path=None):
@@ -176,17 +218,24 @@ def process_waypoints(code_response, plot=False, save_path=None):
         return None
 
     # Execute the extracted Python code to get the waypoints
-    waypoints = execute_waypoints_code(code)
-    if not waypoints:
+    waypoints_list = execute_waypoints_code(code)
+    if not waypoints_list:
         print("Failed to derive waypoints.")
         return None
 
-    print(f"Derived waypoints: {waypoints}")
+    # print(f"Derived waypoints: {waypoints_list}")
 
-    # Plot the 3D trajectory based on the derived waypoints
-    plot_3d_trajectory(waypoints, plot=plot, save_path=save_path)
+    # # Plot the 3D trajectory based on the derived waypoints
+    # plot_3d_trajectory(waypoints, plot=plot, save_path=save_path)
 
-    return waypoints
+    print(f"Derived waypoints for {len(waypoints_list)} drones:")
+    for i, waypoints in enumerate(waypoints_list):
+        print(f"Drone {i+1}: {waypoints}")
+
+    # Plot the 3D trajectories based on the derived waypoints
+    plot_multi_drone_3d_trajectory(waypoints_list, plot=plot, save_path=save_path)
+
+    return waypoints_list
 
 
 def main(file_path):

@@ -61,53 +61,62 @@ few_shot_examples = ""
 
 def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     """
-    Fetches the Python code for generating waypoints using the Google AI API.
-    :param audio_file: Path to the audio file.
-    :param error: Error message from previous code execution, if any.
-    :return: the code response from the AI model
-
-    TODO: add few shots examples to help, 3 for now
+    Fetches the Python code for generating waypoints for three drones using the Google AI API.
     """
-    # Start Timer
-    start_time = time.perf_counter()  # Use perf_counter for higher precision timing
-    # upload the audio file
+    start_time = time.perf_counter()
     audio = genai.upload_file(path=audio_file)
-    # prompt the model with the audio file
-    base_prompt = f"""
-    You are an AI assistant that converts natural audio commands into Python code for generating a list of waypoints for drone trajectories.
-    You will need to generate Python code that outputs a list of waypoints, each specified as [x, y, z].
-    When you receive a user prompt, reason step-by-step.
-    Assume the unit of measurement is meters.
-    The waypoints should start from [0, 0, 1] and create a continuous trajectory.
-    The code should generate waypoints in the following format and be enclosed within triple backticks:
-    ```python
 
+    base_prompt = f""" You are an AI assistant that converts natural audio commands into Python code for generating 
+    lists of waypoints for three drone trajectories. You will need to generate Python code that outputs three lists 
+    of waypoints, each specified as [x, y, z]. When you receive a user prompt, reason step-by-step. Assume the unit 
+    of measurement is meters. The waypoints for each drone should start from different positions: Drone 1: [0, 0, 
+    1] Drone 2: [5, 0, 1] Drone 3: [0, 5, 1] Create continuous trajectories for each drone. The trajectory for the 
+    drones can either combine or be independent based on the audio command. The code should generate 
+    waypoints in the following format and be enclosed within triple backticks: 
+    ```python import numpy as np
+
+    # Drone 1 waypoints
+    waypoints1 = np.array([
+        [0, 0, 1],
+        # ... more waypoints ...
+    ])
+
+    # Drone 2 waypoints
+    waypoints2 = np.array([
+        [5, 0, 1],
+        # ... more waypoints ...
+    ])
+
+    # Drone 3 waypoints
+    waypoints3 = np.array([
+        [0, 5, 1],
+        # ... more waypoints ...
+    ])
+
+    waypoints = [waypoints1, waypoints2, waypoints3]
     ```
-    The code you write should not define a function that gets called. It should directly generate the waypoints.
-    Executing the code should output a list of waypoints. I should not need to call a function you write to get the waypoints.
-    Make sure to import all the necessary libraries you use in the code.
-    No need to use a return statement since we are not defining a function.
-
+    Make sure to import all necessary libraries you use in the code. Feel free to also use numpy functions to help you 
+    generate the waypoint lists like np.sin, np.cos, np.linspace, etc.
     Listen carefully to the following audio file, tell me back the command you understand I said, and 
-    convert the audio command into Python code for generating waypoints.
-    
-    {few_shot_examples}
+    convert the audio command into Python code for generating waypoints for three drones. Think step by step before
+    generating the python code.
     """
+
     if error:
-        base_prompt += f"\n\nThe previous code generated the following error:\n{error}\nPlease correct the code based on this error. Again, ensure that the code generates a list of waypoints and is enclosed within triple backticks: ```python\n\n```\n\n"
+        base_prompt += (f"\n\nThe previous code generated the following error:\n{error}\nPlease correct the code based "
+                        f"on this error.")
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     response = model.generate_content([base_prompt, audio])
 
     code_text = None
     try:
-        code_text = response.text  # Extract the code from the response
+        code_text = response.text
     except ValueError as e:
         logging.error(f"An error occurred while extracting the code from the response: {e}\n Exiting...")
 
-    # Stop Timer and Calculate Elapsed Time
     end_time = time.perf_counter()
-    elapsed_time_ms = (end_time - start_time) * 1000  # Convert to milliseconds
+    elapsed_time_ms = (end_time - start_time) * 1000
 
     logging.info(f"Generated response:\n\n {code_text}")
     logging.info(f"Total time taken for transcription: {elapsed_time_ms:.2f} ms")
@@ -118,36 +127,35 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
 def analyze_plot_with_gemini(audio_file: str, image_path: str):
     """
     Analyze the plot image using Gemini and provide feedback.
-    :param audio_file: Path to the audio file.
-    :param image_path: Path to the plot image.
-    :return: Feedback from the AI model.
     """
-    # Start Timer
-    start_time = time.perf_counter()  # Use perf_counter for higher precision timing
-    # Upload the image file and audio file
+    start_time = time.perf_counter()
     audio = genai.upload_file(path=audio_file)
     image = genai.upload_file(path=image_path)
 
-    # Prompt the model with the image file and audio command
     base_prompt = """
-    You are an AI assistant that analyzes drone trajectory plots. I have provided an audio file with a command and an image file containing the trajectory plot.
-    Please analyze the plot and provide feedback on the trajectory. Specifically, look for continuity, completeness, and any anomalies based on the command from the audio file.
+    You are an AI assistant that analyzes multi-drone trajectory plots. I have provided an audio file with a command and
+     an image file containing the trajectory plot for three drones.
+    Please analyze the plot and provide feedback on the trajectories. Specifically, look for:
+    1. Continuity of each drone's path
+    2. Completeness of the trajectories based on the audio command
+    3. Any anomalies or potential collisions between drones
+    4. Appropriate starting positions for each drone
     Think step by step and be detailed in your analysis.
-    If the trajectory is correct, please respond with the phrase "--VALID TRAJECTORY--" and comments why you think it is valid.
-    If the trajectory is incorrect, provide suggestions on how to correct it.
+    If all trajectories are correct, please respond with the phrase "--VALID TRAJECTORIES--" and comments on why you 
+    think they are valid. If any trajectory is incorrect, provide suggestions on how to correct it. 
     """
+
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     response = model.generate_content([base_prompt, audio, image])
 
     feedback = None
     try:
-        feedback = response.text  # Extract the feedback from the response
+        feedback = response.text
     except ValueError as e:
         logging.error(f"An error occurred while extracting the feedback from the response: {e}\n Exiting...")
 
-    # Stop Timer and Calculate Elapsed Time
     end_time = time.perf_counter()
-    elapsed_time_ms = (end_time - start_time) * 1000  # Convert to milliseconds
+    elapsed_time_ms = (end_time - start_time) * 1000
 
     logging.info(f"Feedback from plot analysis:\n\n {feedback}")
     logging.info(f"Total time taken for plot analysis: {elapsed_time_ms:.2f} ms")
@@ -172,7 +180,7 @@ def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_pat
 
             # Analyze the generated plot image with Gemini
             feedback = analyze_plot_with_gemini(audio_file, save_path)
-            if "--VALID TRAJECTORY--" in feedback:
+            if "--VALID TRAJECTORIES--" in feedback:
                 return waypoints
             # logging.info(f"Feedback from plot analysis: {feedback}")
         except Exception as e:
