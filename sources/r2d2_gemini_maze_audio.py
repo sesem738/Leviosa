@@ -10,6 +10,7 @@ import pybullet as p
 import pybullet_data
 from PIL import Image, ImageDraw, ImageFont
 from dotenv import load_dotenv
+import random
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -87,7 +88,10 @@ def get_llm_feedback(observations: str, rgb_image_path: str, depth_image_path: s
         Finally, based on the grid of number provided in the rgb image
             1. identify the exit point of the maze. The walls of the maze are in black and should be avoided at all cost.
             2. guide the robot towards the exit point by providing the list of numbers the robot should follow.
-            3. Think step by step and be succint in your response.
+            3. Think step by step and be succint in your response. The exit of the maze is at 120 so your path should end at 120.
+            4. To navigate the maze, look at where to robot is (in dark blue) and where the exit is (at 120). look at the numbers
+            find the numbers that go from robot position to exit without crossing the black walls of the maze. So the numbers you give 
+            should go around the walls and not through them.
         """
         response = model.generate_content([prompt, rgb_image, depth_image])
 
@@ -169,6 +173,54 @@ def get_llm_feedback(observations: str, rgb_image_path: str, depth_image_path: s
 #
 #     img.save(path)
 
+# def save_image_with_grid(image: np.ndarray, path: str, maze_layout: np.ndarray) -> None:
+#     """
+#     Save the image as a PNG file with a grid of numbers overlayed, using a 1.25 grid resolution.
+#
+#     Args:
+#         image (np.ndarray): The image data.
+#         path (str): The path where the image will be saved.
+#         maze_layout (np.ndarray): The maze layout with the grid numbers.
+#     """
+#     image = image.astype(np.uint8)  # Convert to uint8
+#     img = Image.fromarray(image)
+#     draw = ImageDraw.Draw(img)
+#
+#     # Use a moderate font size for better readability
+#     font_size = 12
+#     font = ImageFont.truetype("arial.ttf", font_size)  # You may need to specify the path to a TTF file
+#
+#     # Set the grid resolution to 1.25
+#     grid_resolution = 1.25
+#
+#     # Calculate the size of each cell
+#     cell_width = img.width // (len(maze_layout[0]) * grid_resolution)
+#     cell_height = img.height // (len(maze_layout) * grid_resolution)
+#
+#     num_rows = int(len(maze_layout) * grid_resolution)
+#     num_cols = int(len(maze_layout[0]) * grid_resolution)
+#
+#     counter = 1
+#     for i in range(num_rows):
+#         for j in range(num_cols):
+#             text = str(counter)
+#             # Calculate position to draw the text
+#             text_bbox = draw.textbbox((0, 0), text, font=font)
+#             text_width = text_bbox[2] - text_bbox[0]
+#             text_height = text_bbox[3] - text_bbox[1]
+#
+#             text_x = int(j * cell_width + (cell_width - text_width) // 2)
+#             text_y = int(i * cell_height + (cell_height - text_height) // 2)
+#
+#             # Draw a semi-transparent white background for better visibility
+#             background_bbox = (text_x - 1, text_y - 1, text_x + text_width + 1, text_y + text_height + 1)
+#             draw.rectangle(background_bbox, fill=(255, 255, 255, 160))
+#
+#             draw.text((text_x, text_y), text, font=font, fill=(255, 0, 0))
+#             counter += 1
+#
+#     img.save(path)
+
 def save_image_with_grid(image: np.ndarray, path: str, maze_layout: np.ndarray) -> None:
     """
     Save the image as a PNG file with a grid of numbers overlayed, using a 1.25 grid resolution.
@@ -196,10 +248,14 @@ def save_image_with_grid(image: np.ndarray, path: str, maze_layout: np.ndarray) 
     num_rows = int(len(maze_layout) * grid_resolution)
     num_cols = int(len(maze_layout[0]) * grid_resolution)
 
-    counter = 1
+    # Generate and shuffle grid numbers
+    grid_numbers = list(range(1, num_rows * num_cols + 1))
+    random.shuffle(grid_numbers)
+
+    counter = 0
     for i in range(num_rows):
         for j in range(num_cols):
-            text = str(counter)
+            text = str(grid_numbers[counter])
             # Calculate position to draw the text
             text_bbox = draw.textbbox((0, 0), text, font=font)
             text_width = text_bbox[2] - text_bbox[0]
