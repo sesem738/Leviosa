@@ -141,6 +141,7 @@ def analyze_plot_with_gemini(audio_file: str, image_path: str):
     2. Completeness of the trajectories based on the audio command
     3. Any anomalies or potential collisions between drones
     4. Appropriate starting positions for each drone
+    5. Depending on the audio command, each drone does NOT have to come back to the starting point
     Think step by step and be detailed in your analysis.
     If all trajectories are correct, please respond with the phrase "--VALID TRAJECTORIES--" and comments on why you 
     think they are valid. If any trajectory is incorrect, provide suggestions on how to correct it. 
