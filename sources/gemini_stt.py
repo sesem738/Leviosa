@@ -99,7 +99,8 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     generate the waypoint lists like np.sin, np.cos, np.linspace, etc.
     Listen carefully to the following audio file, tell me back the command you understand I said, and 
     convert the audio command into Python code for generating waypoints for three drones. Think step by step before
-    generating the python code.
+    generating the python code. Every time you generate based on feedback, remember you have to start the trajectory 
+    from scratch, you can't extend the previous trajectory.
     """
 
     if error:
