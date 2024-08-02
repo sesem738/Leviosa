@@ -20,46 +20,6 @@ if not GOOGLE_API_KEY:
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
-few_shot_examples = ""
-
-
-# """"
-# Example 1:
-# Audio command: "Execute a figure eight"
-# ```python
-# import numpy as np
-# t = np.linspace(0, 2*np.pi, 100)
-# x = np.sin(t)
-# y = np.sin(2*t)
-# z = np.ones_like(t) * 3
-# waypoints = np.column_stack((x, y, z))
-# ```
-#
-# Example 2:
-# Audio command: "Perform a circle"
-# ```python
-# import numpy as np
-# t = np.linspace(0, 2*np.pi, 100)
-# x = 5 * np.cos(t)
-# y = 5 * np.sin(t)
-# z = np.ones_like(t) * 2
-# waypoints = np.column_stack((x, y, z))
-# ```
-#
-# Example 3:
-# Audio command: "Do a square"
-# ```python
-# import numpy as np
-# waypoints = np.array([
-#     [0, 0, 1],
-#     [4, 0, 1],
-#     [4, 4, 1],
-#     [0, 4, 1],
-#     [0, 0, 1]
-# ])
-# ```
-# """
-
 
 def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     """
@@ -72,30 +32,22 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     lists of waypoints for N drone trajectories. You will need to generate Python code that outputs N lists 
     of waypoints, each specified as [x, y, z] depending on the number of drones. If no specific number of drones is 
     specified, use N=3. When you receive a user prompt, reason step-by-step. Assume the unit 
-    of measurement is meters. The waypoints for each drone should start from different positions: Drone 1: [0, 0, 
-    1] Drone 2: [5, 0, 1] ... Drone N: [0, 5, 1] Create continuous trajectories for each drone. The trajectory for the 
+    of measurement is meters. The waypoints for each drone should start from different positions.
+     Create continuous trajectories for each drone. The trajectory for the 
     drones can either combine or be independent based on the audio command. The code should generate 
     waypoints in the following format and be enclosed within triple backticks: 
-    ```python import numpy as np
+    ```python 
+    import numpy as np
 
     # Drone 1 waypoints
-    waypoints1 = np.array([
-        [0, 0, 1],
-        # ... more waypoints ...
-    ])
+    waypoints1 =...
 
     # Drone 2 waypoints
-    waypoints2 = np.array([
-        [5, 0, 1],
-        # ... more waypoints ...
-    ])
+    waypoints2 = ...
 
     ... 
     # Drone N waypoints
-    waypointsN = np.array([
-        [0, 5, 1],
-        # ... more waypoints ...
-    ])
+    waypointsN = ...
 
     waypoints = [waypoints1, waypoints2, ... waypointsN]
     ```
@@ -175,19 +127,34 @@ def analyze_plot_with_multiple_critics(audio_file: str, image_path: str, num_cri
     return agg_feedback
 
 
-def aggregate_feedback(feedbacks: list) -> str:
+def aggregate_feedback(feedbacks: list, acceptance_rate: float = 0.75) -> str:
     """
-    Aggregate feedback from multiple critics.
+    Aggregate feedback from multiple critics and summarize it using the Gemini model.
     """
     valid_count = sum("--VALID TRAJECTORIES--" in feedback for feedback in feedbacks)
     total_critics = len(feedbacks)
+    majority_threshold = int(total_critics * acceptance_rate)
 
-    if valid_count == total_critics:
-        return "--ALL VALID TRAJECTORIES--\n" + "\n".join(feedbacks)
-    elif valid_count > total_critics / 2:
-        return f"MAJORITY VALID ({valid_count}/{total_critics})\n" + "\n".join(feedbacks)
+    if valid_count > majority_threshold:
+        result = "MAJORITY VALID"
     else:
-        return f"MAJORITY INVALID ({total_critics - valid_count}/{total_critics})\n" + "\n".join(feedbacks)
+        result = "MAJORITY INVALID"
+
+    # Summarize feedback using Gemini model
+    base_prompt = f"""
+    You are an AI assistant that summarizes feedback from multiple critics. I will provide you with the feedback from 
+    {total_critics} critics. Your task is to summarize the feedback, identifying common points, differences, and the 
+    overall consensus.
+    Here is the feedback from the critics:
+    {" ".join(feedbacks)}
+    """
+
+    model = genai.GenerativeModel('models/gemini-1.5-flash')
+    response = model.generate_content([base_prompt])
+
+    summary = response.text if response else "Error in generating summary"
+
+    return f"{result} ({valid_count}/{total_critics})\n Feedback Summary:\n{summary}"
 
 
 def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_path: str = None, num_critics: int = 5):
@@ -203,7 +170,7 @@ def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_pat
 
             # Analyze the generated plot image with multiple Gemini critics
             feedback = analyze_plot_with_multiple_critics(audio_file, save_path, num_critics)
-            if "--ALL VALID TRAJECTORIES--" in feedback or "MAJORITY VALID" in feedback:
+            if "MAJORITY VALID" in feedback:
                 return waypoints
         except Exception as e:
             logging.error(f"An error occurred while processing waypoints: {e}")
@@ -253,34 +220,6 @@ def analyze_plot_with_gemini(audio_file: str, image_path: str):
     logging.info(f"Total time taken for plot analysis: {elapsed_time_ms:.2f} ms")
 
     return feedback
-
-
-# def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_path: str = None):
-#     """
-#     Process the waypoints with a retry mechanism.
-#     :param audio_file: Path to the audio file.
-#     :param max_retries: Maximum number of retries.
-#     :param save_path: Path to save the plot image.
-#     :return: List of waypoints or None if the process fails.
-#     """
-#     error = None
-#     feedback = None
-#     for attempt in range(max_retries):
-#         code_response = fetch_waypoints_code_from_gemini(audio_file, error or feedback)
-#         try:
-#             waypoints = process_waypoints(code_response, save_path=save_path)
-#
-#             # Analyze the generated plot image with Gemini
-#             feedback = analyze_plot_with_gemini(audio_file, save_path)
-#             if "--VALID TRAJECTORIES--" in feedback:
-#                 return waypoints
-#             # logging.info(f"Feedback from plot analysis: {feedback}")
-#         except Exception as e:
-#             logging.error(f"An error occurred while processing waypoints: {e}")
-#             error = str(e)
-#         logging.info(f"Retrying... ({attempt + 1}/{max_retries})")
-#     logging.error("Maximum number of retries reached. Failed to process waypoints.")
-#     return None
 
 
 def main():
