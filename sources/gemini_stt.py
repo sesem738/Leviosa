@@ -147,7 +147,7 @@ def aggregate_feedback(feedbacks: list, acceptance_rate: float = 0.75) -> str:
     base_prompt = f"""
     You are an AI assistant that summarizes feedback from multiple critics. I will provide you with the feedback from 
     {total_critics} critics. Your task is to summarize the feedback, identifying common points and the 
-    overall consensus. Keep it succinct and useful actionable items.
+    overall consensus. 
     Here is the feedback from the critics:
     {" ".join(feedbacks)}
     """
@@ -253,7 +253,7 @@ def main():
 
     # Time the process_waypoints_with_retry function
     start_time = time.perf_counter()
-    waypoints = process_waypoints_with_retry(output_path, max_retries=100, save_path=traj_plot_path, num_critics=10)
+    waypoints = process_waypoints_with_retry(output_path, max_retries=30, save_path=traj_plot_path, num_critics=3)
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
 
