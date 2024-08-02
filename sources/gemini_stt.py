@@ -52,6 +52,7 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     """
     Fetches the Python code for generating waypoints for three drones using the Google AI API.
     """
+    # TODO: next thing to try is multiple generation so it picks which direction is the best and to iterate from
     start_time = time.perf_counter()
 
     base_prompt = f""" You are an AI assistant that converts requirements into Python code for generating 
@@ -238,7 +239,7 @@ def main():
 
     # Time the process_waypoints_with_retry function
     start_time = time.perf_counter()
-    waypoints = process_waypoints_with_retry(output_path, max_retries=30, save_path=traj_plot_path, num_critics=3)
+    waypoints = process_waypoints_with_retry(output_path, max_retries=50, save_path=traj_plot_path, num_critics=3)
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
 
