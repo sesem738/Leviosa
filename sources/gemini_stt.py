@@ -238,7 +238,7 @@ def main():
 
     # Time the process_waypoints_with_retry function
     start_time = time.perf_counter()
-    waypoints = process_waypoints_with_retry(output_path, max_retries=30, save_path=traj_plot_path, num_critics=5)
+    waypoints = process_waypoints_with_retry(output_path, max_retries=30, save_path=traj_plot_path, num_critics=3)
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
 
