@@ -38,6 +38,8 @@ def fetch_waypoints_code_from_gemini(audio_file: str, error: str = None):
     waypoints in the following format and be enclosed within triple backticks: 
     ```python 
     import numpy as np
+    
+    #define any preprocessing functions or steps necessary here
 
     # Drone 1 waypoints
     waypoints1 =...
@@ -91,7 +93,7 @@ def analyze_plot_with_multiple_critics(audio_file: str, image_path: str, num_cri
 
     base_prompt = """
     You are an AI assistant that analyzes multi-drone trajectory plots. I have provided an audio file with a command and
-     an image file containing the trajectory plot for three drones.
+     an image file containing the trajectory plot for drones.
     Please analyze the plot and provide feedback on the trajectories. Specifically, look for:
     1. Continuity of each drone's path
     2. Completeness of the trajectories based on the audio command
@@ -100,9 +102,10 @@ def analyze_plot_with_multiple_critics(audio_file: str, image_path: str, num_cri
     5. Depending on the audio command, each drone does NOT have to come back to the starting point
     6. IMPORTANTLY, The overall shape formed by the combination of all the drones trajectories SHOULD match what the 
     audio command asks!
-    Think step by step and be detailed in your analysis.
+    Think step by step and be detailed in your analysis. 
     If all trajectories are correct, please respond with the phrase "--VALID TRAJECTORIES--" and comments on why you 
-    think they are valid. If any trajectory is incorrect, provide suggestions on how to correct it. 
+    think they are valid. If any trajectory is incorrect, say whether it is close or not and provide suggestions on how to 
+    correct it. 
     """
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
@@ -143,8 +146,8 @@ def aggregate_feedback(feedbacks: list, acceptance_rate: float = 0.75) -> str:
     # Summarize feedback using Gemini model
     base_prompt = f"""
     You are an AI assistant that summarizes feedback from multiple critics. I will provide you with the feedback from 
-    {total_critics} critics. Your task is to summarize the feedback, identifying common points, differences, and the 
-    overall consensus.
+    {total_critics} critics. Your task is to summarize the feedback, identifying common points and the 
+    overall consensus. Keep it succinct and useful actionable items.
     Here is the feedback from the critics:
     {" ".join(feedbacks)}
     """
@@ -250,7 +253,7 @@ def main():
 
     # Time the process_waypoints_with_retry function
     start_time = time.perf_counter()
-    waypoints = process_waypoints_with_retry(output_path, max_retries=100, save_path=traj_plot_path, num_critics=5)
+    waypoints = process_waypoints_with_retry(output_path, max_retries=100, save_path=traj_plot_path, num_critics=10)
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
 
