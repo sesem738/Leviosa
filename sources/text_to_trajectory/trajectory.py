@@ -116,7 +116,7 @@ def execute_waypoints_code(code):
         list: List of waypoints.
     """
     print('Executing Python code...')
-    print(code)
+    # print(code)
     local_vars = {}
     exec(code, {}, local_vars)
     waypoints = local_vars.get('waypoints', [])
