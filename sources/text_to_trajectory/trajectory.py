@@ -154,6 +154,46 @@ def plot_3d_trajectory(waypoints, plot: bool = True, save_path: str = None):
         plt.show()
 
 
+# def plot_multi_drone_3d_trajectory(waypoints_list, plot=True, save_path=None):
+#     """
+#     Plots 3D trajectories for multiple drones based on the given waypoints.
+#
+#     Args:
+#         waypoints_list (list): List of waypoint lists for each drone.
+#         plot (bool): Whether to display the plot.
+#         save_path (str): Path to save the plot image, if provided.
+#     """
+#     fig = plt.figure(figsize=(10, 8))
+#     ax = fig.add_subplot(111, projection='3d')
+#
+#     # Generate a color map for the number of drones
+#     colors = plt.cm.rainbow(np.linspace(0, 1, len(waypoints_list)))
+#
+#     for i, waypoints in enumerate(waypoints_list):
+#         waypoints = np.array(waypoints)
+#         x = waypoints[:, 0]
+#         y = waypoints[:, 1]
+#         z = waypoints[:, 2]
+#
+#         ax.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
+#         ax.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
+#         ax.text(x[0], y[0], z[0], f'Start {i + 1}')
+#
+#     ax.set_xlabel('X')
+#     ax.set_ylabel('Y')
+#     ax.set_zlabel('Z')
+#     ax.legend()
+#     plt.title('Multi-Drone Trajectories')
+#
+#     if save_path:
+#         plt.savefig(save_path)
+#         logging.info(f"Trajectory plot saved at {save_path}")
+#
+#     if plot:
+#         plt.show()
+#
+#     plt.close()
+
 def plot_multi_drone_3d_trajectory(waypoints_list, plot=True, save_path=None):
     """
     Plots 3D trajectories for multiple drones based on the given waypoints.
@@ -163,8 +203,14 @@ def plot_multi_drone_3d_trajectory(waypoints_list, plot=True, save_path=None):
         plot (bool): Whether to display the plot.
         save_path (str): Path to save the plot image, if provided.
     """
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
+    fig = plt.figure(figsize=(20, 8))
+
+    # Subplot 1: Current perspective
+    ax1 = fig.add_subplot(131, projection='3d')
+    # Subplot 2: Top-down view
+    ax2 = fig.add_subplot(132, projection='3d')
+    # Subplot 3: Side view
+    ax3 = fig.add_subplot(133, projection='3d')
 
     # Generate a color map for the number of drones
     colors = plt.cm.rainbow(np.linspace(0, 1, len(waypoints_list)))
@@ -175,15 +221,34 @@ def plot_multi_drone_3d_trajectory(waypoints_list, plot=True, save_path=None):
         y = waypoints[:, 1]
         z = waypoints[:, 2]
 
-        ax.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
-        ax.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
-        ax.text(x[0], y[0], z[0], f'Start {i + 1}')
+        # Plotting on the first subplot (current perspective)
+        ax1.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
+        ax1.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
+        ax1.text(x[0], y[0], z[0], f'Start {i + 1}')
 
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.legend()
-    plt.title('Multi-Drone Trajectories')
+        # Plotting on the second subplot (top-down view)
+        ax2.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
+        ax2.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
+        ax2.text(x[0], y[0], z[0], f'Start {i + 1}')
+        ax2.view_init(elev=90, azim=-90)  # Top-down view
+
+        # Plotting on the third subplot (side view)
+        ax3.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
+        ax3.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
+        ax3.text(x[0], y[0], z[0], f'Start {i + 1}')
+        ax3.view_init(elev=0, azim=0)  # Side view
+
+    for ax in [ax1, ax2, ax3]:
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        ax.legend()
+
+    ax1.set_title('Perspective View')
+    ax2.set_title('Top-Down View')
+    ax3.set_title('Side View')
+
+    plt.suptitle('Multi-Drone Trajectories from Different Perspectives')
 
     if save_path:
         plt.savefig(save_path)
@@ -230,7 +295,7 @@ def process_waypoints(code_response, plot=False, save_path=None):
 
     print(f"Derived waypoints for {len(waypoints_list)} drones:")
     for i, waypoints in enumerate(waypoints_list):
-        print(f"Drone {i+1}: {waypoints}")
+        print(f"Drone {i + 1}: {waypoints}")
 
     # Plot the 3D trajectories based on the derived waypoints
     plot_multi_drone_3d_trajectory(waypoints_list, plot=plot, save_path=save_path)

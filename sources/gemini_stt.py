@@ -20,6 +20,8 @@ if not GOOGLE_API_KEY:
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
+# TODO: add a fuction to keep track of a history of what works and what doesn't work.
+
 
 def interpret_audio_request(audio_file: str) -> str:
     """
