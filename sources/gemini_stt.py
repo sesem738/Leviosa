@@ -20,6 +20,7 @@ if not GOOGLE_API_KEY:
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
+
 # TODO: add a fuction to keep track of a history of what works and what doesn't work.
 
 
@@ -29,12 +30,27 @@ def interpret_audio_request(audio_file: str) -> str:
     """
     audio = genai.upload_file(path=audio_file)
 
-    base_prompt = """
-    You are an AI assistant that interprets natural audio commands into a list of requirements for drone trajectories.
-    Listen carefully to the following audio file and provide a detailed list of requirements based on the command you 
-    understand. Please specify the number of drones, their starting positions, and the overall shape or path they 
-    should follow.
-    """
+    base_prompt = base_prompt = """
+        You are an AI assistant specializing in translating natural language audio commands into structured requirements for drone trajectories. 
+        Your task is to analyze the given audio file and extract the underlying intent, then formulate a detailed set of requirements that a drone control system could use.
+        
+        Please follow these guidelines:
+        1. Interpret the overall goal or purpose of the command, not just the literal words.
+        2. Infer any implicit requirements that aren't directly stated but are necessary for the task.
+        3. Specify the number of drones required, even if not explicitly mentioned.
+        4. Determine appropriate starting positions based on the nature of the task.
+        5. Describe the overall shape, path, or formation the drones should follow.
+        6. Include any timing, synchronization, or sequencing requirements.
+        7. This just a trajectory generation task, so you don't need to consider real-time constraints or obstacle avoidance.
+        
+        Format your response as a structured list of requirements, each prefaced with [REQ], like this:
+        [REQ] Number of drones: X
+        [REQ] Starting formation: Description
+        [REQ] Flight path: Detailed description
+        ...
+        
+        Reason through your interpretation, but do not restate the audio content directly. Focus on translating the command into actionable, technical requirements.
+        """
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     response = model.generate_content([base_prompt, audio])
