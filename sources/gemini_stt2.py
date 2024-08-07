@@ -2,12 +2,13 @@ import logging
 import os
 import time
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 import google.generativeai as genai
 from dotenv import load_dotenv
 
 from speech_to_text.microphone import MicrophoneRecorder
-from text_to_trajectory.trajectory import process_waypoints, plot_multi_drone_3d_trajectory
+from text_to_trajectory.trajectory import process_waypoints
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -21,7 +22,57 @@ if not GOOGLE_API_KEY:
 genai.configure(api_key=GOOGLE_API_KEY)
 
 
-# TODO: add a fuction to keep track of a history of what works and what doesn't work.
+# Product Manager to keep track of the best code and output path
+class ProductManager:
+    def __init__(self):
+        self.best_code = None
+        self.best_output_path = None
+        self.best_score = 0
+        self.scores = []
+
+    def evaluate_and_update(self, new_code, new_output_path, feedback_scores):
+        avg_score = sum(feedback_scores) / len(feedback_scores)
+        self.scores.append(avg_score)
+
+        if self.best_code is None or self.compare_outputs(new_output_path):
+            self.best_code = new_code
+            self.best_output_path = new_output_path
+            self.best_score = avg_score
+            return True
+        return False
+
+    def compare_outputs(self, new_output_path):
+        base_prompt = f"""
+        You are an AI assistant that compares two drone trajectory plots. I will provide you with an image of the best 
+        output so far and an image of the current output. Your task is to analyze both images and determine if the new 
+        output is better than the existing best output.
+
+        Here are the details:
+        - Best Output Path Image: {self.best_output_path}
+        - Current Output Path Image: {new_output_path}
+
+        Please analyze both images and respond with "UPDATE BEST OUTPUT" if the new output is better or "KEEP EXISTING OUTPUT" if the existing output is still better.
+        """
+
+        best_image = genai.upload_file(path=self.best_output_path)
+        new_image = genai.upload_file(path=new_output_path)
+
+        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        response = model.generate_content([base_prompt, best_image, new_image])
+
+        decision = response.text.strip()
+        logging.info(f"Product Manager decision: {decision}")
+
+        return decision == "UPDATE BEST OUTPUT"
+
+    def plot_progress(self, save_path):
+        plt.figure()
+        plt.plot(range(1, len(self.scores) + 1), self.scores, marker='o')
+        plt.xlabel('Attempt')
+        plt.ylabel('Score')
+        plt.title('Progress of Best Score Over Attempts')
+        plt.savefig(save_path)
+        plt.close()
 
 
 def interpret_audio_request(audio_file: str) -> str:
@@ -30,10 +81,10 @@ def interpret_audio_request(audio_file: str) -> str:
     """
     audio = genai.upload_file(path=audio_file)
 
-    base_prompt = base_prompt = """
+    base_prompt = """
         You are an AI assistant specializing in translating natural language audio commands into structured requirements for drone trajectories. 
         Your task is to analyze the given audio file and extract the underlying intent, then formulate a detailed set of requirements that a drone control system could use.
-        
+
         Please follow these guidelines:
         1. Interpret the overall goal or purpose of the command, not just the literal words.
         2. Infer any implicit requirements that aren't directly stated but are necessary for the task.
@@ -41,16 +92,16 @@ def interpret_audio_request(audio_file: str) -> str:
         4. Determine appropriate starting positions based on the nature of the task.
         5. Describe the overall shape, path, or formation the drones should follow.
         6. Include any timing, synchronization, or sequencing requirements.
-        7. This just a trajectory generation task, so you don't need to consider real-time constraints or obstacle avoidance.
-        
+        7. This is just a trajectory generation task, so you don't need to consider real-time constraints or obstacle avoidance.
+
         Format your response as a structured list of requirements, each prefaced with [REQ], like this:
         [REQ] Number of drones: X
         [REQ] Starting formation: Description
         [REQ] Flight path: Detailed description
         ...
-        
+
         Reason through your interpretation, but do not restate the audio content directly. Focus on translating the command into actionable, technical requirements.
-        """
+    """
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     response = model.generate_content([base_prompt, audio])
@@ -66,7 +117,7 @@ def interpret_audio_request(audio_file: str) -> str:
     return requirements
 
 
-def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
+def fetch_waypoints_code_from_gemini(requirements: str, best_code: str = None):
     """
     Fetches the Python code for generating waypoints for three drones using the Google AI API.
     """
@@ -76,10 +127,12 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     lists of waypoints for N drone trajectories. You will need to generate Python code that outputs N lists 
     of waypoints, each specified as [x, y, z] depending on the number of drones. If no specific number of drones is 
     specified, use N=3. When you receive a requirements, reason step-by-step. Assume the unit 
-    of measurement is meters. Create continuous trajectories for each drone. The trajectory for the 
+    of measurement is meters. Create continuous trajectories for each drone. Those trajectories don't have to be straight, they
+    can be angled ^ ie going in one direction then changing direction. The trajectory for the 
     drones can either combine or be independent. The code should generate waypoints in the following format and be 
     enclosed within triple backticks: 
-    ```python 
+
+python 
     import numpy as np
 
     #define any preprocessing functions or steps necessary here
@@ -95,7 +148,7 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     waypointsN = ...
 
     waypoints = [waypoints1, waypoints2, ... waypointsN]
-    ```
+
     Make sure to import all necessary libraries you use in the code. Feel free to also use numpy functions to help you 
     generate the waypoint lists like np.sin, np.cos, np.linspace, etc. Think step by step before
     generating the python code. Every time you generate based on feedback, remember you have to start the trajectory 
@@ -104,9 +157,9 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     {requirements}
     """
 
-    if error:
-        base_prompt += (f"\n\nThe previous code generated the following error:\n{error}\nPlease correct the code based "
-                        f"on this error.")
+    if best_code:
+        base_prompt += (f"\n\nHere is the current best code so far:\n{best_code}\n"
+                        f"Please improve upon this code based on the requirements.")
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     response = model.generate_content([base_prompt])
@@ -126,10 +179,9 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     return code_text
 
 
-def analyze_plot_with_multiple_critics(image_path: str, requirements: str, num_critics: int = 3,
-                                       prev_feedback: str = None) -> str:
+def analyze_plot_with_multiple_critics(image_path: str, requirements: str, num_critics: int = 3):
     """
-    Analyze the plot image using multiple Gemini critics and provide aggregated feedback.
+    Analyze the plot image using multiple Gemini critics and provide aggregated feedback with scores.
     """
     start_time = time.perf_counter()
     image = genai.upload_file(path=image_path)
@@ -138,7 +190,7 @@ def analyze_plot_with_multiple_critics(image_path: str, requirements: str, num_c
     You are an AI assistant that analyzes multi-drone trajectory plots. I have provided an image file containing the 
     trajectory plot for drones. Based on the following requirements:
     {requirements}
-    Please analyze the plot and provide feedback on the trajectories. Specifically, look for:
+    Please analyze the plot and provide a score from 0 to 100% based on the following criteria:
     1. Continuity of each drone's path
     2. Completeness of the trajectories based on the requirements
     3. Any anomalies or potential collisions between drones
@@ -146,21 +198,20 @@ def analyze_plot_with_multiple_critics(image_path: str, requirements: str, num_c
     5. Depending on the requirements, each drone does NOT have to come back to the starting point
     6. IMPORTANTLY, The overall shape formed by the combination of all the drones' trajectories SHOULD match what the 
     requirements specify!
-    7. Always Score the trajectories based on how well they meet the requirements from 0 to 100.
-    Think step by step and be detailed in your analysis. 
-    If all trajectories are correct, please respond with the phrase "--VALID TRAJECTORIES--" and comments on why you 
-    think they are valid. If trajectory is incorrect, say whether it is close or not and provide suggestions on how to 
-    correct it. 
+    Provide a score out of 100 for the overall quality of the trajectories and a brief explanation for your score.
     """
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
 
     feedbacks = []
+    scores = []
     for i in range(num_critics):
         response = model.generate_content([base_prompt, image])
         try:
             feedback = response.text
+            score = int(response.metadata['score'])  # Assume the score is provided in metadata
             feedbacks.append(feedback)
+            scores.append(score)
         except ValueError as e:
             logging.error(f"An error occurred while extracting the feedback from critic {i + 1}: {e}")
 
@@ -170,17 +221,17 @@ def analyze_plot_with_multiple_critics(image_path: str, requirements: str, num_c
     logging.info(
         f"Total time taken for plot analysis with {num_critics} critics: {elapsed_time_ms:.2f} ms")
 
-    agg_feedback = aggregate_feedback(feedbacks, prev_feedback=prev_feedback)
+    agg_feedback = aggregate_feedback(feedbacks, scores)
     logging.info(f"Aggregated feedback from multiple critics:\n\n {agg_feedback}")
 
-    return agg_feedback
+    return agg_feedback, scores
 
 
-def aggregate_feedback(feedbacks: list, acceptance_rate: float = 0.75, prev_feedback: str = "") -> str:
+def aggregate_feedback(feedbacks: list, scores: list, acceptance_rate: float = 0.75) -> str:
     """
     Aggregate feedback from multiple critics and summarize it using the Gemini model.
     """
-    valid_count = sum("--VALID TRAJECTORIES--" in feedback for feedback in feedbacks)
+    valid_count = sum(score >= 50 for score in scores)  # Considering 50 as a passing score
     total_critics = len(feedbacks)
     majority_threshold = int(total_critics * acceptance_rate)
 
@@ -196,13 +247,6 @@ def aggregate_feedback(feedbacks: list, acceptance_rate: float = 0.75, prev_feed
     overall consensus. 
     Here is the feedback from the critics:
     {" ".join(feedbacks)}
-    
-    
-    Finally tell based on the previous feedback, what the previous score was (the previous overall over 100 number) and what the current score is. and how much
-    the score has improved or decreased. Say "BETTER" if the score has improved, "WORSE" if the score has decreased,
-    
-    Here is the previous feedback:
-    {prev_feedback}
     """
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
@@ -217,34 +261,26 @@ def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_pat
     """
     Process the waypoints with a retry mechanism.
     """
-    error = None
-    feedback = None
-    prev_feedback = None
-    best_waypoints = None
     requirements = interpret_audio_request(audio_file)
+    product_manager = ProductManager()
+
     for attempt in range(max_retries):
-        code_response = fetch_waypoints_code_from_gemini(requirements, error or feedback)
+        code_response = fetch_waypoints_code_from_gemini(requirements, product_manager.best_code)
         try:
-            waypoints = process_waypoints(code_response, save_path=save_path)
+            current_output_path = f"{save_path}_{attempt}.png"
+            waypoints = process_waypoints(code_response, save_path=current_output_path)
 
             # Analyze the generated plot image with multiple Gemini critics
-            feedback = analyze_plot_with_multiple_critics(save_path, requirements, num_critics, prev_feedback)
-
-            prev_feedback = feedback
-            if "MAJORITY VALID" in feedback:
-                return waypoints
-            if "BETTER" in feedback:
-                # save these waypoints as the best waypoints
-                best_waypoints = waypoints
-                best_save_path = save_path.replace(".png", "_best.png")
-                plot_multi_drone_3d_trajectory(best_waypoints, plot=False, save_path=best_save_path)
-
-
-
+            feedback, scores = analyze_plot_with_multiple_critics(current_output_path, requirements, num_critics)
+            if product_manager.evaluate_and_update(code_response, current_output_path, scores):
+                product_manager.plot_progress(f"data/plots/progress_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+                if "MAJORITY VALID" in feedback:
+                    return waypoints
         except Exception as e:
             logging.error(f"An error occurred while processing waypoints: {e}")
-            error = str(e)
+
         logging.info(f"Retrying... ({attempt + 1}/{max_retries})")
+
     logging.error("Maximum number of retries reached. Failed to process waypoints.")
     return None
 
