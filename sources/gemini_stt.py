@@ -10,7 +10,13 @@ from speech_to_text.microphone import MicrophoneRecorder
 from text_to_trajectory.trajectory import process_waypoints, plot_multi_drone_3d_trajectory
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename='gemini_output_log.log',  # Specify the log file name
+    filemode='w'  # Use 'a' to append to the log file instead of overwriting it
+)
+
 # Load environment variables from .env file
 load_dotenv()
 GOOGLE_API_KEY = os.getenv('gemini_api_key')
