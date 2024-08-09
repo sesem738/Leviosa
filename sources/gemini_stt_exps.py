@@ -327,16 +327,17 @@ def run_experiment(
     :param experiment_id: The ID of the experiment.
 
     """
-    # Get current timestamp for the folder name
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    # Get current timestamp for the experiment type folder name
+    timestamped_experiment_type = f"{experiment_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
     # Setup directories
-    experiment_dir = f"experiments/{experiment_type}_{timestamp}/trial_{experiment_id}"
-    os.makedirs(experiment_dir, exist_ok=True)
+    experiment_type_dir = f"experiments/{timestamped_experiment_type}"
+    trial_dir = os.path.join(experiment_type_dir, f"trial_{experiment_id}")
+    os.makedirs(trial_dir, exist_ok=True)
 
     # Define paths for output files
-    traj_plot_path = os.path.join(experiment_dir, f"waypoints_{experiment_id}.png")
-    log_file_path = os.path.join(experiment_dir, 'experiment_log.log')
+    traj_plot_path = os.path.join(trial_dir, f"waypoints_plot.png")
+    log_file_path = os.path.join(trial_dir, 'experiment_log.log')
 
     # Setup logging for this experiment
     setup_logging(log_file_path)
