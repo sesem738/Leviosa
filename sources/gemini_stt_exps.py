@@ -110,23 +110,27 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     of measurement is meters. Create continuous trajectories for each drone. The trajectory for the 
     drones can either combine or be independent. The code should generate waypoints in the following format and be 
     enclosed within triple backticks: 
-    ```python 
-    import numpy as np
+    
+```python 
 
-    #define any preprocessing functions or steps necessary here
+import numpy as np
 
-    # Drone 1 waypoints
-    waypoints1 =...
+#define any preprocessing functions or steps necessary here
 
-    # Drone 2 waypoints
-    waypoints2 = ...
+# Drone 1 waypoints
+waypoints1 =...
 
-    ... 
-    # Drone N waypoints
-    waypointsN = ...
+# Drone 2 waypoints
+waypoints2 = ...
 
-    waypoints = [waypoints1, waypoints2, ... waypointsN]
-    ```
+... 
+# Drone N waypoints
+waypointsN = ...
+
+waypoints = [waypoints1, waypoints2, ... waypointsN]
+```
+
+    
     Make sure to import all necessary libraries you use in the code. Feel free to also use numpy functions to help you 
     generate the waypoint lists like np.sin, np.cos, np.linspace, etc. Think step by step before
     generating the python code. Every time you generate based on feedback, remember you have to start the trajectory 

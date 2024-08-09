@@ -108,18 +108,26 @@ def extract_code_from_response(response):
 def execute_waypoints_code(code):
     """
     Executes the generated Python code to produce waypoints.
-    
+
     Args:
         code (str): Python code for generating the waypoints.
-    
+
     Returns:
         list: List of waypoints.
     """
     print('Executing Python code...')
-    # print(code)
+    print(code)
+
+    # Prepare the local variables and import necessary modules
     local_vars = {}
+    exec("import numpy as np", {}, local_vars)  # Import numpy as np in the local scope
+
+    # Execute the generated code
     exec(code, {}, local_vars)
+
+    # Retrieve the waypoints from the local variables
     waypoints = local_vars.get('waypoints', [])
+
     return waypoints
 
 
