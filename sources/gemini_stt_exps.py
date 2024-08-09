@@ -39,11 +39,48 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 # Experiment types and their prompts
 experiment_types = {
-    "star": "Draw a star trajectory using 5 drones such that the drones' trajectories when drawn out form a star.",
-    "zigzag": "Create a zigzag pattern using 3 drones.",
-    "decagone": "Generate a decagone path using 4 drones such that the drones draw out a quarter of the decagone.",
-    "heart": "Design a heart-shaped path using 2 drones, each forming one half of the heart. The heart should be non-smooth like a angular heart.",
-    "cross": "Design a cross-shaped path using 2 drones, each forming one arm of the cross."
+    "star": "Generate a star-shaped trajectory using 5 drones. The drones should move in such a way that their "
+            "combined flight paths trace out a symmetrical star with equal arm lengths. Ensure that each drone covers "
+            "one arm of the star without overlapping the paths of other drones.",
+
+    "zigzag": "Create a dynamic zigzag pattern using 3 drones. The drones should move in unison, forming a "
+              "synchronized zigzag path. Each drone should follow a separate line within the zigzag, ensuring the "
+              "pattern is evenly spaced and consistent throughout the trajectory.",
+
+    "decagon": "Design a quarter-segment of a decagon using 4 drones. Each drone should be responsible for tracing "
+               "one side of the decagon, with their paths collectively forming a continuous and precise quarter of "
+               "the shape. The starting and ending points should align to form a smooth transition between drones.",
+
+    "heart": "Design a geometric, angular heart-shaped path using 2 drones. Each drone should trace one half of the "
+             "heart, starting from the bottom point and meeting at the top. The heart should have an angular "
+             "appearance, with both halves perfectly mirroring each other.",
+
+    "cross": "Generate a cross-shaped path using 2 drones. Each drone should be responsible for one arm of the cross. "
+             "Ensure that the paths are perpendicular to each other and intersect at the center. The cross should be "
+             "symmetrical with equal arm lengths, and the drones should start at opposite ends.",
+
+    "pentagon": "Create a quarter-segment of a pentagon using 3 drones. Each drone should trace one side of the "
+                "pentagon, with their paths combining to form a precise quarter of the shape. The drones should "
+                "maintain equal spacing and ensure smooth transitions at the vertices where their paths meet.",
+
+    "hexagon": "Design a hexagon-shaped path using 3 drones, each responsible for two sides of the hexagon. The "
+               "drones should work together to form a complete hexagon, ensuring that the drones' paths connect "
+               "seamlessly at the vertices to maintain the shape's integrity.",
+
+    "triangle": "Create an equilateral triangle path using 3 drones. Each drone should trace one side of the "
+                "triangle, starting from a common point and moving outward to form the triangle. The drones should "
+                "synchronize their movements to complete the triangle simultaneously.",
+
+    "square": "Generate a square trajectory using 4 drones. Each drone should be responsible for one side of the "
+              "square, ensuring that the angles at each corner are well-defined. The drones should coordinate their "
+              "movements to maintain equal side lengths and complete the square simultaneously.",
+
+    "octagon": "Design an octagon-shaped path using 4 drones. Each drone should be responsible for tracing two sides "
+               "of the octagon. Ensure that the drones' paths create a symmetric and precise overall shape.",
+
+    "diamond": "Create a diamond-shaped path using 2 drones. The drones should each be responsible for two adjacent "
+               "sides of the diamond. The drones should start from opposite corners and move in sync to complete the "
+               "diamond shape."
 }
 
 
@@ -107,7 +144,7 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     lists of waypoints for N drone trajectories. You will need to generate Python code that outputs N lists 
     of waypoints, each specified as [x, y, z] depending on the number of drones. If no specific number of drones is 
     specified, use N=3. When you receive a requirements, reason step-by-step. Assume the unit 
-    of measurement is meters. Create continuous trajectories for each drone. The trajectory for the 
+    of measurement is meters. Create trajectories for each drone. The trajectory for the 
     drones can either combine or be independent. The code should generate waypoints in the following format and be 
     enclosed within triple backticks: 
     
@@ -396,7 +433,7 @@ def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-flash', ma
             response = model.generate_content(base_prompt)
             response_text = response.text
             if response_text:
-                return response # Return the response text if successful
+                return response  # Return the response text if successful
         except Exception as e:
             logging.error(f"An error occurred during Gemini API call: {e}")
             if "429" in str(e):
