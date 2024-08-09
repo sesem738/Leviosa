@@ -1,21 +1,26 @@
 import logging
 import os
 import time
-from datetime import datetime
 
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-from speech_to_text.microphone import MicrophoneRecorder
+# from speech_to_text.microphone import MicrophoneRecorder
 from text_to_trajectory.trajectory import process_waypoints, plot_multi_drone_3d_trajectory
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    filename='gemini_output_log.log',  # Specify the log file name
-    filemode='w'  # Use 'a' to append to the log file instead of overwriting it
-)
+
+def setup_logging(log_file_path):
+    """
+    Set up logging to a specified file.
+    :param log_file_path: The file path for the log output.
+    """
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        filename=log_file_path,
+        filemode='w'  # Use 'a' to append to the log file instead of overwriting it
+    )
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -26,43 +31,54 @@ if not GOOGLE_API_KEY:
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
+# Experiment types and their prompts
+experiment_types = {
+    "star": "Draw a star trajectory using 5 drones such that the drones' trajectories when drawn out form a star.",
+    "zigzag": "Create a zigzag pattern using 3 drones.",
+    "decagone": "Generate a decagone path using 4 drones such that the drones draw out a quarter of the decagone.",
+    "heart": "Design a heart-shaped path using 2 drones, each forming one half of the heart. The heart should be non-smooth like a angular heart.",
+    "cross": "Design a cross-shaped path using 2 drones, each forming one arm of the cross."
+}
 
-def interpret_audio_request(audio_file: str) -> str:
-    """
-    Interpret the audio request into a list of requirements using the Google AI API.
-    """
-    audio = genai.upload_file(path=audio_file)
 
-    base_prompt = """
-        You are an AI assistant specializing in translating natural language audio commands into structured requirements for drone trajectories. 
-        Your task is to analyze the given audio file and extract the underlying intent, then formulate a detailed set of requirements that a drone control system could use.
-        
+def interpret_text_request(prompt: str) -> str:
+    """
+    Interpret the text prompt into a list of requirements using the Google AI API.
+
+    :param prompt: The text prompt to interpret.
+
+    :return: The interpreted requirements.
+    """
+    base_prompt = f""" You are an AI assistant specializing in translating natural language text commands into 
+    structured requirements for drone waypoint trajectories. Your task is to analyze the given text prompt and 
+    extract the underlying intent, then formulate a detailed set of requirements that a drone control system could use.
+
         Please follow these guidelines:
         1. Interpret the overall goal or purpose of the command, not just the literal words.
         2. Infer any implicit requirements that aren't directly stated but are necessary for the task.
         3. Specify the number of drones required, even if not explicitly mentioned.
         4. Determine appropriate starting positions based on the nature of the task.
         5. Describe the overall shape, path, or formation the drones should follow.
-        6. Include any timing, synchronization, or sequencing requirements.
-        7. This just a trajectory generation task, so you don't need to consider real-time constraints or obstacle avoidance.
-        
+        7. This is just a trajectory generation task, so you don't need to consider real-time constraints or obstacle avoidance.
+
         Format your response as a structured list of requirements, each prefaced with [REQ], like this:
         [REQ] Number of drones: X
         [REQ] Starting formation: Description
         [REQ] Flight path: Detailed description
         ...
-        
-        Reason through your interpretation, but do not restate the audio content directly. Focus on translating the command into actionable, technical requirements.
+
+        Reason through your interpretation, but do not restate the text content directly. 
+        Focus on translating the command into actionable, technical requirements.
         """
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
-    response = model.generate_content([base_prompt, audio])
+    response = model.generate_content([base_prompt, prompt])
 
     requirements = None
     try:
         requirements = response.text
     except ValueError as e:
-        logging.error(f"An error occurred while interpreting the audio request: {e}\n Exiting...")
+        logging.error(f"An error occurred while interpreting the text request: {e}\n Exiting...")
 
     logging.info(f"Interpreted requirements:\n\n {requirements}")
 
@@ -72,6 +88,11 @@ def interpret_audio_request(audio_file: str) -> str:
 def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     """
     Fetches the Python code for generating waypoints for three drones using the Google AI API.
+
+    :param requirements: The requirements for the waypoints.
+    :param error: The error message from the previous code generation.
+
+    :return: The generated Python code for waypoints.
     """
     start_time = time.perf_counter()
 
@@ -108,8 +129,9 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     """
 
     if error:
-        base_prompt += (f"\n\nThe previous code generated the following error:\n{error}\nPlease correct the code based "
-                        f"on this error.")
+        base_prompt += (
+            f"\n\nThe previous code generated the following error:\n"
+            f"{error}\nPlease correct the code based on this error.")
 
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     response = model.generate_content([base_prompt])
@@ -129,10 +151,22 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     return code_text
 
 
-def analyze_plot_with_multiple_critics(image_path: str, requirements: str, num_critics: int = 3,
-                                       prev_feedback: str = None) -> str:
+def analyze_plot_with_multiple_critics(
+        image_path: str,
+        requirements: str,
+        num_critics: int = 3,
+        prev_feedback: str = None
+) -> str:
     """
     Analyze the plot image using multiple Gemini critics and provide aggregated feedback.
+
+    :param image_path: The path to the plot image.
+    :param requirements: The requirements for the plot.
+    :param num_critics: The number of critics to analyze the plot.
+    :param prev_feedback: The previous feedback for comparison.
+
+    :return: The aggregated feedback from multiple critics.
+
     """
     start_time = time.perf_counter()
     image = genai.upload_file(path=image_path)
@@ -179,9 +213,19 @@ def analyze_plot_with_multiple_critics(image_path: str, requirements: str, num_c
     return agg_feedback
 
 
-def aggregate_feedback(feedbacks: list, acceptance_rate: float = 0.75, prev_feedback: str = "") -> str:
+def aggregate_feedback(
+        feedbacks: list,
+        acceptance_rate: float = 0.75,
+        prev_feedback: str = ""
+) -> str:
     """
     Aggregate feedback from multiple critics and summarize it using the Gemini model.
+
+    :param feedbacks: The list of feedback from multiple critics.
+    :param acceptance_rate: The acceptance rate threshold for majority consensus.
+    :param prev_feedback: The previous feedback for comparison.
+
+    :return: The aggregated feedback summary.
     """
     valid_count = sum("--VALID TRAJECTORIES--" in feedback for feedback in feedbacks)
     total_critics = len(feedbacks)
@@ -216,15 +260,27 @@ def aggregate_feedback(feedbacks: list, acceptance_rate: float = 0.75, prev_feed
     return f"{result} ({valid_count}/{total_critics})\n Feedback Summary:\n{summary}"
 
 
-def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_path: str = None, num_critics: int = 5):
+def process_waypoints_with_retry(
+        requirements: str,
+        save_path: str = None,
+        num_critics: int = 5,
+        max_retries: int = 3
+):
     """
     Process the waypoints with a retry mechanism.
+
+    :param requirements: The requirements for the waypoints.
+    :param save_path: The path to save the plot image.
+    :param num_critics: The number of critics to analyze the plot.
+    :param max_retries: The maximum number of retries.
+
+    :return: The processed waypoints if successful, otherwise None.
+
     """
     error = None
     feedback = None
-    prev_feedback = None
+    prev_feedback = ""
     best_waypoints = None
-    requirements = interpret_audio_request(audio_file)
     for attempt in range(max_retries):
         code_response = fetch_waypoints_code_from_gemini(requirements, error or feedback)
         try:
@@ -234,13 +290,15 @@ def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_pat
             feedback = analyze_plot_with_multiple_critics(save_path, requirements, num_critics, prev_feedback)
 
             prev_feedback = feedback
-            if "MAJORITY VALID" in feedback:
-                return waypoints
             if "BETTER" in feedback:
                 # save these waypoints as the best waypoints
                 best_waypoints = waypoints
                 best_save_path = save_path.replace(".png", "_best.png")
                 plot_multi_drone_3d_trajectory(best_waypoints, plot=False, save_path=best_save_path)
+
+            if "MAJORITY VALID" in feedback:
+                return waypoints
+
 
         except Exception as e:
             logging.error(f"An error occurred while processing waypoints: {e}")
@@ -250,44 +308,57 @@ def process_waypoints_with_retry(audio_file: str, max_retries: int = 3, save_pat
     return None
 
 
-def main():
+def run_experiment(
+        experiment_type: str,
+        experiment_prompt: str,
+        experiment_id: int
+):
     """
-    Main function to test the Google AI API.
+    Run a single experiment and save outputs in the appropriate directory.
+    :param experiment_type: The type of experiment to run.
+    :param experiment_prompt: The text prompt for the experiment.
+    :param experiment_id: The ID of the experiment.
+
     """
+    # Setup directories
+    experiment_dir = f"experiments/{experiment_type}/trial_{experiment_id}"
+    os.makedirs(experiment_dir, exist_ok=True)
 
-    # Define the path to save the recorded audio file with timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_path = f"data/audios/output_{timestamp}.wav"
-    traj_plot_path = f"data/plots/waypoints_{timestamp}.png"
+    # Define paths for output files
+    traj_plot_path = os.path.join(experiment_dir, f"waypoints_{experiment_id}.png")
+    log_file_path = os.path.join(experiment_dir, 'experiment_log.log')
 
-    # Create directories if they don't exist
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    os.makedirs(os.path.dirname(traj_plot_path), exist_ok=True)
+    # Setup logging for this experiment
+    setup_logging(log_file_path)
 
-    # Specify the device index if needed
-    choice_device = 2  # specific to my system
-    recorder = MicrophoneRecorder(device_index=choice_device)
+    # Interpret the text prompt
+    requirements = interpret_text_request(experiment_prompt)
 
-    # Record audio to a file
-    try:
-        logging.info("Starting audio recording. Press Ctrl+C to stop.")
-        recorder.start_stream(save_path=output_path)
-    except KeyboardInterrupt:
-        recorder.stop_stream()
-        logging.info(f"Recording stopped. Audio saved to {output_path}")
-
-    # Time the process_waypoints_with_retry function
-    start_time = time.perf_counter()
-    waypoints = process_waypoints_with_retry(output_path, max_retries=50, save_path=traj_plot_path, num_critics=3)
-    end_time = time.perf_counter()
-    elapsed_time = end_time - start_time
+    # Process waypoints and generate the plot
+    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=3, max_retries=30)
 
     if waypoints:
-        logging.info(f"Successfully processed waypoints")
+        logging.info(f"Experiment {experiment_id} for {experiment_type} completed successfully.")
     else:
-        logging.error("Failed to process waypoints after maximum retries.")
+        logging.error(f"Experiment {experiment_id} for {experiment_type} failed.")
 
-    logging.info(f"Total time taken for process_waypoints_with_retry: {elapsed_time:.2f} seconds")
+
+def main():
+    """
+    Main function to run all experiments.
+    """
+
+    # Number of trials per experiment type
+    num_trials = 3
+
+    # Run experiments
+    for experiment_type, experiment_prompt in experiment_types.items():
+        for trial_id in range(1, num_trials + 1):
+            try:
+                run_experiment(experiment_type, experiment_prompt, trial_id)
+            except Exception as e:
+                logging.error(f"An error occurred during experiment {trial_id} for {experiment_type}: {e}")
+                continue
 
 
 if __name__ == "__main__":
