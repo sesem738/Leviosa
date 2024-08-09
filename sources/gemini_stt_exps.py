@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from datetime import datetime
 
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -14,6 +15,10 @@ def setup_logging(log_file_path):
     Set up logging to a specified file.
     :param log_file_path: The file path for the log output.
     """
+    # Reset logging handlers if they exist
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -239,14 +244,16 @@ def aggregate_feedback(
     # Summarize feedback using Gemini model
     base_prompt = f"""
     You are an AI assistant that summarizes feedback from multiple critics. I will provide you with the feedback from 
-    {total_critics} critics. Your task is to summarize the feedback, identifying common points and the 
+    {total_critics} critics without mentioning the specifics about the individual critics to avoid confusion. 
+    Don't mention individual critic scores. Your task is to summarize the feedback, identifying common points and the 
     overall consensus. 
     Here is the feedback from the critics:
     {" ".join(feedbacks)}
     
     
-    Finally tell based on the previous feedback, what the previous score was (the previous overall over 100 number) and what the current score is. and how much
-    the score has improved or decreased. Say "BETTER" if the score has improved, "WORSE" if the score has decreased,
+    Finally tell based on the previous feedback, what the previous score was (the previous overall over 100 number) and 
+    what the current score is. and how much the score has improved or decreased by a + or -. 
+    If the score  Say "BETTER" if the score has improved, "WORSE" if the score has decreased,
     
     Here is the previous feedback:
     {prev_feedback}
@@ -320,8 +327,11 @@ def run_experiment(
     :param experiment_id: The ID of the experiment.
 
     """
+    # Get current timestamp for the folder name
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
     # Setup directories
-    experiment_dir = f"experiments/{experiment_type}/trial_{experiment_id}"
+    experiment_dir = f"experiments/{experiment_type}_{timestamp}/trial_{experiment_id}"
     os.makedirs(experiment_dir, exist_ok=True)
 
     # Define paths for output files
@@ -335,7 +345,7 @@ def run_experiment(
     requirements = interpret_text_request(experiment_prompt)
 
     # Process waypoints and generate the plot
-    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=3, max_retries=30)
+    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=5, max_retries=10)
 
     if waypoints:
         logging.info(f"Experiment {experiment_id} for {experiment_type} completed successfully.")
