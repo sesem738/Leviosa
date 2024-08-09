@@ -202,3 +202,179 @@ Since we don't know the previous score, we can't determine if it's BETTER or WOR
 
  None
 2024-08-09 13:36:53,971 - INFO - Total time taken for transcription: 5505.32 ms
+2024-08-09 13:37:11,922 - INFO - Total time taken for plot analysis with 5 critics: 17950.27 ms
+2024-08-09 13:37:13,696 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback consistently points out that the drone trajectories fail to meet the requirements for forming a star shape. 
+
+**Common Issues:**
+
+* **Incomplete Trajectories:** Most drones only complete half of their intended arc, failing to reach the opposite side of the circle.
+* **Incorrect Arc Shape:** The arcs are not consistently shaped, with some being too straight or too jagged.
+* **Incorrect Intersection Points:** The drones do not intersect at the correct points to form the star points. 
+* **Uneven Starting Positions:**  In some cases, the drones do not start in a circle, equally spaced around a central point.
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid and require significant adjustments to meet the requirements. The drones need to fly in complete, smoothly curved arcs that intersect correctly to form a symmetrical star shape. 
+
+**Previous Score:**  Not provided.
+
+**Current Score:** Approximately 40/100.
+
+**Improvement:** Since we don't have the previous score, we cannot determine if the score is BETTER or WORSE. 
+
+2024-08-09 13:37:13,840 - ERROR - An error occurred while processing waypoints: object of type 'NoneType' has no len()
+2024-08-09 13:37:13,840 - INFO - Retrying... (4/10)
+2024-08-09 13:37:19,142 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_star_waypoints(num_drones, radius, altitude, arc_angle, speed):
+    """
+    Generates waypoints for drones flying in a star formation.
+
+    Args:
+        num_drones (int): Number of drones.
+        radius (float): Radius of the initial circular formation.
+        altitude (float): Constant altitude of the drones.
+        arc_angle (float): Angle of each drone's arc.
+        speed (float): Constant speed of the drones.
+
+    Returns:
+        list: List of waypoints for each drone, where each waypoint is a list [x, y, z].
+    """
+    # Calculate the angle between each drone in the initial circle
+    angle_increment = 2 * np.pi / num_drones
+
+    # Initialize lists to store waypoints for each drone
+    waypoints = []
+    for i in range(num_drones):
+        waypoints.append([])
+
+    # Generate waypoints for each drone
+    for i in range(num_drones):
+        # Calculate the starting position on the circle
+        start_angle = i * angle_increment
+        start_x = radius * np.cos(start_angle)
+        start_y = radius * np.sin(start_angle)
+
+        # Calculate the intersection point with the next drone's arc
+        intersection_angle = start_angle + arc_angle / 2
+        intersection_x = radius * np.cos(intersection_angle)
+        intersection_y = radius * np.sin(intersection_angle)
+
+        # Generate waypoints for the current drone
+        # Start from the initial position on the circle
+        current_waypoint = [start_x, start_y, altitude]
+        waypoints[i].append(current_waypoint)
+
+        # Generate waypoints along the curved path to the intersection point
+        num_waypoints = int(np.ceil(arc_angle / (0.1 * speed)))  # Adjust the step size for smoother curves
+        for j in range(num_waypoints):
+            angle = start_angle + j * (arc_angle / num_waypoints)
+            x = radius * np.cos(angle)
+            y = radius * np.sin(angle)
+            current_waypoint = [x, y, altitude]
+            waypoints[i].append(current_waypoint)
+
+        # Continue generating waypoints along the curved path to the opposite point on the circle
+        for j in range(num_waypoints):
+            angle = start_angle + arc_angle + j * (arc_angle / num_waypoints)
+            x = radius * np.cos(angle)
+            y = radius * np.sin(angle)
+            current_waypoint = [x, y, altitude]
+            waypoints[i].append(current_waypoint)
+
+    return waypoints
+
+# Drone 1 waypoints
+waypoints1 = generate_star_waypoints(5, 5, 10, np.pi/2, 1) # 5 drones, 5 meter radius, 10 meter altitude, 90 degree arc, 1 m/s speed
+
+# Drone 2 waypoints
+waypoints2 = generate_star_waypoints(5, 5, 10, np.pi/2, 1)
+
+# Drone 3 waypoints
+waypoints3 = generate_star_waypoints(5, 5, 10, np.pi/2, 1)
+
+# Drone 4 waypoints
+waypoints4 = generate_star_waypoints(5, 5, 10, np.pi/2, 1)
+
+# Drone 5 waypoints
+waypoints5 = generate_star_waypoints(5, 5, 10, np.pi/2, 1)
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4, waypoints5]
+```
+2024-08-09 13:37:19,142 - INFO - Total time taken for transcription: 5301.54 ms
+2024-08-09 13:37:19,143 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 13:37:19,143 - INFO - Retrying... (5/10)
+2024-08-09 13:37:22,983 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+waypoints1 = np.array([[1, 0, 1], [1.5, 0.5, 1], [2, 0, 1], [2.5, -0.5, 1], [3, 0, 1], [2.5, 0.5, 1], [2, 0, 1], [1.5, -0.5, 1], [1, 0, 1]])
+
+# Drone 2 waypoints
+waypoints2 = np.array([[0.866, 0.5, 1], [1.366, 1, 1], [1.866, 0.5, 1], [2.366, 0, 1], [2.866, -0.5, 1], [2.366, 1, 1], [1.866, 0.5, 1], [1.366, 0, 1], [0.866, -0.5, 1]])
+
+# Drone 3 waypoints
+waypoints3 = np.array([[0.5, 0.866, 1], [1, 1.366, 1], [1.5, 0.866, 1], [2, 0.5, 1], [2.5, 0, 1], [2, 1.366, 1], [1.5, 0.866, 1], [1, 0.5, 1], [0.5, 0, 1]])
+
+# Drone 4 waypoints
+waypoints4 = np.array([[0, 1, 1], [0.5, 1.5, 1], [1, 1, 1], [1.5, 0.5, 1], [2, 0, 1], [1.5, 1.5, 1], [1, 1, 1], [0.5, 0.5, 1], [0, 0, 1]])
+
+# Drone 5 waypoints
+waypoints5 = np.array([[-0.5, 0.866, 1], [0, 1.366, 1], [0.5, 0.866, 1], [1, 0.5, 1], [1.5, 0, 1], [1, 1.366, 1], [0.5, 0.866, 1], [0, 0.5, 1], [0.5, 0, 1]])
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4, waypoints5]
+```
+2024-08-09 13:37:22,984 - INFO - Total time taken for transcription: 3840.56 ms
+2024-08-09 13:37:23,586 - INFO - Trajectory plot saved at experiments/star_20240809_133553/trial_1\waypoints_1.png
+2024-08-09 13:37:37,598 - INFO - Total time taken for plot analysis with 5 critics: 13992.34 ms
+2024-08-09 13:37:39,500 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback consistently points out that the drone trajectories fail to meet the requirements for forming a star shape. 
+
+**Common Issues:**
+
+* **Incomplete Trajectories:**  Most drones do not complete their intended arc, failing to reach the opposite side of the circle.
+* **Incorrect Arc Shape:** The arcs are not consistently shaped, with some being too straight or too jagged. 
+* **Incorrect Intersection Points:** The drones do not intersect at the correct points to form the star points. 
+* **Uneven Starting Positions:** In some cases, the drones do not start in a circle, equally spaced around a central point.
+* **Altitude and Speed Consistency:** Drones often fail to maintain a constant altitude and speed throughout their flight.
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid and require significant adjustments to meet the requirements. The drones need to fly in complete, smoothly curved arcs that intersect correctly to form a symmetrical star shape. They should also maintain a constant altitude and speed.
+
+**Previous Score:** Not provided.
+
+**Current Score:** Approximately 40/100.
+
+**Improvement:**  Since we don't have the previous score, we cannot determine if the score is BETTER or WORSE. 
+
+2024-08-09 13:37:40,151 - INFO - Trajectory plot saved at experiments/star_20240809_133553/trial_1\waypoints_1_best.png
+2024-08-09 13:37:40,164 - INFO - Retrying... (6/10)
+2024-08-09 13:37:45,882 - ERROR - An error occurred while extracting the code from the response: Invalid operation: The `response.text` quick accessor requires the response to contain a valid `Part`, but none were returned. Please check the `candidate.safety_ratings` to determine if the response was blocked.
+ Exiting...
+2024-08-09 13:37:45,882 - INFO - Generated response:
+
+ None
+2024-08-09 13:37:45,882 - INFO - Total time taken for transcription: 5718.36 ms
+2024-08-09 13:37:57,130 - ERROR - An error occurred while processing waypoints: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 13:37:57,130 - INFO - Retrying... (7/10)
+2024-08-09 13:37:57,236 - ERROR - An error occurred during experiment 1 for star: 429 Resource has been exhausted (e.g. check quota).
