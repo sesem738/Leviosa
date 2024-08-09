@@ -318,22 +318,20 @@ def process_waypoints_with_retry(
 
 
 def run_experiment(
+        experiment_type_dir: str,
         experiment_type: str,
         experiment_prompt: str,
         experiment_id: int
 ):
     """
     Run a single experiment and save outputs in the appropriate directory.
+    :param experiment_type_dir: The directory for the experiment type.
     :param experiment_type: The type of experiment to run.
     :param experiment_prompt: The text prompt for the experiment.
     :param experiment_id: The ID of the experiment.
 
     """
-    # Get current timestamp for the experiment type folder name
-    timestamped_experiment_type = f"{experiment_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
-    # Setup directories
-    experiment_type_dir = f"experiments/{timestamped_experiment_type}"
     trial_dir = os.path.join(experiment_type_dir, f"trial_{experiment_id}")
     os.makedirs(trial_dir, exist_ok=True)
 
@@ -356,7 +354,7 @@ def run_experiment(
         logging.error(f"Experiment {experiment_id} for {experiment_type} failed.")
 
 
-def retry_with_backoff(attempt, max_attempts=5, base_delay=1):
+def retry_with_backoff(attempt, max_attempts=5, base_delay=0.1):
     """
     Retry function with exponential backoff and jitter.
 
@@ -376,7 +374,7 @@ def retry_with_backoff(attempt, max_attempts=5, base_delay=1):
     return True  # Indicate that the retry should proceed
 
 
-def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-flash', max_attempts=5, base_delay=2):
+def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-flash', max_attempts=5, base_delay=0.1):
     """
     Calls the Gemini model API with retry logic and exponential backoff.
 
@@ -417,9 +415,13 @@ def main():
 
     # Run experiments
     for experiment_type, experiment_prompt in experiment_types.items():
+        # Get current timestamp for the experiment type folder name
+        timestamped_experiment_type = f"{experiment_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        # Setup directories
+        experiment_type_dir = f"experiments/{timestamped_experiment_type}"
         for trial_id in range(1, num_trials + 1):
             try:
-                run_experiment(experiment_type, experiment_prompt, trial_id)
+                run_experiment(experiment_type_dir, experiment_type, experiment_prompt, trial_id)
             except Exception as e:
                 logging.error(f"An error occurred during experiment {trial_id} for {experiment_type}: {e}")
                 continue
