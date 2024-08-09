@@ -1,0 +1,584 @@
+2024-08-09 15:28:01,495 - INFO - Interpreted requirements:
+
+ ## Drone Trajectory Requirements: Star Formation
+
+Here are the structured requirements for a drone trajectory to form a star shape using 5 drones:
+
+[REQ] Number of drones: 5
+[REQ] Starting formation: The drones should begin in a circular formation, equidistant from the center point of the intended star. This ensures a symmetrical starting point for the star formation.
+[REQ] Flight path: Each drone will fly in a straight line towards a point on the intended star's outer edge, then follow a curved trajectory inward along a "star point" to meet at the center. The drones should maintain a constant speed throughout their flight, resulting in a synchronized and visually appealing star formation.
+[REQ] Trajectory shape: The overall trajectory of the drones will resemble a five-pointed star, with each drone's path forming one point of the star. The five paths should converge at the center of the star.
+[REQ] Synchronization:  The drones must be synchronized in their movements to ensure they arrive at their respective star points simultaneously and maintain the star shape throughout the flight.
+[REQ] Formation Maintenance: The drones should maintain a roughly equal distance from each other throughout the flight to avoid collisions and maintain the visual aesthetic of the star. 
+
+2024-08-09 15:28:05,221 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the radius of the circular starting formation and the star's outer edge
+radius_circle = 5
+radius_star = 10
+
+# Define the number of drones
+num_drones = 5
+
+# Define the angle increment for the circular formation
+angle_increment = 2*np.pi/num_drones
+
+# Pre-process the starting positions of the drones
+drone_positions = []
+for i in range(num_drones):
+    angle = i * angle_increment
+    x = radius_circle * np.cos(angle)
+    y = radius_circle * np.sin(angle)
+    drone_positions.append([x, y, 0])
+
+# Define the star points
+star_points = []
+for i in range(num_drones):
+    angle = i * angle_increment + angle_increment/2
+    x = radius_star * np.cos(angle)
+    y = radius_star * np.sin(angle)
+    star_points.append([x, y, 0])
+
+# Generate waypoints for each drone
+waypoints = []
+for i in range(num_drones):
+    # Calculate the straight line trajectory to the star point
+    straight_line_waypoints = np.linspace(drone_positions[i], star_points[i], 10, endpoint=False)
+    
+    # Calculate the curved trajectory along the star point
+    center = [0, 0, 0]
+    angle_start = np.arctan2(star_points[i][1], star_points[i][0])
+    angle_end = np.arctan2(drone_positions[i][1], drone_positions[i][0])
+    angle_range = np.linspace(angle_start, angle_end, 10)
+    curved_waypoints = []
+    for angle in angle_range:
+        x = radius_star * np.cos(angle)
+        y = radius_star * np.sin(angle)
+        curved_waypoints.append([x, y, 0])
+    
+    # Combine the straight line and curved waypoints
+    waypoints.append(np.concatenate((straight_line_waypoints, curved_waypoints)))
+
+# Assign waypoints to individual drones
+waypoints1 = waypoints[0]
+waypoints2 = waypoints[1]
+waypoints3 = waypoints[2]
+waypoints4 = waypoints[3]
+waypoints5 = waypoints[4]
+
+# Combine all waypoints into a single list
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4, waypoints5]
+```
+2024-08-09 15:28:05,221 - INFO - Total time taken for transcription: 3724.82 ms
+2024-08-09 15:28:06,029 - INFO - Trajectory plot saved at experiments/star_20240809_152759\trial_1\waypoints_plot.png
+2024-08-09 15:28:28,554 - INFO - Total time taken for plot analysis with 5 critics: 22497.76 ms
+2024-08-09 15:28:32,020 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The consensus among the critics is that the drone trajectories do not form a valid star shape. While the drones move in a circular formation and their paths are continuous, they fail to converge at the center point of the star, resulting in an incomplete and inaccurate star formation. 
+
+The critics highlight several issues:
+
+* **Incomplete Trajectories:** The drones' paths do not form the points of a star accurately. Some arcs are too large, while others are too small, leading to an uneven and distorted star shape.
+* **Synchronization Issues:** The drones are not synchronized in their movements, which prevents them from forming a unified star shape. Some drones reach their target points earlier or later than others.
+* **Positioning Issues:** While the drones start in a circular formation, they are not perfectly equidistant from the center point, impacting the symmetry and aesthetics of the star. 
+
+The critics offer various suggestions for improvement:
+
+* **Refine Drone Paths:** Adjust the arc lengths of each drone's path to create a balanced and symmetrical star shape.
+* **Improve Synchronization:** Ensure the drones move at synchronized speeds to reach their target points simultaneously.
+* **Adjust Starting Positions:** Ensure the drones start equidistant from the center point to maintain a perfectly symmetrical circular formation.
+
+**Overall Score:**
+
+The critics' scores indicate a range of performance.  While the original score was **15/100**, the updated score based on the new feedback is a **70/100**. This is a significant improvement, indicating progress made in addressing the initial issues.  **BETTER**. 
+
+2024-08-09 15:28:33,285 - INFO - Trajectory plot saved at experiments/star_20240809_152759\trial_1\waypoints_plot_best.png
+2024-08-09 15:28:33,335 - INFO - Retrying... (1/10)
+2024-08-09 15:28:37,319 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the number of drones
+N = 5
+
+# Define the radius of the circle
+radius = 5
+
+# Define the center of the circle
+center = [0, 0]
+
+# Define the angle between each drone
+angle = 2*np.pi/N
+
+# Define the distance to the star points
+distance = 10
+
+# Define the number of waypoints for each drone
+num_waypoints = 20
+
+# Define the starting positions for each drone
+drone_positions = []
+for i in range(N):
+    x = center[0] + radius * np.cos(i*angle)
+    y = center[1] + radius * np.sin(i*angle)
+    drone_positions.append([x, y, 0])
+
+# Define the target points for each drone
+target_points = []
+for i in range(N):
+    x = center[0] + distance * np.cos(i*angle + np.pi/2)
+    y = center[1] + distance * np.sin(i*angle + np.pi/2)
+    target_points.append([x, y, 0])
+
+# Define the waypoints for each drone
+waypoints = []
+for i in range(N):
+    # Generate the waypoints for the straight line segment
+    x = np.linspace(drone_positions[i][0], target_points[i][0], num_waypoints//2)
+    y = np.linspace(drone_positions[i][1], target_points[i][1], num_waypoints//2)
+    z = np.zeros(num_waypoints//2)
+    waypoints.append(np.array([x, y, z]).transpose())
+
+    # Generate the waypoints for the curved segment
+    theta = np.linspace(0, np.pi/2, num_waypoints//2)
+    x = target_points[i][0] + distance*np.cos(theta) * np.cos(i*angle + np.pi/2)
+    y = target_points[i][1] + distance*np.cos(theta) * np.sin(i*angle + np.pi/2)
+    z = np.zeros(num_waypoints//2)
+    waypoints.append(np.array([x, y, z]).transpose())
+
+# Convert the waypoints to a list of lists
+waypoints = [waypoints[i] for i in range(N)]
+
+# Assign the waypoints to each drone
+waypoints1 = waypoints[0]
+waypoints2 = waypoints[1]
+waypoints3 = waypoints[2]
+waypoints4 = waypoints[3]
+waypoints5 = waypoints[4]
+```
+2024-08-09 15:28:37,319 - INFO - Total time taken for transcription: 3983.23 ms
+2024-08-09 15:28:37,334 - ERROR - An error occurred while processing waypoints: name 'waypoints' is not defined
+2024-08-09 15:28:37,335 - INFO - Retrying... (2/10)
+2024-08-09 15:28:43,311 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_circular_formation(num_drones, radius):
+    """Generates a circular formation of waypoints for the drones.
+
+    Args:
+        num_drones (int): The number of drones in the formation.
+        radius (float): The radius of the circle.
+
+    Returns:
+        list: A list of waypoints for each drone, where each waypoint is [x, y, z].
+    """
+    angles = np.linspace(0, 2 * np.pi, num_drones, endpoint=False)
+    x = radius * np.cos(angles)
+    y = radius * np.sin(angles)
+    z = np.zeros_like(x)
+    return [[x[i], y[i], z[i]] for i in range(num_drones)]
+
+def generate_star_point(angle, radius):
+    """Generates a waypoint for a star point given an angle and radius.
+
+    Args:
+        angle (float): The angle of the star point in radians.
+        radius (float): The radius of the star.
+
+    Returns:
+        list: The waypoint [x, y, z] for the star point.
+    """
+    x = radius * np.cos(angle)
+    y = radius * np.sin(angle)
+    z = 0
+    return [x, y, z]
+
+def generate_curved_trajectory(start_point, end_point, num_points):
+    """Generates a curved trajectory between two points.
+
+    Args:
+        start_point (list): The starting waypoint [x, y, z].
+        end_point (list): The ending waypoint [x, y, z].
+        num_points (int): The number of points in the trajectory.
+
+    Returns:
+        list: A list of waypoints along the curved trajectory.
+    """
+    x_values = np.linspace(start_point[0], end_point[0], num_points)
+    y_values = np.linspace(start_point[1], end_point[1], num_points)
+    z_values = np.zeros_like(x_values)  # Assuming constant altitude
+    return [[x, y, z] for x, y, z in zip(x_values, y_values, z_values)]
+
+# Drone 1 waypoints
+num_drones = 5
+radius = 10  # Adjust this for the size of the star
+start_points = generate_circular_formation(num_drones, radius)
+
+waypoints1 = start_points[0]
+star_point1 = generate_star_point(np.pi/2, radius)
+waypoints1.extend(generate_curved_trajectory(waypoints1[-1], star_point1, 20))
+
+# Drone 2 waypoints
+waypoints2 = start_points[1]
+star_point2 = generate_star_point(np.pi/2 + 2*np.pi/5, radius)
+waypoints2.extend(generate_curved_trajectory(waypoints2[-1], star_point2, 20))
+
+# Drone 3 waypoints
+waypoints3 = start_points[2]
+star_point3 = generate_star_point(np.pi/2 + 4*np.pi/5, radius)
+waypoints3.extend(generate_curved_trajectory(waypoints3[-1], star_point3, 20))
+
+# Drone 4 waypoints
+waypoints4 = start_points[3]
+star_point4 = generate_star_point(np.pi/2 + 6*np.pi/5, radius)
+waypoints4.extend(generate_curved_trajectory(waypoints4[-1], star_point4, 20))
+
+# Drone 5 waypoints
+waypoints5 = start_points[4]
+star_point5 = generate_star_point(np.pi/2 + 8*np.pi/5, radius)
+waypoints5.extend(generate_curved_trajectory(waypoints5[-1], star_point5, 20))
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4, waypoints5]
+```
+2024-08-09 15:28:43,312 - INFO - Total time taken for transcription: 5976.19 ms
+2024-08-09 15:28:43,314 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 15:28:43,315 - INFO - Retrying... (3/10)
+2024-08-09 15:28:46,644 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_star_waypoints(num_drones, radius, center_x, center_y, star_radius):
+    """Generates waypoints for a star formation with given parameters.
+
+    Args:
+        num_drones: Number of drones.
+        radius: Radius of the initial circular formation.
+        center_x: X-coordinate of the center of the formation.
+        center_y: Y-coordinate of the center of the formation.
+        star_radius: Radius of the star points.
+
+    Returns:
+        A list of lists of waypoints, one list per drone.
+    """
+
+    angles = np.linspace(0, 2*np.pi, num_drones, endpoint=False)
+    waypoints = []
+    for i in range(num_drones):
+        # Initial circular formation
+        x_start = center_x + radius * np.cos(angles[i])
+        y_start = center_y + radius * np.sin(angles[i])
+
+        # Star point coordinates
+        x_star = center_x + star_radius * np.cos(angles[i] + np.pi/2)
+        y_star = center_y + star_radius * np.sin(angles[i] + np.pi/2)
+
+        # Waypoints for each drone
+        drone_waypoints = [[x_start, y_start, 0]]  # Initial position (z = 0)
+        drone_waypoints.append([x_star, y_star, 0])  # Star point
+        drone_waypoints.append([center_x, center_y, 0])  # Center of the star
+
+        waypoints.append(drone_waypoints)
+
+    return waypoints
+
+
+# Drone 1 waypoints
+waypoints1 = ...
+
+# Drone 2 waypoints
+waypoints2 = ...
+
+# Drone 3 waypoints
+waypoints3 = ...
+
+# Drone 4 waypoints
+waypoints4 = ...
+
+# Drone 5 waypoints
+waypoints5 = ...
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4, waypoints5]
+```
+2024-08-09 15:28:46,644 - INFO - Total time taken for transcription: 3329.34 ms
+2024-08-09 15:28:46,880 - ERROR - An error occurred while processing waypoints: too many indices for array: array is 0-dimensional, but 2 were indexed
+2024-08-09 15:28:46,880 - INFO - Retrying... (4/10)
+2024-08-09 15:28:49,937 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_circle_points(radius, num_points):
+    """Generates points on a circle."""
+    angles = np.linspace(0, 2 * np.pi, num_points, endpoint=False)
+    x = radius * np.cos(angles)
+    y = radius * np.sin(angles)
+    return x, y
+
+# Drone 1 waypoints
+radius = 5 # radius of the starting circle
+center_x = 0 # center of the circle
+center_y = 0 # center of the circle
+num_drones = 5
+x_circle, y_circle = generate_circle_points(radius, num_drones)
+waypoints1 = [[x_circle[0], y_circle[0], 0]] # starting point
+waypoints1.append([center_x, center_y, 0]) # center point
+
+# Drone 2 waypoints
+waypoints2 = [[x_circle[1], y_circle[1], 0]] # starting point
+waypoints2.append([center_x, center_y, 0]) # center point
+
+# Drone 3 waypoints
+waypoints3 = [[x_circle[2], y_circle[2], 0]] # starting point
+waypoints3.append([center_x, center_y, 0]) # center point
+
+# Drone 4 waypoints
+waypoints4 = [[x_circle[3], y_circle[3], 0]] # starting point
+waypoints4.append([center_x, center_y, 0]) # center point
+
+# Drone 5 waypoints
+waypoints5 = [[x_circle[4], y_circle[4], 0]] # starting point
+waypoints5.append([center_x, center_y, 0]) # center point
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4, waypoints5]
+```
+2024-08-09 15:28:49,937 - INFO - Total time taken for transcription: 3056.36 ms
+2024-08-09 15:28:49,938 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 15:28:49,938 - INFO - Retrying... (5/10)
+2024-08-09 15:28:53,736 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the center of the star
+center_x = 0
+center_y = 0
+
+# Define the radius of the circle and star
+circle_radius = 5
+star_radius = 3
+
+# Define the number of drones
+num_drones = 5
+
+# Define the angle increment for the drones in the circle
+angle_increment = 2 * np.pi / num_drones
+
+# Preprocessing: Generate initial positions of the drones
+drone_positions = []
+for i in range(num_drones):
+    angle = i * angle_increment
+    x = center_x + circle_radius * np.cos(angle)
+    y = center_y + circle_radius * np.sin(angle)
+    drone_positions.append([x, y, 0])
+
+# Define the angles for the star points
+star_angles = [0, np.pi / 2, np.pi, 3 * np.pi / 2, 2 * np.pi]
+
+# Generate the waypoints for each drone
+waypoints = []
+for i in range(num_drones):
+    # Drone i initial position
+    drone_waypoint = drone_positions[i]
+
+    # Calculate the star point coordinates
+    star_point_x = center_x + star_radius * np.cos(star_angles[i])
+    star_point_y = center_y + star_radius * np.sin(star_angles[i])
+
+    # Generate waypoints for the straight line segment
+    num_waypoints = 10  # Number of waypoints for the straight line segment
+    straight_line_waypoints = np.linspace(drone_waypoint[:2], [star_point_x, star_point_y], num_waypoints)
+
+    # Generate waypoints for the curved segment
+    num_curve_waypoints = 10  # Number of waypoints for the curved segment
+    theta = np.linspace(0, np.pi / 2, num_curve_waypoints)
+    curve_waypoints = np.array([
+        star_radius * np.cos(theta) + star_point_x,
+        star_radius * np.sin(theta) + star_point_y
+    ]).T
+
+    # Combine the straight line and curved segment waypoints
+    drone_waypoint = np.concatenate((straight_line_waypoints, curve_waypoints))
+
+    # Append the z-coordinate to the waypoints
+    drone_waypoint = np.concatenate((drone_waypoint, np.zeros((drone_waypoint.shape[0], 1))), axis=1)
+
+    # Append the waypoints for this drone
+    waypoints.append(drone_waypoint.tolist())
+
+# Print the waypoints
+print(waypoints)
+```
+2024-08-09 15:28:53,737 - INFO - Total time taken for transcription: 3798.63 ms
+2024-08-09 15:28:54,441 - INFO - Trajectory plot saved at experiments/star_20240809_152759\trial_1\waypoints_plot.png
+2024-08-09 15:29:10,970 - INFO - Total time taken for plot analysis with 5 critics: 16510.78 ms
+2024-08-09 15:29:14,249 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The consensus among the critics is that the drone trajectories still do not form a valid star shape. While some progress has been made, there are still issues with the drones' paths not converging at the center point, resulting in an incomplete and inaccurate star formation.
+
+Here's a breakdown of the common points:
+
+* **Convergence Issues:** The drones are still not converging at the center point of the star, leading to a distorted shape.
+* **Synchronization Issues:** The drones are not always synchronized in their movements, which impacts the formation of the star.
+* **Formation Maintenance:** The drones do not always maintain a roughly equal distance from each other throughout the flight, affecting the visual aesthetics of the star.
+
+Some critics highlight specific issues like incomplete trajectories and incorrect starting positions. However, the majority agree on the need for improvements in synchronization and convergence.
+
+Overall, while some critics acknowledge improvements, the consensus is that the drone trajectories still need significant work to achieve a proper star shape.
+
+**Score Comparison:**
+
+* **Previous Score:** 15/100
+* **Current Score:** 30/100 
+* **Score Change:** +15 **BETTER** 
+
+2024-08-09 15:29:15,322 - INFO - Trajectory plot saved at experiments/star_20240809_152759\trial_1\waypoints_plot_best.png
+2024-08-09 15:29:15,336 - INFO - Retrying... (6/10)
+2024-08-09 15:29:19,334 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_star_waypoints(num_drones, radius_circle, radius_star, center_x, center_y):
+  """
+  Generates waypoints for a star formation with drones starting in a circle.
+
+  Args:
+    num_drones: The number of drones.
+    radius_circle: The radius of the initial circle formation.
+    radius_star: The radius of the star formation.
+    center_x: The x-coordinate of the center of the formation.
+    center_y: The y-coordinate of the center of the formation.
+
+  Returns:
+    A list of waypoints for each drone.
+  """
+
+  angles = np.linspace(0, 2 * np.pi, num_drones, endpoint=False)
+  waypoints = []
+
+  for i in range(num_drones):
+    # Initial position on circle
+    x_circle = center_x + radius_circle * np.cos(angles[i])
+    y_circle = center_y + radius_circle * np.sin(angles[i])
+
+    # Star point position
+    x_star = center_x + radius_star * np.cos((angles[i] + np.pi / 2) / 2)
+    y_star = center_y + radius_star * np.sin((angles[i] + np.pi / 2) / 2)
+
+    # Interpolate points for smooth flight
+    num_points = 20
+    t = np.linspace(0, 1, num_points)
+    x_waypoints = (1 - t) * x_circle + t * x_star
+    y_waypoints = (1 - t) * y_circle + t * y_star
+
+    # Append drone waypoints
+    waypoints.append(np.column_stack((x_waypoints, y_waypoints, np.zeros(num_points))))
+
+  return waypoints
+
+# Drone 1 waypoints
+waypoints1 = generate_star_waypoints(5, 2, 1, 0, 0)[0]
+
+# Drone 2 waypoints
+waypoints2 = generate_star_waypoints(5, 2, 1, 0, 0)[1]
+
+# Drone 3 waypoints
+waypoints3 = generate_star_waypoints(5, 2, 1, 0, 0)[2]
+
+# Drone 4 waypoints
+waypoints4 = generate_star_waypoints(5, 2, 1, 0, 0)[3]
+
+# Drone 5 waypoints
+waypoints5 = generate_star_waypoints(5, 2, 1, 0, 0)[4]
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4, waypoints5]
+```
+2024-08-09 15:29:19,334 - INFO - Total time taken for transcription: 3997.67 ms
+2024-08-09 15:29:19,339 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 15:29:19,340 - INFO - Retrying... (7/10)
+2024-08-09 15:29:21,293 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+waypoints1 = np.array([[0, 5, 0], [2.5, 0, 0], [0, -2.5, 0], [0, 0, 0]])
+
+# Drone 2 waypoints
+waypoints2 = np.array([[5, 0, 0], [0, 2.5, 0], [-2.5, 0, 0], [0, 0, 0]])
+
+# Drone 3 waypoints
+waypoints3 = np.array([[0, -5, 0], [-2.5, 0, 0], [0, 2.5, 0], [0, 0, 0]])
+
+# Drone 4 waypoints
+waypoints4 = np.array([[-5, 0, 0], [0, -2.5, 0], [2.5, 0, 0], [0, 0, 0]])
+
+# Drone 5 waypoints
+waypoints5 = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4, waypoints5]
+```
+2024-08-09 15:29:21,293 - INFO - Total time taken for transcription: 1952.99 ms
+2024-08-09 15:29:21,967 - INFO - Trajectory plot saved at experiments/star_20240809_152759\trial_1\waypoints_plot.png
+2024-08-09 15:29:38,928 - INFO - Total time taken for plot analysis with 5 critics: 16946.41 ms
+2024-08-09 15:29:42,124 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The critics agree that the drone trajectories are still not forming a valid star shape. However, there is some improvement over the previous attempt. There is a consensus that the drones' movements are more continuous, with no sudden jumps or breaks in their paths. While the drones do converge towards the center, they are still not following the required curved trajectories to form a proper star shape. The starting positions are also not completely accurate. 
+
+Overall, while the drones are moving more smoothly, the overall shape formed by their trajectories is still far from a valid star.
+
+**Score Comparison:**
+
+* **Previous Score:** 15/100
+* **Current Score:** 30/100
+* **Score Change:** +15 **BETTER** 
+
+2024-08-09 15:29:42,797 - INFO - Trajectory plot saved at experiments/star_20240809_152759\trial_1\waypoints_plot_best.png
+2024-08-09 15:29:42,810 - INFO - Retrying... (8/10)
+2024-08-09 15:29:44,756 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+waypoints1 = np.array([[0, 10, 0], [5, 0, 0], [0, -5, 0], [0, 0, 0]])
+
+# Drone 2 waypoints
+waypoints2 = np.array([[10, 0, 0], [0, -10, 0], [-5, 0, 0], [0, 0, 0]])
+
+# Drone 3 waypoints
+waypoints3 = np.array([[-10, 0, 0], [0, 10, 0], [5, 0, 0], [0, 0, 0]])
+
+# Drone 4 waypoints
+waypoints4 = np.array([[0, -10, 0], [-10, 0, 0], [0, 5, 0], [0, 0, 0]])
+
+# Drone 5 waypoints
+waypoints5 = np.array([[0, 10, 0], [10, 0, 0], [0, -5, 0], [0, 0, 0]])
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4, waypoints5]
+```
+2024-08-09 15:29:44,756 - INFO - Total time taken for transcription: 1945.87 ms
+2024-08-09 15:29:45,946 - INFO - Trajectory plot saved at experiments/star_20240809_152759\trial_1\waypoints_plot.png

@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 import time
 from datetime import datetime
 
@@ -76,8 +77,9 @@ def interpret_text_request(prompt: str) -> str:
         Focus on translating the command into actionable, technical requirements.
         """
 
-    model = genai.GenerativeModel('models/gemini-1.5-flash')
-    response = model.generate_content([base_prompt, prompt])
+    # model = genai.GenerativeModel('models/gemini-1.5-flash')
+    # response = model.generate_content([base_prompt, prompt])
+    response = call_gemini_with_retry([base_prompt, prompt])
 
     requirements = None
     try:
@@ -138,9 +140,9 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
             f"\n\nThe previous code generated the following error:\n"
             f"{error}\nPlease correct the code based on this error.")
 
-    model = genai.GenerativeModel('models/gemini-1.5-flash')
-    response = model.generate_content([base_prompt])
-
+    # model = genai.GenerativeModel('models/gemini-1.5-flash')
+    # response = model.generate_content([base_prompt])
+    response = call_gemini_with_retry([base_prompt])
     code_text = None
     try:
         code_text = response.text
@@ -195,11 +197,10 @@ def analyze_plot_with_multiple_critics(
     correct it. 
     """
 
-    model = genai.GenerativeModel('models/gemini-1.5-flash')
-
     feedbacks = []
     for i in range(num_critics):
-        response = model.generate_content([base_prompt, image])
+        # response = model.generate_content([base_prompt, image])
+        response = call_gemini_with_retry([base_prompt, image])
         try:
             feedback = response.text
             feedbacks.append(feedback)
@@ -259,8 +260,9 @@ def aggregate_feedback(
     {prev_feedback}
     """
 
-    model = genai.GenerativeModel('models/gemini-1.5-flash')
-    response = model.generate_content([base_prompt])
+    # model = genai.GenerativeModel('models/gemini-1.5-flash')
+    # response = model.generate_content([base_prompt])
+    response = call_gemini_with_retry([base_prompt])
 
     summary = response.text if response else "Error in generating summary"
 
@@ -352,6 +354,57 @@ def run_experiment(
         logging.info(f"Experiment {experiment_id} for {experiment_type} completed successfully.")
     else:
         logging.error(f"Experiment {experiment_id} for {experiment_type} failed.")
+
+
+def retry_with_backoff(attempt, max_attempts=5, base_delay=1):
+    """
+    Retry function with exponential backoff and jitter.
+
+    :param attempt: The current attempt number.
+    :param max_attempts: The maximum number of retry attempts.
+    :param base_delay: The base delay in seconds for exponential backoff.
+
+    :return: True if the retry should proceed, False if the maximum number of retries is reached.
+    """
+    if attempt >= max_attempts:
+        logging.error("Max attempts reached, aborting...")
+        return False  # Indicate that the maximum number of retries has been reached
+    delay = base_delay * (2 ** attempt) + random.uniform(0, 1)  # Exponential backoff with jitter
+    # range of delay is
+    logging.info(f"Retrying in {delay:.2f} seconds...")
+    time.sleep(delay)
+    return True  # Indicate that the retry should proceed
+
+
+def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-flash', max_attempts=5, base_delay=2):
+    """
+    Calls the Gemini model API with retry logic and exponential backoff.
+
+    :param base_prompt: The prompt to send to the model.
+    :param model_name: The name of the Gemini model to use.
+    :param max_attempts: Maximum number of retry attempts.
+    :param base_delay: Base delay in seconds for exponential backoff.
+
+    :return: The response text from the model, or None if the call fails.
+    """
+    model = genai.GenerativeModel(model_name)
+
+    for attempt in range(max_attempts):
+        try:
+            response = model.generate_content(base_prompt)
+            response_text = response.text
+            if response_text:
+                return response # Return the response text if successful
+        except Exception as e:
+            logging.error(f"An error occurred during Gemini API call: {e}")
+            if "429" in str(e):
+                if not retry_with_backoff(attempt, max_attempts, base_delay):
+                    break  # Exit the loop if maximum retries are reached
+            else:
+                break  # Break if the error is not retryable
+
+    logging.error("Failed to get a valid response from the Gemini API.")
+    return None  # Return None if all attempts fail
 
 
 def main():
