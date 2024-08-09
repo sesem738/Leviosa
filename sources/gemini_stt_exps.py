@@ -38,12 +38,26 @@ if not GOOGLE_API_KEY:
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # Experiment types and their prompts
+# experiment_types = {
+#     "star": "Draw a star trajectory using 5 drones such that the drones' trajectories when drawn out form a star.",
+#     "zigzag": "Create a zigzag pattern using 3 drones.",
+#     "decagone": "Generate a decagone path using 4 drones such that the drones draw out a quarter of the decagone.",
+#     "heart": "Design a heart-shaped path using 2 drones, each forming one half of the heart. The heart should be non-smooth like a angular heart.",
+#     "cross": "Design a cross-shaped path using 2 drones, each forming one arm of the cross."
+# }
+
+# Continuous Experiment Types and Their Prompts
 experiment_types = {
-    "star": "Draw a star trajectory using 5 drones such that the drones' trajectories when drawn out form a star.",
-    "zigzag": "Create a zigzag pattern using 3 drones.",
-    "decagone": "Generate a decagone path using 4 drones such that the drones draw out a quarter of the decagone.",
-    "heart": "Design a heart-shaped path using 2 drones, each forming one half of the heart. The heart should be non-smooth like a angular heart.",
-    "cross": "Design a cross-shaped path using 2 drones, each forming one arm of the cross."
+    "circle": "Create a circular trajectory using 2 drones, where each drone traces out one half of the circle. The drones should move in perfect synchronization to form a complete circle.",
+    "hyperbola": "Design a hyperbolic path using 2 drones, with each drone tracing one branch of the hyperbola. The drones should maintain symmetry and smoothness in their paths.",
+    "3petal_rose": "Generate a 3-petal rose curve using 3 drones, where each drone is responsible for tracing out one petal. The drones should coordinate to form a seamless rose pattern.",
+    "4petal_rose": "Create a 4-petal rose curve using 4 drones, with each drone tracing one petal. The drones should work together to ensure the rose curve is smooth and continuous.",
+    "5petal_rose": "Design a 5-petal rose curve using 5 drones, where each drone forms one petal. The drones should synchronize their movements to create a harmonious rose shape.",
+    "sine_wave": "Construct a sine wave pattern using 3 drones, where each drone covers a separate section of the wave. The drones should ensure a continuous and smooth wave formation.",
+    "helix": "Draw a helical path using 1 drone, creating a spiral in three-dimensional space. The drone should maintain a consistent radius and pitch throughout the helix.",
+    "double_helix": "Create a double helix trajectory using 2 drones, with each drone forming one strand of the helix. The drones should maintain parallel paths and synchronized movement.",
+    "triple_helix": "Generate a triple helix pattern using 3 drones, with each drone forming one strand. The drones should coordinate to maintain uniform spacing and synchronization.",
+    "double_conical_helix": "Design a double conical helix using 2 drones, where each drone traces one conical spiral. The drones should ensure the cones are symmetrical and the paths are smooth."
 }
 
 
@@ -378,7 +392,7 @@ def retry_with_backoff(attempt, max_attempts=5, base_delay=0.1):
     return True  # Indicate that the retry should proceed
 
 
-def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-flash', max_attempts=5, base_delay=0.1):
+def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-flash', max_attempts=25, base_delay=0.1):
     """
     Calls the Gemini model API with retry logic and exponential backoff.
 
