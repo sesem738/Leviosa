@@ -223,30 +223,30 @@ def fetch_waypoints_code_from_vlm(requirements: str, error: str = None):
     drones can either combine or be independent. The code should generate waypoints in the following format and be 
     enclosed within triple backticks: 
     
-```python 
-
-import numpy as np
-
-#define any preprocessing functions or steps necessary here
-
-# Drone 1 waypoints
-waypoints1 =...
-
-# Drone 2 waypoints
-waypoints2 = ...
-
-... 
-# Drone N waypoints
-waypointsN = ...
-
-waypoints = [waypoints1, waypoints2, ... waypointsN]
-```
+    ```python 
+    
+    import numpy as np
+    
+    #define any preprocessing functions or steps necessary here
+    
+    # Drone 1 waypoints
+    waypoints1 =...
+    
+    # Drone 2 waypoints
+    waypoints2 = ...
+    
+    ... 
+    # Drone N waypoints
+    waypointsN = ...
+    
+    waypoints = [waypoints1, waypoints2, ... waypointsN]
+    ```
 
     
     Make sure to import all necessary libraries you use in the code. Feel free to also use numpy functions to help you 
     generate the waypoint lists like np.sin, np.cos, np.linspace, etc. Think step by step before
     generating the python code. Every time you generate based on feedback, remember you have to start the trajectory 
-    from scratch, you can't extend the previous trajectory.
+    from scratch, you can't extend the previous trajectory. Don't print anything. Don't use comments.
     Based on the following requirements:
     {requirements}
     """
@@ -453,6 +453,10 @@ def run_experiment(
     traj_plot_path = os.path.join(trial_dir, "waypoints_plot.png")
     log_file_path = os.path.join(trial_dir, "experiment_log.log")
 
+    # Convert to absolute paths
+    traj_plot_path = os.path.abspath(traj_plot_path)
+    log_file_path = os.path.abspath(log_file_path)
+
     # Setup logging for this experiment
     setup_logging(log_file_path)
 
@@ -460,7 +464,7 @@ def run_experiment(
     requirements = interpret_text_request(experiment_prompt)
 
     # Process waypoints and generate the plot
-    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=5, max_retries=10)
+    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=3, max_retries=10)
 
     if waypoints:
         logging.info(f"Experiment {experiment_id} for {experiment_type} completed successfully.")
@@ -521,18 +525,21 @@ def call_vlm_with_retry(prompt: str, image_path: Optional[str] = None, model_nam
 
 def main():
     """
-    Main function to run all experiments1.
+    Main function to run all experiments.
     """
 
     # Number of trials per experiment type
     num_trials = 3
 
-    # Run experiments1
+    # Run experiments
     for experiment_type, experiment_prompt in experiment_types.items():
         # Get current timestamp for the experiment type folder name
         timestamped_experiment_type = f"{experiment_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        # Setup directories
-        experiment_type_dir = f"experiments/{timestamped_experiment_type}"
+
+        # Setup directories using absolute paths
+        experiment_type_dir = os.path.abspath(os.path.join("experiments", timestamped_experiment_type))
+        os.makedirs(experiment_type_dir, exist_ok=True)
+
         for trial_id in range(1, num_trials + 1):
             try:
                 run_experiment(experiment_type_dir, experiment_type, experiment_prompt, trial_id)

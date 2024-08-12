@@ -118,12 +118,12 @@ def execute_waypoints_code(code):
     print('Executing Python code...')
     print(code)
 
-    # Prepare the local variables and import necessary modules
+    # Prepare the local variables
     local_vars = {}
 
     try:
-        # Execute the code in a safe environment with limited built-ins
-        exec(code, {'np': np}, local_vars)
+        # Execute the code in a full execution environment
+        exec(code, {"__builtins__": __builtins__, "np": np}, local_vars)
 
         # Retrieve the waypoints from the local variables
         waypoints = local_vars.get('waypoints', None)
@@ -290,26 +290,21 @@ def process_waypoints(code_response, plot=False, save_path=None):
         list: Derived waypoints or None if the process fails.
     """
     if not code_response:
-        print("Failed to generate Python code.")
-        return None
+        raise ValueError("Failed to generate Python code.")
 
     # Extract the code from the response
     code = extract_code_from_response(code_response)
-    # print(f"Extracted Python code: {code}") # extracted code is correct
     if not code:
-        print("Failed to extract Python code.")
-        return None
+        raise ValueError("Failed to extract Python code.")
 
-    # Execute the extracted Python code to get the waypoints
-    waypoints_list = execute_waypoints_code(code)
-    if not waypoints_list:
-        print("Failed to derive waypoints.")
-        return None
-
-    # print(f"Derived waypoints: {waypoints_list}")
-
-    # # Plot the 3D trajectory based on the derived waypoints
-    # plot_3d_trajectory(waypoints, plot=plot, save_path=save_path)
+    try:
+        # Execute the extracted Python code to get the waypoints
+        waypoints_list = execute_waypoints_code(code)
+        if not waypoints_list:
+            raise RuntimeError("Failed to derive waypoints. The waypoints list is empty.")
+    except Exception as e:
+        # Raise an error with the original exception message
+        raise RuntimeError(f"An error occurred during the execution of the waypoints code: {e}")
 
     print(f"Derived waypoints for {len(waypoints_list)} drones:")
     for i, waypoints in enumerate(waypoints_list):
