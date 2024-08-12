@@ -364,15 +364,18 @@ def run_experiment(
     :param experiment_type: The type of experiment to run.
     :param experiment_prompt: The text prompt for the experiment.
     :param experiment_id: The ID of the experiment.
-
     """
 
     trial_dir = os.path.join(experiment_type_dir, f"trial_{experiment_id}")
     os.makedirs(trial_dir, exist_ok=True)
 
     # Define paths for output files
-    traj_plot_path = os.path.join(trial_dir, f"waypoints_plot.png")
-    log_file_path = os.path.join(trial_dir, 'experiment_log.log')
+    traj_plot_path = os.path.join(trial_dir, "waypoints_plot.png")
+    log_file_path = os.path.join(trial_dir, "experiment_log.log")
+
+    # Convert to absolute paths
+    traj_plot_path = os.path.abspath(traj_plot_path)
+    log_file_path = os.path.abspath(log_file_path)
 
     # Setup logging for this experiment
     setup_logging(log_file_path)
@@ -381,7 +384,7 @@ def run_experiment(
     requirements = interpret_text_request(experiment_prompt)
 
     # Process waypoints and generate the plot
-    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=5, max_retries=10)
+    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=3, max_retries=10)
 
     if waypoints:
         logging.info(f"Experiment {experiment_id} for {experiment_type} completed successfully.")
@@ -442,18 +445,21 @@ def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-flash', ma
 
 def main():
     """
-    Main function to run all experiments1.
+    Main function to run all experiments.
     """
 
     # Number of trials per experiment type
     num_trials = 3
 
-    # Run experiments1
+    # Run experiments
     for experiment_type, experiment_prompt in experiment_types.items():
         # Get current timestamp for the experiment type folder name
         timestamped_experiment_type = f"{experiment_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        # Setup directories
-        experiment_type_dir = f"experiments1/{timestamped_experiment_type}"
+
+        # Setup directories using absolute paths
+        experiment_type_dir = os.path.abspath(os.path.join("experiments", timestamped_experiment_type))
+        os.makedirs(experiment_type_dir, exist_ok=True)
+
         for trial_id in range(1, num_trials + 1):
             try:
                 run_experiment(experiment_type_dir, experiment_type, experiment_prompt, trial_id)
