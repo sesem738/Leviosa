@@ -9,8 +9,8 @@ from typing import Optional
 
 import openai
 from dotenv import load_dotenv
-from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage
+from langchain_community.chat_models import ChatOpenAI
 
 # from speech_to_text.microphone import MicrophoneRecorder
 from text_to_trajectory.trajectory import process_waypoints, plot_multi_drone_3d_trajectory
@@ -444,15 +444,14 @@ def run_experiment(
     :param experiment_type: The type of experiment to run.
     :param experiment_prompt: The text prompt for the experiment.
     :param experiment_id: The ID of the experiment.
-
     """
 
     trial_dir = os.path.join(experiment_type_dir, f"trial_{experiment_id}")
     os.makedirs(trial_dir, exist_ok=True)
 
     # Define paths for output files
-    traj_plot_path = os.path.join(trial_dir, f"waypoints_plot.png")
-    log_file_path = os.path.join(trial_dir, 'experiment_log.log')
+    traj_plot_path = os.path.join(trial_dir, "waypoints_plot.png")
+    log_file_path = os.path.join(trial_dir, "experiment_log.log")
 
     # Setup logging for this experiment
     setup_logging(log_file_path)
@@ -533,7 +532,7 @@ def main():
         # Get current timestamp for the experiment type folder name
         timestamped_experiment_type = f"{experiment_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         # Setup directories
-        experiment_type_dir = f"experiments1/{timestamped_experiment_type}"
+        experiment_type_dir = f"experiments/{timestamped_experiment_type}"
         for trial_id in range(1, num_trials + 1):
             try:
                 run_experiment(experiment_type_dir, experiment_type, experiment_prompt, trial_id)
