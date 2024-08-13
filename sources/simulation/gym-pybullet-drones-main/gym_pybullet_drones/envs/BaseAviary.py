@@ -787,7 +787,7 @@ class BaseAviary(gym.Env):
                   ):
         """PyBullet implementation of a ground effect model.
 
-        Based on experiments conducted at the Dynamic Systems Lab by SiQi Zhou.
+        Based on experiments1 conducted at the Dynamic Systems Lab by SiQi Zhou.
 
         Parameters
         ----------

@@ -5,3 +5,7 @@ data/plots
 .env
 r2d2_images
 /.idea
+/experiments1
+/experiments
+/experiments_gpt
+/experiments_gemini

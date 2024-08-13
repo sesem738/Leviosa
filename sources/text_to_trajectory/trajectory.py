@@ -113,22 +113,31 @@ def execute_waypoints_code(code):
         code (str): Python code for generating the waypoints.
 
     Returns:
-        list: List of waypoints.
+        list: List of waypoints if successful, otherwise None.
     """
     print('Executing Python code...')
     print(code)
 
-    # Prepare the local variables and import necessary modules
+    # Prepare the local variables
     local_vars = {}
-    exec("import numpy as np", {}, local_vars)  # Import numpy as np in the local scope
 
-    # Execute the generated code
-    exec(code, {}, local_vars)
+    try:
+        # Execute the code in a full execution environment
+        exec(code, {"__builtins__": __builtins__, "np": np}, local_vars)
 
-    # Retrieve the waypoints from the local variables
-    waypoints = local_vars.get('waypoints', [])
+        # Retrieve the waypoints from the local variables
+        waypoints = local_vars.get('waypoints', None)
 
-    return waypoints
+        # Validate the waypoints
+        if not isinstance(waypoints, list):
+            raise ValueError("The code did not produce a list of waypoints.")
+
+        return waypoints
+
+    except Exception as e:
+        # Print the exception for debugging purposes
+        print(f"An error occurred during execution: {e}")
+        return None
 
 
 def plot_3d_trajectory(waypoints, plot: bool = True, save_path: str = None):
@@ -281,25 +290,21 @@ def process_waypoints(code_response, plot=False, save_path=None):
         list: Derived waypoints or None if the process fails.
     """
     if not code_response:
-        print("Failed to generate Python code.")
-        return None
+        raise ValueError("Failed to generate Python code.")
 
     # Extract the code from the response
     code = extract_code_from_response(code_response)
     if not code:
-        print("Failed to extract Python code.")
-        return None
+        raise ValueError("Failed to extract Python code.")
 
-    # Execute the extracted Python code to get the waypoints
-    waypoints_list = execute_waypoints_code(code)
-    if not waypoints_list:
-        print("Failed to derive waypoints.")
-        return None
-
-    # print(f"Derived waypoints: {waypoints_list}")
-
-    # # Plot the 3D trajectory based on the derived waypoints
-    # plot_3d_trajectory(waypoints, plot=plot, save_path=save_path)
+    try:
+        # Execute the extracted Python code to get the waypoints
+        waypoints_list = execute_waypoints_code(code)
+        if not waypoints_list:
+            raise RuntimeError("Failed to derive waypoints. The waypoints list is empty.")
+    except Exception as e:
+        # Raise an error with the original exception message
+        raise RuntimeError(f"An error occurred during the execution of the waypoints code: {e}")
 
     print(f"Derived waypoints for {len(waypoints_list)} drones:")
     for i, waypoints in enumerate(waypoints_list):
