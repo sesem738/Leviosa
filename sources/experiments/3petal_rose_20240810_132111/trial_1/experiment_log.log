@@ -1,0 +1,488 @@
+2024-08-10 13:21:14,019 - INFO - Interpreted requirements:
+
+ Here are the structured requirements for generating a 3-petal rose curve using 3 drones:
+
+[REQ] Number of drones: 3
+[REQ] Starting formation: The drones should begin at the center of the desired rose curve formation.
+[REQ] Flight path: 
+    - Each drone will trace out one petal of the rose curve.
+    - The drones should coordinate their movements to ensure a smooth and continuous transition between petals, creating a seamless rose pattern.
+    - The drones should maintain a consistent speed and distance from each other while tracing their respective petals.
+    - The drones should fly in a counter-clockwise direction.
+    - The flight path of each drone can be defined using a parametric equation for a 3-petal rose curve, where each drone traces out a different phase shift of the equation.
+[REQ]  Trajectory generation: 
+    - The drone control system should generate trajectories for each drone based on the parametric equations for a 3-petal rose curve. 
+    - The trajectories should be smooth and continuous, avoiding sudden changes in direction or speed. 
+    - The trajectories should ensure that the drones maintain a consistent formation and distance from each other.
+[REQ]  Coordination: 
+    - The drones need to be coordinated to ensure that the petals are traced out smoothly and that the overall rose curve is seamless.
+    -  A central control system or a distributed control system could be used to coordinate the drones. 
+
+2024-08-10 13:21:16,338 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the parametric equations for a 3-petal rose curve
+def rose_curve(t, a, n, phase):
+  return a * np.cos(n * t + phase) * np.cos(t)
+
+# Define the number of drones
+n_drones = 3
+
+# Define the number of points for each drone's trajectory
+num_points = 100
+
+# Define the radius of the rose curve
+radius = 10
+
+# Generate waypoints for each drone
+waypoints = []
+for i in range(n_drones):
+  # Calculate the phase shift for each drone
+  phase = (2 * np.pi * i) / n_drones
+  # Generate the trajectory for each drone
+  t = np.linspace(0, 2 * np.pi, num_points)
+  x = rose_curve(t, radius, 3, phase)
+  y = rose_curve(t, radius, 3, phase + np.pi / 2)
+  z = np.zeros(num_points) # Assuming the drones fly in a 2D plane
+  waypoints.append(np.column_stack((x, y, z)))
+
+# Print the waypoints
+print(f"Number of Drones: {n_drones}")
+for i, waypoint in enumerate(waypoints):
+  print(f"Drone {i+1} waypoints:")
+  print(waypoint)
+
+# Convert the waypoints to a list for easy access
+waypoints = [list(waypoint) for waypoint in waypoints]
+```
+2024-08-10 13:21:16,339 - INFO - Total time taken for transcription: 2319.23 ms
+2024-08-10 13:21:16,342 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-10 13:21:16,342 - INFO - Retrying... (1/10)
+2024-08-10 13:21:18,616 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3 * np.sin(3*t)
+x1 = r * np.cos(t)
+y1 = r * np.sin(t)
+z1 = np.zeros_like(x1)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3 * np.sin(3*t + 2*np.pi/3)
+x2 = r * np.cos(t)
+y2 = r * np.sin(t)
+z2 = np.zeros_like(x2)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3 * np.sin(3*t + 4*np.pi/3)
+x3 = r * np.cos(t)
+y3 = r * np.sin(t)
+z3 = np.zeros_like(x3)
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-10 13:21:18,617 - INFO - Total time taken for transcription: 2273.74 ms
+2024-08-10 13:21:18,828 - INFO - Trajectory plot saved at experiments/3petal_rose_20240810_132111/trial_1/waypoints_plot.png
+2024-08-10 13:21:34,687 - INFO - Total time taken for plot analysis with 5 critics: 15858.10 ms
+2024-08-10 13:21:37,149 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback from the critics is overwhelmingly negative. All of the critics agree that the trajectories provided are not valid. The main issues identified are:
+
+* **Incomplete Trajectories:** The drones do not complete their paths according to the requirements, failing to form a complete 3-petal rose shape. Each drone only traces out a portion of its respective petal.
+* **Incorrect Formation:** The drones do not maintain a consistent formation or distance from each other, and the overall shape they form does not resemble a rose.
+* **Starting Position:**  The drones are not consistently starting at the center of the desired rose curve formation, as required.
+* **Smoothness:** The trajectories are not smooth, with noticeable kinks and abrupt changes in direction.
+* **Direction:** The drones are not flying in a counter-clockwise direction, as specified.
+
+While some critics acknowledged that certain aspects like the continuity of each drone's path are satisfactory, the overall consensus is that the trajectories are significantly flawed and need significant improvement. 
+
+**Previous Score:** Not provided (you didn't include the previous feedback). 
+
+**Current Score:** The scores range from 20/100 to 75/100. However, given the overall negativity and the fact that all critics agree the trajectories are not valid, it's safe to assume the overall score is significantly below average. 
+
+**Score Improvement:**  **WORSE** (since the score is below average and the feedback is negative, the score has decreased from the previous attempt). 
+
+2024-08-10 13:21:37,150 - INFO - Retrying... (2/10)
+2024-08-10 13:21:39,776 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+x1 = 2*np.cos(t)*np.cos(3*t)
+y1 = 2*np.sin(t)*np.cos(3*t)
+z1 = np.zeros(100)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+x2 = 2*np.cos(t + (2*np.pi)/3)*np.cos(3*(t + (2*np.pi)/3))
+y2 = 2*np.sin(t + (2*np.pi)/3)*np.cos(3*(t + (2*np.pi)/3))
+z2 = np.zeros(100)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+x3 = 2*np.cos(t + (4*np.pi)/3)*np.cos(3*(t + (4*np.pi)/3))
+y3 = 2*np.sin(t + (4*np.pi)/3)*np.cos(3*(t + (4*np.pi)/3))
+z3 = np.zeros(100)
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-10 13:21:39,777 - INFO - Total time taken for transcription: 2626.52 ms
+2024-08-10 13:21:39,990 - INFO - Trajectory plot saved at experiments/3petal_rose_20240810_132111/trial_1/waypoints_plot.png
+2024-08-10 13:21:48,253 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:21:48,255 - INFO - Retrying in 0.79 seconds...
+2024-08-10 13:21:49,122 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:21:49,122 - INFO - Retrying in 0.95 seconds...
+2024-08-10 13:21:50,154 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:21:50,154 - INFO - Retrying in 0.75 seconds...
+2024-08-10 13:21:50,981 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:21:50,981 - INFO - Retrying in 1.21 seconds...
+2024-08-10 13:21:52,270 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:21:52,271 - INFO - Retrying in 1.94 seconds...
+2024-08-10 13:21:54,288 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:21:54,290 - INFO - Retrying in 3.96 seconds...
+2024-08-10 13:21:58,324 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:21:58,324 - INFO - Retrying in 6.54 seconds...
+2024-08-10 13:22:16,247 - INFO - Total time taken for plot analysis with 5 critics: 36256.28 ms
+2024-08-10 13:22:18,314 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback from the critics is largely negative, indicating a significant decrease in performance from the previous attempt.  While some aspects of the trajectories, like continuity and starting positions, are seen as positive, the overall shape and formation fail to meet the requirements. 
+
+The main issues identified include:
+
+* **Incomplete Trajectories:** The drones do not complete their paths, resulting in an incomplete 3-petal rose curve.
+* **Incorrect Formation:** The drones do not maintain a consistent formation or distance from each other, leading to an inaccurate rose shape.
+* **Incorrect Direction:** The drones are not flying in a counter-clockwise direction as specified.
+
+While the previous score isn't provided,  the current score ranges from 20/100 to 75/100, suggesting a  **WORSE** performance compared to the previous attempt. 
+
+2024-08-10 13:22:18,314 - INFO - Retrying... (3/10)
+2024-08-10 13:22:20,567 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+waypoints1 = np.array([3*np.cos(t)*np.sin(t), 3*np.sin(t)*np.sin(t), np.zeros(len(t))]).T
+
+# Drone 2 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+waypoints2 = np.array([3*np.cos(t + 2*np.pi/3)*np.sin(t + 2*np.pi/3), 3*np.sin(t + 2*np.pi/3)*np.sin(t + 2*np.pi/3), np.zeros(len(t))]).T
+
+# Drone 3 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+waypoints3 = np.array([3*np.cos(t + 4*np.pi/3)*np.sin(t + 4*np.pi/3), 3*np.sin(t + 4*np.pi/3)*np.sin(t + 4*np.pi/3), np.zeros(len(t))]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-10 13:22:20,567 - INFO - Total time taken for transcription: 2251.99 ms
+2024-08-10 13:22:20,857 - INFO - Trajectory plot saved at experiments/3petal_rose_20240810_132111/trial_1/waypoints_plot.png
+2024-08-10 13:22:40,639 - INFO - Total time taken for plot analysis with 5 critics: 19781.45 ms
+2024-08-10 13:22:42,857 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The previous score was **0/100**, while the current score ranges from **20/100 to 75/100**. This means the score has **improved**  by a considerable margin.  The feedback suggests that the drones are now forming a continuous shape, but it is still not the correct 3-petal rose curve. While this represents progress, the trajectory still needs significant refinement. 
+
+2024-08-10 13:22:42,857 - INFO - Retrying... (4/10)
+2024-08-10 13:22:45,351 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3*np.sin(3*t)
+x1 = r*np.cos(t)
+y1 = r*np.sin(t)
+z1 = np.zeros_like(x1) 
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3*np.sin(3*t + 2*np.pi/3)
+x2 = r*np.cos(t)
+y2 = r*np.sin(t)
+z2 = np.zeros_like(x2)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3*np.sin(3*t + 4*np.pi/3)
+x3 = r*np.cos(t)
+y3 = r*np.sin(t)
+z3 = np.zeros_like(x3)
+waypoints3 = np.array([x3, y3, z3]).T
+
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-10 13:22:45,352 - INFO - Total time taken for transcription: 2494.13 ms
+2024-08-10 13:22:45,537 - INFO - Trajectory plot saved at experiments/3petal_rose_20240810_132111/trial_1/waypoints_plot.png
+2024-08-10 13:23:07,457 - INFO - Total time taken for plot analysis with 5 critics: 21920.24 ms
+2024-08-10 13:23:09,086 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The previous score was **0/100**. The current score ranges from **40/100 to 65/100**. This means the score has **improved** by a considerable margin.  The feedback suggests that the drones are now forming a continuous shape, but it is still not the correct 3-petal rose curve. While this represents progress, the trajectory still needs significant refinement.  
+
+2024-08-10 13:23:09,087 - INFO - Retrying... (5/10)
+2024-08-10 13:23:11,256 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3*np.sin(3*t)
+x1 = r*np.cos(t)
+y1 = r*np.sin(t)
+z1 = np.zeros_like(t)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3*np.sin(3*t + 2*np.pi/3)
+x2 = r*np.cos(t)
+y2 = r*np.sin(t)
+z2 = np.zeros_like(t)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3*np.sin(3*t + 4*np.pi/3)
+x3 = r*np.cos(t)
+y3 = r*np.sin(t)
+z3 = np.zeros_like(t)
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-10 13:23:11,256 - INFO - Total time taken for transcription: 2168.92 ms
+2024-08-10 13:23:11,480 - INFO - Trajectory plot saved at experiments/3petal_rose_20240810_132111/trial_1/waypoints_plot.png
+2024-08-10 13:23:30,200 - INFO - Total time taken for plot analysis with 5 critics: 18719.92 ms
+2024-08-10 13:23:31,965 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (1/5)
+ Feedback Summary:
+Feedback Summary:
+
+The previous score was **0/100**. The current score ranges from **20/100 to 60/100**. This means the score has **improved** by a considerable margin.  The feedback suggests that the drones are now forming a continuous shape, but it is still not the correct 3-petal rose curve. While this represents progress, the trajectory still needs significant refinement.  
+
+2024-08-10 13:23:31,965 - INFO - Retrying... (6/10)
+2024-08-10 13:23:34,301 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3*np.cos(3*t)
+x1 = r*np.cos(t)
+y1 = r*np.sin(t)
+z1 = np.zeros_like(x1)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3*np.cos(3*t + 2*np.pi/3)
+x2 = r*np.cos(t)
+y2 = r*np.sin(t)
+z2 = np.zeros_like(x2)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3*np.cos(3*t + 4*np.pi/3)
+x3 = r*np.cos(t)
+y3 = r*np.sin(t)
+z3 = np.zeros_like(x3)
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-10 13:23:34,302 - INFO - Total time taken for transcription: 2336.15 ms
+2024-08-10 13:23:34,492 - INFO - Trajectory plot saved at experiments/3petal_rose_20240810_132111/trial_1/waypoints_plot.png
+2024-08-10 13:23:55,628 - INFO - Total time taken for plot analysis with 5 critics: 21135.44 ms
+2024-08-10 13:23:55,712 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:23:55,713 - INFO - Retrying in 0.38 seconds...
+2024-08-10 13:23:56,169 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:23:56,170 - INFO - Retrying in 0.96 seconds...
+2024-08-10 13:23:57,231 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:23:57,231 - INFO - Retrying in 0.69 seconds...
+2024-08-10 13:23:58,005 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:23:58,006 - INFO - Retrying in 1.19 seconds...
+2024-08-10 13:24:00,999 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The previous score was **0/100**. The current score ranges from **20/100 to 60/100**. This means the score has **improved** by a considerable margin.  The feedback suggests that the drones are now forming a continuous shape, but it is still not the correct 3-petal rose curve. While this represents progress, the trajectory still needs significant refinement.  
+
+2024-08-10 13:24:00,999 - INFO - Retrying... (7/10)
+2024-08-10 13:24:03,681 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+x1 = 2*np.cos(t)*np.cos(3*t)
+y1 = 2*np.sin(t)*np.cos(3*t)
+z1 = np.zeros_like(t)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+x2 = 2*np.cos(t + 2*np.pi/3)*np.cos(3*(t + 2*np.pi/3))
+y2 = 2*np.sin(t + 2*np.pi/3)*np.cos(3*(t + 2*np.pi/3))
+z2 = np.zeros_like(t)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+x3 = 2*np.cos(t + 4*np.pi/3)*np.cos(3*(t + 4*np.pi/3))
+y3 = 2*np.sin(t + 4*np.pi/3)*np.cos(3*(t + 4*np.pi/3))
+z3 = np.zeros_like(t)
+waypoints3 = np.array([x3, y3, z3]).T
+
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-10 13:24:03,681 - INFO - Total time taken for transcription: 2681.37 ms
+2024-08-10 13:24:03,889 - INFO - Trajectory plot saved at experiments/3petal_rose_20240810_132111/trial_1/waypoints_plot.png
+2024-08-10 13:24:24,882 - INFO - Total time taken for plot analysis with 5 critics: 20993.33 ms
+2024-08-10 13:24:26,519 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The previous score was **0/100**. The current score ranges from **20/100 to 60/100**. This means the score has **improved** by a considerable margin.  The feedback suggests that the drones are now forming a continuous shape, but it is still not the correct 3-petal rose curve. While this represents progress, the trajectory still needs significant refinement.  
+
+2024-08-10 13:24:26,520 - INFO - Retrying... (8/10)
+2024-08-10 13:24:28,869 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3 * np.sin(3*t)
+x1 = r * np.cos(t)
+y1 = r * np.sin(t)
+z1 = np.zeros_like(x1)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3 * np.sin(3*t + 2*np.pi/3)
+x2 = r * np.cos(t)
+y2 = r * np.sin(t)
+z2 = np.zeros_like(x2)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+r = 3 * np.sin(3*t + 4*np.pi/3)
+x3 = r * np.cos(t)
+y3 = r * np.sin(t)
+z3 = np.zeros_like(x3)
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-10 13:24:28,870 - INFO - Total time taken for transcription: 2348.42 ms
+2024-08-10 13:24:29,118 - INFO - Trajectory plot saved at experiments/3petal_rose_20240810_132111/trial_1/waypoints_plot.png
+2024-08-10 13:24:49,972 - INFO - Total time taken for plot analysis with 5 critics: 20852.83 ms
+2024-08-10 13:24:52,223 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The previous score was **0/100**. The current score ranges from **20/100 to 65/100**. This means the score has **improved** by a considerable margin.  The feedback suggests that the drones are now forming a continuous shape, but it is still not the correct 3-petal rose curve. While this represents progress, the trajectory still needs significant refinement.  
+
+2024-08-10 13:24:52,223 - INFO - Retrying... (9/10)
+2024-08-10 13:24:54,982 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+x1 = 2*np.cos(t)*np.cos(t)
+y1 = 2*np.cos(t)*np.sin(t)
+z1 = np.zeros_like(t)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+x2 = 2*np.cos(t + 2*np.pi/3)*np.cos(t + 2*np.pi/3)
+y2 = 2*np.cos(t + 2*np.pi/3)*np.sin(t + 2*np.pi/3)
+z2 = np.zeros_like(t)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+t = np.linspace(0, 2*np.pi, 100)
+x3 = 2*np.cos(t + 4*np.pi/3)*np.cos(t + 4*np.pi/3)
+y3 = 2*np.cos(t + 4*np.pi/3)*np.sin(t + 4*np.pi/3)
+z3 = np.zeros_like(t)
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-10 13:24:54,982 - INFO - Total time taken for transcription: 2758.94 ms
+2024-08-10 13:24:55,211 - INFO - Trajectory plot saved at experiments/3petal_rose_20240810_132111/trial_1/waypoints_plot.png
+2024-08-10 13:24:56,493 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:24:56,495 - INFO - Retrying in 0.14 seconds...
+2024-08-10 13:25:14,750 - INFO - Total time taken for plot analysis with 5 critics: 19538.30 ms
+2024-08-10 13:25:16,264 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The previous score was **0/100**. The current score is **0/100**. The score has **not improved**. 
+
+Even though the feedback mentions some progress, such as continuous paths and correct starting positions, the overall shape formed by the drones still does not match the required 3-petal rose curve. The critics consistently point out that the drones are forming circles or incomplete petals, which ultimately results in a score of 0/100. 
+
+2024-08-10 13:25:16,264 - INFO - Retrying... (10/10)
+2024-08-10 13:25:16,264 - ERROR - Maximum number of retries reached. Failed to process waypoints.
+2024-08-10 13:25:16,264 - ERROR - Experiment 1 for 3petal_rose failed.

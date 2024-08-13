@@ -1,0 +1,737 @@
+2024-08-10 13:17:29,356 - INFO - Interpreted requirements:
+
+ ## Requirements for Hyperbolic Drone Trajectory:
+
+[REQ] Number of drones: 2
+[REQ] Starting formation:  The two drones should start at the foci of the desired hyperbola. This ensures both drones will trace a branch of the hyperbola symmetrically.
+[REQ] Flight path:
+    * Each drone will follow one branch of the hyperbola.
+    * The hyperbola should be symmetric, with both drones tracing congruent branches.
+    * The drones should maintain a smooth, continuous trajectory along their respective branches.  
+    * The speed of both drones should be synchronized to maintain symmetry and visual appeal. 
+[REQ] Additional requirements:
+    * The specific size and orientation of the hyperbola should be determined based on the context of the task and the desired visual effect.
+    * To ensure smooth transitions, the drones should accelerate and decelerate smoothly at the start and end of their trajectories. 
+
+2024-08-10 13:17:31,747 - INFO - Generated response:
+
+ ```python
+
+import numpy as np
+
+# Define the parameters of the hyperbola
+a = 5  # Distance from center to a vertex
+b = 3  # Distance from center to a co-vertex
+center_x = 0  # x-coordinate of the center of the hyperbola
+center_y = 0  # y-coordinate of the center of the hyperbola
+
+# Generate the trajectory for the first drone
+t = np.linspace(0, 2*np.pi, 100)  # Parameter for generating points along the hyperbola
+x1 = a*np.cosh(t) + center_x  # x-coordinates of points on the hyperbola
+y1 = b*np.sinh(t) + center_y  # y-coordinates of points on the hyperbola
+
+# Generate the trajectory for the second drone
+x2 = -a*np.cosh(t) + center_x  # x-coordinates of points on the hyperbola
+y2 = b*np.sinh(t) + center_y  # y-coordinates of points on the hyperbola
+
+# Combine the x and y coordinates into lists of waypoints
+waypoints1 = [[x1[i], y1[i], 0] for i in range(len(x1))]
+waypoints2 = [[x2[i], y2[i], 0] for i in range(len(x2))]
+
+# Combine the waypoints for both drones into a single list
+waypoints = [waypoints1, waypoints2]
+
+```
+2024-08-10 13:17:31,747 - INFO - Total time taken for transcription: 2390.20 ms
+2024-08-10 13:17:31,917 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot.png
+2024-08-10 13:17:42,316 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:17:42,316 - INFO - Retrying in 0.12 seconds...
+2024-08-10 13:17:42,546 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:17:42,546 - INFO - Retrying in 0.22 seconds...
+2024-08-10 13:17:42,841 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:17:42,842 - INFO - Retrying in 0.67 seconds...
+2024-08-10 13:17:43,595 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:17:43,595 - INFO - Retrying in 0.91 seconds...
+2024-08-10 13:17:44,583 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:17:44,583 - INFO - Retrying in 2.47 seconds...
+2024-08-10 13:17:47,136 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:17:47,136 - INFO - Retrying in 3.42 seconds...
+2024-08-10 13:17:50,635 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:17:50,636 - INFO - Retrying in 6.46 seconds...
+2024-08-10 13:17:57,177 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:17:57,177 - INFO - Retrying in 12.83 seconds...
+2024-08-10 13:18:12,249 - INFO - Total time taken for plot analysis with 5 critics: 40331.77 ms
+2024-08-10 13:18:13,982 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback consistently highlights the most significant issue: **the drones are not flying along a hyperbolic trajectory, but rather in straight lines.** This fundamental flaw is consistently pointed out by all critics. 
+
+Additional issues include:
+
+* **Starting Positions:** The drones do not start at the foci of the hyperbola, contradicting the requirements. 
+* **Overall Shape:** The combined shape formed by the drones' paths does not resemble a hyperbola, failing to meet the specification.
+* **Symmetry:** While some critics mention continuity and smoothness, the most critical concern is the lack of a symmetrical, visually appealing movement due to the linear paths. 
+
+The feedback consistently points out these shortcomings, resulting in a **score of 0/100** across all evaluations.
+
+**Previous Score: N/A (No previous feedback provided)**
+
+**Current Score: 0/100**
+
+**Change: N/A** 
+
+2024-08-10 13:18:13,983 - INFO - Retrying... (1/10)
+2024-08-10 13:18:15,961 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define hyperbola parameters
+a = 5  # Distance from center to vertex
+b = 3  # Distance from center to co-vertex
+c = np.sqrt(a**2 + b**2)  # Distance from center to focus
+
+# Time for the trajectory
+t = np.linspace(0, 1, 50)
+
+# Drone 1 waypoints - Right branch of the hyperbola
+x1 = c * np.cosh(t)
+y1 = b * np.sinh(t)
+z1 = np.zeros_like(x1)  # Assume constant altitude
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints - Left branch of the hyperbola
+x2 = -c * np.cosh(t)
+y2 = b * np.sinh(t)
+z2 = np.zeros_like(x2)  # Assume constant altitude
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-10 13:18:15,962 - INFO - Total time taken for transcription: 1978.53 ms
+2024-08-10 13:18:16,155 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot.png
+2024-08-10 13:18:29,513 - INFO - Total time taken for plot analysis with 5 critics: 13358.13 ms
+2024-08-10 13:18:32,898 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback is mixed, with a clear consensus that the **drone trajectories are not following a hyperbolic path as required**.  While all critics acknowledge that the trajectories are not valid, there is some disagreement on the specific shortcomings.
+
+**Common Issues:**
+
+* **Incorrect Trajectory Shape:** The most prominent issue is that the drones do not follow a hyperbolic path. This is a fundamental requirement that is consistently not met. Some critics suggest the trajectories resemble straight lines or curved paths that do not resemble a hyperbola. 
+* **Starting Positions:** Several critics note that the drones are not starting at the foci of the hyperbola, as required by the task. 
+
+**Less Consistent Issues:**
+
+* **Symmetry:** While some critics mention the lack of symmetry in the trajectories due to the differing paths, others don't specifically address this aspect.
+* **Completeness:** Some critics argue the trajectories are incomplete, while others find them complete based on their specific interpretation of the requirement.
+* **Overall Shape:**  There is disagreement on whether the overall shape formed by the combined trajectories is acceptable, with some seeing it as a hyperbola and others finding it doesn't meet the criteria. 
+
+**Suggestions for Improvement:**
+
+The suggestions for improvement focus on creating a correct hyperbolic trajectory:
+
+* **Use a mathematical function:**  Generate a hyperbolic path for both drones using a suitable mathematical function.
+* **Adjust starting positions:**  Place the drones at the foci of the desired hyperbola.
+* **Maintain symmetry:** Ensure the drones trace congruent branches of the hyperbola.
+* **Synchronize speed:**  Ensure both drones maintain synchronized speeds for visual appeal and symmetry.
+* **Smooth acceleration and deceleration:** Include smooth acceleration and deceleration at the start and end of the trajectories. 
+
+## Score Summary:
+
+**Previous Score: N/A (No previous feedback provided)**
+
+**Current Score: 18/100**  
+
+**Change: +18**
+
+**Overall:** The score has **improved**, moving from 0/100 to 18/100. This improvement indicates some progress towards meeting the requirements, but the core issue of the non-hyperbolic trajectory still needs significant attention. 
+
+2024-08-10 13:18:32,899 - INFO - Retrying... (2/10)
+2024-08-10 13:18:34,688 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the hyperbola parameters
+a = 5  # Semi-major axis
+b = 3  # Semi-minor axis
+c = np.sqrt(a**2 + b**2)  # Distance from center to foci
+
+# Define the range of parameter t for the hyperbola
+t = np.linspace(-3, 3, 100)  # Adjust the range and number of points as needed
+
+# Calculate the x and y coordinates of the hyperbola
+x1 = a * np.cosh(t) 
+y1 = b * np.sinh(t)
+
+x2 = -a * np.cosh(t) 
+y2 = b * np.sinh(t)
+
+# Define the z coordinate (altitude) -  You can customize this for each drone
+z = np.zeros_like(t)  # Keep altitude constant
+
+# Drone 1 waypoints 
+waypoints1 = np.array([x1, y1, z]).T  
+
+# Drone 2 waypoints
+waypoints2 = np.array([x2, y2, z]).T
+
+# Combine the waypoints into a list of lists
+waypoints = [waypoints1, waypoints2]
+
+```
+2024-08-10 13:18:34,688 - INFO - Total time taken for transcription: 1788.44 ms
+2024-08-10 13:18:34,903 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot.png
+2024-08-10 13:18:49,525 - INFO - Total time taken for plot analysis with 5 critics: 14621.67 ms
+2024-08-10 13:18:52,387 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback is largely consistent, with all critics agreeing that the drone trajectories are not valid and do not form a hyperbola as required.  
+
+**Common Issues:**
+
+* **Incorrect Trajectory Shape:** The drones do not follow a hyperbolic path. This is the most significant issue, as it directly contradicts the core requirement.  
+* **Starting Positions:**  Some critics point out that the drones are not starting at the foci of the hyperbola, which is crucial for creating the correct shape.  
+
+**Less Consistent Issues:**
+
+* **Symmetry:**  While some critics highlight the lack of symmetry between the drones' trajectories, others do not explicitly mention it. 
+* **Completeness:** There is some disagreement on whether the trajectories are considered complete. 
+* **Overall Shape:**  The overall shape formed by the combined trajectories is not consistently evaluated, with varying opinions on whether it resembles a hyperbola. 
+
+**Suggestions for Improvement:**
+
+The suggestions revolve around correcting the trajectory and achieving a proper hyperbolic formation:
+
+* **Use a mathematical function:** Utilize a suitable mathematical function to generate a hyperbolic path for both drones.
+* **Adjust starting positions:** Ensure the drones start at the foci of the desired hyperbola.
+* **Maintain symmetry:** The drones should trace congruent branches of the hyperbola.
+* **Synchronize speed:**  Maintain synchronized speeds for both drones to ensure symmetry and visual appeal.
+* **Smooth acceleration and deceleration:** Include smooth acceleration and deceleration at the start and end of the trajectories. 
+
+## Score Summary:
+
+**Previous Score: 0/100**
+
+**Current Score: 18/100**
+
+**Change: +18**
+
+**Overall:** The score has **BETTER**, moving from 0/100 to 18/100. This improvement indicates some progress towards meeting the requirements. While the score has improved, the core issue of the incorrect trajectory shape still needs significant attention to achieve a valid hyperbolic formation. 
+
+2024-08-10 13:18:52,564 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot_best.png
+2024-08-10 13:18:52,564 - INFO - Retrying... (3/10)
+2024-08-10 13:18:54,950 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define hyperbola parameters
+a = 5  # Distance from center to a vertex
+b = 3  # Distance from center to a co-vertex
+center_x = 0  # X-coordinate of the center
+center_y = 0  # Y-coordinate of the center
+
+# Generate points along the hyperbola
+t = np.linspace(-5, 5, 50)  # Parameter for the hyperbola equation
+x = center_x + a * np.cosh(t)
+y = center_y + b * np.sinh(t)
+
+# Calculate foci positions for starting positions
+c = np.sqrt(a**2 + b**2)  # Distance from center to a focus
+focus1_x = center_x + c
+focus1_y = center_y
+focus2_x = center_x - c
+focus2_y = center_y
+
+# Drone 1 waypoints (Right branch)
+waypoints1 = np.array([[focus1_x + x[i], focus1_y + y[i], 0] for i in range(len(x))])
+
+# Drone 2 waypoints (Left branch)
+waypoints2 = np.array([[focus2_x + x[i], focus2_y - y[i], 0] for i in range(len(x))])
+
+waypoints = [waypoints1, waypoints2]
+
+```
+2024-08-10 13:18:54,950 - INFO - Total time taken for transcription: 2385.58 ms
+2024-08-10 13:18:55,127 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot.png
+2024-08-10 13:18:56,223 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:18:56,224 - INFO - Retrying in 0.61 seconds...
+2024-08-10 13:18:56,915 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:18:56,915 - INFO - Retrying in 0.83 seconds...
+2024-08-10 13:18:57,824 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:18:57,824 - INFO - Retrying in 0.77 seconds...
+2024-08-10 13:18:58,664 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:18:58,665 - INFO - Retrying in 0.97 seconds...
+2024-08-10 13:19:01,869 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:01,870 - INFO - Retrying in 0.57 seconds...
+2024-08-10 13:19:12,526 - INFO - Total time taken for plot analysis with 5 critics: 17397.76 ms
+2024-08-10 13:19:15,492 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback is largely consistent, with all critics agreeing that the drone trajectories are not valid and do not form a hyperbola as required.  
+
+**Common Issues:**
+
+* **Incorrect Trajectory Shape:** The drones do not follow a hyperbolic path. This is the most significant issue, as it directly contradicts the core requirement.  
+* **Starting Positions:**  All critics agree that the drones are not starting at the foci of the hyperbola, which is crucial for creating the correct shape.  
+
+**Less Consistent Issues:**
+
+* **Symmetry:**  While some critics highlight the lack of symmetry between the drones' trajectories, others do not explicitly mention it. 
+* **Completeness:** There is some disagreement on whether the trajectories are considered complete. 
+* **Overall Shape:**  The overall shape formed by the combined trajectories is not consistently evaluated, with varying opinions on whether it resembles a hyperbola. 
+
+**Suggestions for Improvement:**
+
+The suggestions revolve around correcting the trajectory and achieving a proper hyperbolic formation:
+
+* **Use a mathematical function:** Utilize a suitable mathematical function to generate a hyperbolic path for both drones.
+* **Adjust starting positions:** Ensure the drones start at the foci of the desired hyperbola.
+* **Maintain symmetry:** The drones should trace congruent branches of the hyperbola.
+* **Synchronize speed:**  Maintain synchronized speeds for both drones to ensure symmetry and visual appeal.
+* **Smooth acceleration and deceleration:** Include smooth acceleration and deceleration at the start and end of the trajectories. 
+
+## Score Summary:
+
+**Previous Score: 0/100**
+
+**Current Score: 18/100**
+
+**Change: +18**
+
+**Overall:** The score has **BETTER**, moving from 0/100 to 18/100. This improvement indicates some progress towards meeting the requirements. While the score has improved, the core issue of the incorrect trajectory shape still needs significant attention to achieve a valid hyperbolic formation. 
+
+2024-08-10 13:19:15,661 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot_best.png
+2024-08-10 13:19:15,661 - INFO - Retrying... (4/10)
+2024-08-10 13:19:17,560 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the hyperbola parameters
+a = 5  # Distance from center to a vertex
+b = 3  # Distance from center to a co-vertex
+center = [0, 0]  # Center of the hyperbola
+
+# Define the range of the parameter
+t = np.linspace(-5, 5, 100)
+
+# Calculate the x and y coordinates of the hyperbola
+x = a * np.cosh(t) + center[0]
+y = b * np.sinh(t) + center[1]
+
+# Calculate the foci of the hyperbola
+foci_distance = np.sqrt(a**2 + b**2)
+foci1 = [center[0] + foci_distance, center[1]]
+foci2 = [center[0] - foci_distance, center[1]]
+
+# Drone 1 waypoints
+waypoints1 = [[foci1[0], foci1[1], 0]] + [[x[i], y[i], 0] for i in range(len(x))]
+
+# Drone 2 waypoints
+waypoints2 = [[foci2[0], foci2[1], 0]] + [[x[i], -y[i], 0] for i in range(len(x))]
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-10 13:19:17,560 - INFO - Total time taken for transcription: 1898.46 ms
+2024-08-10 13:19:17,723 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot.png
+2024-08-10 13:19:29,250 - INFO - Total time taken for plot analysis with 5 critics: 11526.46 ms
+2024-08-10 13:19:32,075 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback is largely consistent, with all critics agreeing that the drone trajectories are not valid and do not form a hyperbola as required.  
+
+**Common Issues:**
+
+* **Incorrect Trajectory Shape:** The drones do not follow a hyperbolic path. This is the most significant issue, as it directly contradicts the core requirement.  
+* **Starting Positions:**  All critics agree that the drones are not starting at the foci of the hyperbola, which is crucial for creating the correct shape.  
+* **Symmetry:**  A majority of critics highlight the lack of symmetry between the drones' trajectories. 
+* **Synchronization:** All critics noted that the drones' speed is not synchronized.
+
+**Less Consistent Issues:**
+
+* **Completeness:** There is some disagreement on whether the trajectories are considered complete. 
+* **Overall Shape:**  The overall shape formed by the combined trajectories is not consistently evaluated, with varying opinions on whether it resembles a hyperbola. 
+
+**Suggestions for Improvement:**
+
+The suggestions revolve around correcting the trajectory and achieving a proper hyperbolic formation:
+
+* **Use a mathematical function:** Utilize a suitable mathematical function to generate a hyperbolic path for both drones.
+* **Adjust starting positions:** Ensure the drones start at the foci of the desired hyperbola.
+* **Maintain symmetry:** The drones should trace congruent branches of the hyperbola.
+* **Synchronize speed:**  Maintain synchronized speeds for both drones to ensure symmetry and visual appeal.
+* **Smooth acceleration and deceleration:** Include smooth acceleration and deceleration at the start and end of the trajectories. 
+
+## Score Summary:
+
+**Previous Score: 0/100**
+
+**Current Score: 0/100**
+
+**Change: 0**
+
+**Overall:** The score has **NOT IMPROVED** and remains at 0/100.  This indicates that the core issues with the trajectory shape, starting positions, and lack of symmetry have not been addressed. 
+
+2024-08-10 13:19:32,077 - INFO - Retrying... (5/10)
+2024-08-10 13:19:34,195 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define hyperbola parameters
+a = 5  # Distance from center to a vertex
+b = 3  # Distance from center to a co-vertex
+center_x = 0  # x-coordinate of the hyperbola's center
+center_y = 0  # y-coordinate of the hyperbola's center
+
+# Calculate foci coordinates
+c = np.sqrt(a**2 + b**2)
+focus1_x = center_x + c
+focus1_y = center_y
+focus2_x = center_x - c
+focus2_y = center_y
+
+# Generate waypoints for Drone 1 (right branch of hyperbola)
+t = np.linspace(0, 2*np.pi, 100)  
+x1 = focus1_x + a * np.cosh(t)
+y1 = focus1_y + b * np.sinh(t)
+waypoints1 = np.array([x1, y1, np.zeros_like(x1)]).T 
+
+# Generate waypoints for Drone 2 (left branch of hyperbola)
+x2 = focus2_x - a * np.cosh(t)
+y2 = focus2_y + b * np.sinh(t)
+waypoints2 = np.array([x2, y2, np.zeros_like(x2)]).T 
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-10 13:19:34,196 - INFO - Total time taken for transcription: 2118.34 ms
+2024-08-10 13:19:34,434 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot.png
+2024-08-10 13:19:40,028 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:40,030 - INFO - Retrying in 1.10 seconds...
+2024-08-10 13:19:41,205 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:41,206 - INFO - Retrying in 0.61 seconds...
+2024-08-10 13:19:41,908 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:41,909 - INFO - Retrying in 0.96 seconds...
+2024-08-10 13:19:42,943 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:42,944 - INFO - Retrying in 1.10 seconds...
+2024-08-10 13:19:44,122 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:44,122 - INFO - Retrying in 2.43 seconds...
+2024-08-10 13:19:46,631 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:46,631 - INFO - Retrying in 3.22 seconds...
+2024-08-10 13:19:52,780 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:52,781 - INFO - Retrying in 0.36 seconds...
+2024-08-10 13:19:53,216 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:53,217 - INFO - Retrying in 0.86 seconds...
+2024-08-10 13:19:54,162 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:54,163 - INFO - Retrying in 1.18 seconds...
+2024-08-10 13:19:55,419 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:55,419 - INFO - Retrying in 1.69 seconds...
+2024-08-10 13:19:57,192 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:19:57,193 - INFO - Retrying in 2.07 seconds...
+2024-08-10 13:20:04,272 - INFO - Total time taken for plot analysis with 5 critics: 29837.56 ms
+2024-08-10 13:20:07,139 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback is largely consistent, with all critics agreeing that the drone trajectories are not valid and do not form a hyperbola as required.  
+
+**Common Issues:**
+
+* **Incorrect Trajectory Shape:** The drones do not follow a hyperbolic path. This is the most significant issue, as it directly contradicts the core requirement.  
+* **Starting Positions:**  All critics agree that the drones are not starting at the foci of the hyperbola, which is crucial for creating the correct shape.  
+* **Symmetry:**  A majority of critics highlight the lack of symmetry between the drones' trajectories. 
+* **Synchronization:** All critics noted that the drones' speed is not synchronized.
+
+**Less Consistent Issues:**
+
+* **Completeness:** There is some disagreement on whether the trajectories are considered complete. 
+* **Overall Shape:**  The overall shape formed by the combined trajectories is not consistently evaluated, with varying opinions on whether it resembles a hyperbola. 
+
+**Suggestions for Improvement:**
+
+The suggestions revolve around correcting the trajectory and achieving a proper hyperbolic formation:
+
+* **Use a mathematical function:** Utilize a suitable mathematical function to generate a hyperbolic path for both drones.
+* **Adjust starting positions:** Ensure the drones start at the foci of the desired hyperbola.
+* **Maintain symmetry:** The drones should trace congruent branches of the hyperbola.
+* **Synchronize speed:**  Maintain synchronized speeds for both drones to ensure symmetry and visual appeal.
+* **Smooth acceleration and deceleration:** Include smooth acceleration and deceleration at the start and end of the trajectories. 
+
+## Score Summary:
+
+**Previous Score: 0/100**
+
+**Current Score: 0/100**
+
+**Change: 0**
+
+**Overall:** The score has **NOT IMPROVED** and remains at 0/100.  This indicates that the core issues with the trajectory shape, starting positions, and lack of symmetry have not been addressed. 
+
+2024-08-10 13:20:07,139 - INFO - Retrying... (6/10)
+2024-08-10 13:20:08,695 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define hyperbola parameters
+a = 5  # Distance from center to a vertex
+b = 3  # Distance from center to a co-vertex
+c = np.sqrt(a**2 + b**2)  # Distance from center to a focus
+
+# Define the range of x values to plot
+x = np.linspace(-10, 10, 100)
+
+# Calculate the y values for the hyperbola
+y1 = b * np.sqrt(1 + (x / a)**2)
+y2 = -b * np.sqrt(1 + (x / a)**2)
+
+# Drone 1 waypoints
+waypoints1 = [[x[i], y1[i], 0] for i in range(len(x))]
+
+# Drone 2 waypoints
+waypoints2 = [[x[i], y2[i], 0] for i in range(len(x))]
+
+waypoints = [waypoints1, waypoints2]
+
+```
+2024-08-10 13:20:08,695 - INFO - Total time taken for transcription: 1555.57 ms
+2024-08-10 13:20:08,892 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot.png
+2024-08-10 13:20:23,823 - INFO - Total time taken for plot analysis with 5 critics: 14931.04 ms
+2024-08-10 13:20:26,633 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback remains largely consistent: the drone trajectories are still not valid and fail to form a hyperbola as required. 
+
+**Common Issues:**
+
+* **Incorrect Trajectory Shape:** The drones still do not follow a hyperbolic path. This remains the most significant issue.
+* **Starting Positions:** While some critics acknowledge that the drones start at the correct positions (foci), others still highlight the issue of incorrect starting points.
+* **Symmetry:** The lack of symmetry between the drone trajectories is still a major concern.
+* **Synchronization:** The drones are not moving at synchronized speeds.
+
+**Less Consistent Issues:**
+
+* **Completeness:** There is still disagreement on whether the trajectories are considered complete.
+* **Overall Shape:**  There is no clear consensus on the overall shape formed by the combined trajectories.
+
+**Suggestions for Improvement:**
+
+The suggestions for improvement continue to emphasize the need to correct the trajectory and achieve a proper hyperbolic formation:
+
+* **Use a mathematical function:** Utilize a suitable mathematical function to generate a hyperbolic path for both drones.
+* **Ensure correct starting positions:**  Ensure the drones start at the foci of the desired hyperbola.
+* **Maintain symmetry:** The drones should trace congruent branches of the hyperbola.
+* **Synchronize speed:** Maintain synchronized speeds for both drones to ensure symmetry and visual appeal.
+* **Smooth acceleration and deceleration:** Include smooth acceleration and deceleration at the start and end of the trajectories. 
+
+## Score Summary:
+
+**Previous Score: 0/100**
+
+**Current Score: 0/100**
+
+**Change: 0**
+
+**Overall:** The score has **NOT IMPROVED** and remains at 0/100. This indicates that the core issues with the trajectory shape, starting positions, and lack of symmetry have not been addressed. 
+
+2024-08-10 13:20:26,633 - INFO - Retrying... (7/10)
+2024-08-10 13:20:28,437 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the hyperbola parameters 
+a = 5  # semi-major axis
+b = 3  # semi-minor axis
+center_x = 0  # x-coordinate of the center
+center_y = 0  # y-coordinate of the center
+
+# Calculate the foci
+c = np.sqrt(a**2 + b**2)
+focus_x1 = center_x + c 
+focus_x2 = center_x - c
+
+# Generate the waypoints for each drone
+t = np.linspace(-2, 2, 50) 
+
+# Drone 1 waypoints
+waypoints1 = np.array([
+    [focus_x1 + a * np.cosh(t), b * np.sinh(t), 0]
+]).T 
+
+# Drone 2 waypoints
+waypoints2 = np.array([
+    [focus_x2 - a * np.cosh(t), b * np.sinh(t), 0]
+]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-10 13:20:28,438 - INFO - Total time taken for transcription: 1803.42 ms
+2024-08-10 13:20:28,439 - ERROR - An error occurred while processing waypoints: setting an array element with a sequence. The requested array has an inhomogeneous shape after 2 dimensions. The detected shape was (1, 3) + inhomogeneous part.
+2024-08-10 13:20:28,439 - INFO - Retrying... (8/10)
+2024-08-10 13:20:30,943 - INFO - Generated response:
+
+ ```python
+
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_hyperbolic_trajectory(a, b, t_start, t_end, num_waypoints):
+    """
+    Generates waypoints for a hyperbolic trajectory.
+
+    Args:
+        a: The distance from the center of the hyperbola to the foci.
+        b: The distance from the center of the hyperbola to the asymptotes.
+        t_start: The starting time for the trajectory.
+        t_end: The ending time for the trajectory.
+        num_waypoints: The number of waypoints to generate.
+
+    Returns:
+        A list of waypoints for the hyperbolic trajectory.
+    """
+    t = np.linspace(t_start, t_end, num_waypoints)
+    x = a * np.cosh(t)
+    y = b * np.sinh(t)
+    z = np.zeros_like(x)  # Assuming constant altitude
+    return np.array([x, y, z]).T
+
+# Drone 1 waypoints
+a = 5 # Distance from center to foci 
+b = 3 # Distance from center to asymptotes 
+t_start = -2
+t_end = 2
+num_waypoints = 20
+waypoints1 = generate_hyperbolic_trajectory(a, b, t_start, t_end, num_waypoints)
+
+# Drone 2 waypoints
+waypoints2 = generate_hyperbolic_trajectory(a, b, t_start, t_end, num_waypoints)
+
+# Drone N waypoints
+waypoints = [waypoints1, waypoints2]
+
+```
+2024-08-10 13:20:30,943 - INFO - Total time taken for transcription: 2503.55 ms
+2024-08-10 13:20:30,945 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-10 13:20:30,945 - INFO - Retrying... (9/10)
+2024-08-10 13:20:32,874 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define hyperbola parameters
+a = 5  # Distance from center to a vertex
+b = 3  # Distance from center to a co-vertex
+center_x = 0
+center_y = 0
+
+# Generate waypoints for Drone 1
+t = np.linspace(0, np.pi, 50)  # Parameter for hyperbola equation
+x1 = center_x + a * np.cosh(t)
+y1 = center_y + b * np.sinh(t)
+
+# Generate waypoints for Drone 2
+t = np.linspace(0, np.pi, 50)  # Parameter for hyperbola equation
+x2 = center_x - a * np.cosh(t)
+y2 = center_y + b * np.sinh(t)
+
+# Combine waypoints into lists
+waypoints1 = np.array([x1, y1, np.zeros_like(x1)]).T
+waypoints2 = np.array([x2, y2, np.zeros_like(x2)]).T
+
+# Combine waypoints for all drones
+waypoints = [waypoints1, waypoints2] 
+```
+2024-08-10 13:20:32,875 - INFO - Total time taken for transcription: 1928.83 ms
+2024-08-10 13:20:33,064 - INFO - Trajectory plot saved at experiments/hyperbola_20240810_131226/trial_3/waypoints_plot.png
+2024-08-10 13:20:38,945 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:38,946 - INFO - Retrying in 1.03 seconds...
+2024-08-10 13:20:40,050 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:40,051 - INFO - Retrying in 0.83 seconds...
+2024-08-10 13:20:41,033 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:41,034 - INFO - Retrying in 1.08 seconds...
+2024-08-10 13:20:42,190 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:42,190 - INFO - Retrying in 1.29 seconds...
+2024-08-10 13:20:43,562 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:43,562 - INFO - Retrying in 2.59 seconds...
+2024-08-10 13:20:48,327 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:48,329 - INFO - Retrying in 0.26 seconds...
+2024-08-10 13:20:48,668 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:48,669 - INFO - Retrying in 1.04 seconds...
+2024-08-10 13:20:49,781 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:49,782 - INFO - Retrying in 0.44 seconds...
+2024-08-10 13:20:50,303 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:50,303 - INFO - Retrying in 1.77 seconds...
+2024-08-10 13:20:52,149 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:52,150 - INFO - Retrying in 1.75 seconds...
+2024-08-10 13:20:54,035 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:54,035 - INFO - Retrying in 3.57 seconds...
+2024-08-10 13:20:57,692 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-10 13:20:57,693 - INFO - Retrying in 6.67 seconds...
+2024-08-10 13:21:08,489 - INFO - Total time taken for plot analysis with 5 critics: 35424.93 ms
+2024-08-10 13:21:11,922 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback from the critics remains largely negative. While there are some improvements in the trajectory generation, the fundamental issues persist, preventing the drones from forming the required hyperbolic shape.
+
+**Common Issues:**
+
+* **Incorrect Trajectory Shape:** The most significant issue remains the drones' failure to follow a hyperbolic path. Many critics emphasize the lack of a proper curved trajectory, with some even mentioning straight lines instead of hyperbolic branches.
+* **Starting Positions:** The starting positions of the drones are still a point of contention. While some critics acknowledge the placement at the foci, others still highlight incorrect positioning.
+* **Symmetry:**  The lack of symmetry between the drone trajectories is a major concern. The drones are not tracing congruent branches of a hyperbola, which is crucial for the intended effect. 
+* **Speed Synchronization:** The drones are still not moving at synchronized speeds, further hindering the overall visual appeal and symmetry of the formation. 
+
+**Less Consistent Issues:**
+
+* **Completeness:** There is still disagreement on whether the trajectories are considered complete. 
+* **Overall Shape:** There is no clear consensus on the overall shape formed by the combined trajectories, with some critics not seeing a clear hyperbola shape emerging.
+
+**Suggestions for Improvement:**
+
+The critics consistently recommend focusing on:
+
+* **Correcting the Trajectory Shape:** Utilizing a mathematical function to define the hyperbolic path and ensuring the drones accurately trace this path.
+* **Ensuring Correct Starting Positions:** Positioning the drones at the foci of the desired hyperbola to enable symmetrical branches.
+* **Achieving Symmetry:** Adjusting the trajectories to ensure the drones trace congruent branches of the hyperbola, maintaining a symmetrical formation.
+* **Synchronizing Speed:** Adjusting the drone speeds to move at the same pace, enhancing visual appeal and symmetry.
+* **Smooth Acceleration and Deceleration:** Ensuring smooth transitions at the start and end of the trajectories for a visually appealing flight. 
+
+## Score Summary:
+
+**Previous Score: 0/100**
+
+**Current Score: 0/100**
+
+**Change: 0**
+
+**Overall:** The score has **NOT IMPROVED** and remains at 0/100. This indicates that the core issues with the trajectory shape, starting positions, and lack of symmetry have not been addressed. While some improvements might have been made, the fundamental flaws persist, requiring significant revisions to achieve the desired outcome. 
+
+2024-08-10 13:21:11,922 - INFO - Retrying... (10/10)
+2024-08-10 13:21:11,922 - ERROR - Maximum number of retries reached. Failed to process waypoints.
+2024-08-10 13:21:11,922 - ERROR - Experiment 3 for hyperbola failed.

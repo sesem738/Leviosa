@@ -1,0 +1,681 @@
+2024-08-09 17:22:23,131 - INFO - Interpreted requirements:
+
+ ## Structured Requirements for Sine Wave Drone Formation:
+
+**[REQ] Number of drones:** 3
+
+**[REQ] Starting formation:**  The drones should start in a horizontal line formation, evenly spaced, positioned at the beginning of their respective sine wave segments. 
+
+**[REQ] Flight path:** 
+* Each drone will follow a sinusoidal path, with the amplitude and frequency of the sine wave being the same for all drones.
+* The drones should be synchronized such that their horizontal positions are offset by 1/3 of the wavelength, creating a continuous wave shape.
+* The drones should maintain their relative positions within the wave formation throughout the flight.
+* The drone paths should be continuous and smooth, avoiding abrupt changes in direction.
+* The drones should maintain a constant altitude throughout the flight.
+
+**[REQ]  Constraints:** 
+* The drones' flight path should be in the X-Y plane, assuming the Z-axis is the vertical direction.
+* The sine wave's amplitude and frequency can be adjusted based on the desired visual effect.
+* The starting point of the sine wave can be specified by the user. 
+
+2024-08-09 17:22:25,212 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the number of drones
+N = 3
+
+# Define the sine wave parameters
+amplitude = 2.0 # meters
+frequency = 1.0 # cycles per meter
+phase_offset = 2*np.pi/3
+starting_point = [0, 0, 1]  # [x, y, z] in meters
+
+# Define the length of the trajectory (in meters)
+trajectory_length = 10
+
+# Generate the x-coordinates for each drone
+x_range = np.linspace(starting_point[0], starting_point[0] + trajectory_length, 100)
+
+# Generate the y-coordinates for each drone
+waypoints = []
+for i in range(N):
+    y_coords = amplitude * np.sin(2 * np.pi * frequency * x_range + i * phase_offset)
+    z_coords = starting_point[2] * np.ones_like(x_range)
+    waypoints.append(np.array([x_range, y_coords, z_coords]).T)
+
+# Drone 1 waypoints
+waypoints1 = waypoints[0]
+
+# Drone 2 waypoints
+waypoints2 = waypoints[1]
+
+# Drone 3 waypoints
+waypoints3 = waypoints[2]
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:22:25,212 - INFO - Total time taken for transcription: 2080.11 ms
+2024-08-09 17:22:25,547 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot.png
+2024-08-09 17:22:41,048 - INFO - Total time taken for plot analysis with 5 critics: 15500.58 ms
+2024-08-09 17:22:43,569 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Summary of Critic Feedback:
+
+The consensus among the critics is that the drone trajectories are **NOT VALID**.  While the individual drone paths are continuous and smooth, they fail to meet the key requirement of forming a synchronized, continuous wave formation. 
+
+Here's a breakdown of the common issues:
+
+* **Synchronization:**  The drones are not flying in a synchronized manner, resulting in a series of parallel sine waves instead of a single, continuous wave. Critics emphasize the need for a 1/3 wavelength offset between drones to achieve the desired wave shape.
+* **Spacing:** While the drones may start at the correct horizontal positions, they are not consistently spaced, leading to an uneven wave formation.
+* **Starting Positions:**  Some critics note that the drones do not start in a horizontal line formation, further hindering the creation of a proper wave pattern. 
+
+**Overall Shape:** The lack of synchronization and proper spacing results in an overall shape that does not resemble the required continuous wave formation.
+
+**Suggestions for Improvement:**
+
+* **Synchronization:**  Adjust the drone trajectories to ensure they are synchronized with a 1/3 wavelength offset. 
+* **Spacing:** Ensure the drones are evenly spaced in a horizontal line formation.
+* **Starting Positions:**  Correct the starting positions of the drones to be in a horizontal line formation.
+
+
+## Score Comparison:
+
+Based on the provided feedback, the **previous score** was **40/100**. The **current score** is **30/100**.  
+
+Therefore, the score has **decreased** by **-10**, making the current performance **WORSE** than the previous attempt. 
+
+2024-08-09 17:22:43,569 - INFO - Retrying... (1/10)
+2024-08-09 17:22:45,460 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define parameters for the sine wave
+amplitude = 10  # Adjust amplitude as desired
+frequency = 0.5  # Adjust frequency as desired
+wavelength = 2 * np.pi / frequency
+offset = wavelength / 3
+
+# Define the x-axis range
+x_range = np.linspace(0, 3 * wavelength, 50)
+
+# Calculate y-coordinates for each drone
+y1 = amplitude * np.sin(frequency * x_range)
+y2 = amplitude * np.sin(frequency * (x_range + offset))
+y3 = amplitude * np.sin(frequency * (x_range + 2 * offset))
+
+# Create waypoints for each drone
+waypoints1 = [[x, y1[i], 0] for i, x in enumerate(x_range)]
+waypoints2 = [[x, y2[i], 0] for i, x in enumerate(x_range)]
+waypoints3 = [[x, y3[i], 0] for i, x in enumerate(x_range)]
+
+# Combine waypoints for all drones
+waypoints = [waypoints1, waypoints2, waypoints3]
+
+```
+2024-08-09 17:22:45,461 - INFO - Total time taken for transcription: 1891.36 ms
+2024-08-09 17:22:45,694 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot.png
+2024-08-09 17:23:01,329 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:23:01,330 - INFO - Retrying in 0.46 seconds...
+2024-08-09 17:23:01,868 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:23:01,869 - INFO - Retrying in 1.14 seconds...
+2024-08-09 17:23:03,090 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:23:03,090 - INFO - Retrying in 0.88 seconds...
+2024-08-09 17:23:04,051 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:23:04,051 - INFO - Retrying in 1.14 seconds...
+2024-08-09 17:23:05,267 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:23:05,267 - INFO - Retrying in 2.44 seconds...
+2024-08-09 17:23:07,807 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:23:07,808 - INFO - Retrying in 4.03 seconds...
+2024-08-09 17:23:11,919 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:23:11,920 - INFO - Retrying in 7.09 seconds...
+2024-08-09 17:23:21,850 - INFO - Total time taken for plot analysis with 5 critics: 36154.95 ms
+2024-08-09 17:23:24,328 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Summary of Critic Feedback:
+
+The consensus among the critics is that the drone trajectories are **NOT VALID**. While individual drone paths are continuous and smooth, they fail to meet the key requirement of forming a synchronized, continuous wave formation.
+
+Here's a breakdown of the common issues:
+
+* **Synchronization:** The drones are not flying in a synchronized manner, resulting in a series of parallel sine waves instead of a single, continuous wave. Critics emphasize the need for a 1/3 wavelength offset between drones to achieve the desired wave shape. 
+* **Spacing:** While the drones may start at the correct horizontal positions, they are not consistently spaced, leading to an uneven wave formation.  
+* **Starting Positions:** Some critics note that the drones do not start in a horizontal line formation, further hindering the creation of a proper wave pattern.
+
+**Overall Shape:** The lack of synchronization and proper spacing results in an overall shape that does not resemble the required continuous wave formation. 
+
+**Suggestions for Improvement:**
+
+* **Synchronization:** Adjust the drone trajectories to ensure they are synchronized with a 1/3 wavelength offset.
+* **Spacing:** Ensure the drones are evenly spaced in a horizontal line formation.
+* **Starting Positions:** Correct the starting positions of the drones to be in a horizontal line formation.
+
+## Score Comparison:
+
+Based on the provided feedback, the **previous score** was **50/100**. The **current score** is **40/100**.  
+
+Therefore, the score has **decreased** by **-10**, making the current performance **WORSE** than the previous attempt. 
+
+2024-08-09 17:23:24,329 - INFO - Retrying... (2/10)
+2024-08-09 17:23:26,818 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define the parameters for the sine wave
+amplitude = 5  # Adjust the amplitude as needed
+frequency = 1  # Adjust the frequency as needed
+wavelength = 2 * np.pi / frequency
+offset = wavelength / 3  # Offset for synchronization
+
+# Define the number of drones
+N = 3
+
+# Define the starting point of the sine wave
+start_x = 0
+start_y = 0
+
+# Generate the waypoints for each drone
+waypoints = []
+for i in range(N):
+  # Calculate the x-coordinates for the current drone
+  x_values = np.linspace(start_x + i * offset, start_x + i * offset + 3 * wavelength, 100)  # Increase the number of points for smoother trajectory
+  
+  # Calculate the y-coordinates for the current drone
+  y_values = amplitude * np.sin(frequency * x_values) + start_y 
+  
+  # Create the waypoints list for the current drone
+  waypoints_drone = [[x, y, 0] for x, y in zip(x_values, y_values)]  # Add the Z coordinate (altitude)
+  waypoints.append(waypoints_drone)
+
+# Drone 1 waypoints
+waypoints1 = waypoints[0]
+
+# Drone 2 waypoints
+waypoints2 = waypoints[1]
+
+# Drone 3 waypoints
+waypoints3 = waypoints[2]
+
+waypoints = [waypoints1, waypoints2, waypoints3] 
+```
+2024-08-09 17:23:26,819 - INFO - Total time taken for transcription: 2489.62 ms
+2024-08-09 17:23:27,038 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot.png
+2024-08-09 17:23:43,844 - INFO - Total time taken for plot analysis with 5 critics: 16804.81 ms
+2024-08-09 17:23:45,951 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Summary of Critic Feedback:
+
+The consensus among critics remains that the drone trajectories are **NOT VALID**. While individual drone paths are generally continuous and smooth, the key issue remains the lack of a synchronized, continuous wave formation.
+
+Here's a breakdown of common issues:
+
+* **Synchronization:** The drones are not properly synchronized, resulting in a series of parallel sine waves rather than a single, continuous wave. The required 1/3 wavelength offset between drones is not consistently achieved. 
+* **Trajectory Completeness:** Several critics note that drone trajectories seem incomplete, failing to form full sine waves.
+* **Overall Shape:** The overall shape formed by the combined trajectories does not resemble the required continuous wave formation. 
+
+**Suggestions for Improvement:**
+
+* **Synchronization:** Critics continue to stress the need to adjust drone trajectories to achieve proper synchronization with the 1/3 wavelength offset.
+* **Completeness:** Ensure that each drone completes at least one full sine wave cycle.
+* **Spacing:**  Ensure consistent spacing between drones to maintain a smooth wave formation.
+
+
+## Score Comparison:
+
+The **previous score** was **50/100**. The **current score** is **40/100**. 
+
+Therefore, the score has **decreased** by **-10**, making the current performance **WORSE** than the previous attempt. 
+
+2024-08-09 17:23:45,951 - INFO - Retrying... (3/10)
+2024-08-09 17:23:48,046 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define parameters
+amplitude = 10 # Amplitude of the sine wave
+frequency = 1 # Frequency of the sine wave
+wavelength = 2*np.pi/frequency
+offset = wavelength/3 # Offset between drones
+
+# Drone 1 waypoints
+x1 = np.linspace(0, wavelength, 100)
+y1 = amplitude * np.sin(frequency * x1)
+z1 = np.zeros_like(x1) 
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = np.linspace(offset, wavelength + offset, 100) 
+y2 = amplitude * np.sin(frequency * x2)
+z2 = np.zeros_like(x2)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+x3 = np.linspace(2*offset, wavelength + 2*offset, 100) 
+y3 = amplitude * np.sin(frequency * x3)
+z3 = np.zeros_like(x3)
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:23:48,046 - INFO - Total time taken for transcription: 2094.26 ms
+2024-08-09 17:23:48,313 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot.png
+2024-08-09 17:24:04,742 - INFO - Total time taken for plot analysis with 5 critics: 16427.75 ms
+2024-08-09 17:24:04,824 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:24:04,824 - INFO - Retrying in 1.06 seconds...
+2024-08-09 17:24:07,808 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Summary of Critic Feedback:
+
+The critics still generally agree that the drone trajectories are **NOT VALID**.  While there's improvement in individual drone paths being continuous and smooth, the overall formation is still lacking.
+
+Key issues persist:
+
+* **Synchronization:**  Drones remain unsynchronized, resulting in a fragmented wave shape instead of a continuous one. The required 1/3 wavelength offset is inconsistent. 
+* **Trajectory Completeness:**  Several critics still highlight that some drones fail to complete full sine waves.
+* **Overall Shape:**  The overall shape is still not a continuous wave formation as required.
+
+## Score Comparison:
+
+The **previous score** was **50/100**. The **current score** is **40/100**. 
+
+Therefore, the score has **decreased** by **-10**, making the current performance **WORSE** than the previous attempt. 
+
+2024-08-09 17:24:07,808 - INFO - Retrying... (4/10)
+2024-08-09 17:24:10,104 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_sine_wave_waypoints(amplitude, frequency, wavelength, offset, start_x, start_y, num_waypoints):
+    x = np.linspace(start_x, start_x + wavelength, num_waypoints)
+    y = amplitude * np.sin(2 * np.pi * frequency * x) + start_y
+    z = np.zeros(num_waypoints)  # Constant altitude
+    return np.array([x, y, z]).T
+
+
+# Drone 1 waypoints
+amplitude = 5  # Adjust amplitude as needed
+frequency = 0.5  # Adjust frequency as needed
+wavelength = 2 * np.pi / frequency
+num_waypoints = 100
+start_x = 0
+start_y = 0
+offset = wavelength / 3
+waypoints1 = generate_sine_wave_waypoints(amplitude, frequency, wavelength, 0, start_x, start_y, num_waypoints)
+
+# Drone 2 waypoints
+waypoints2 = generate_sine_wave_waypoints(amplitude, frequency, wavelength, offset, start_x + offset, start_y, num_waypoints)
+
+# Drone 3 waypoints
+waypoints3 = generate_sine_wave_waypoints(amplitude, frequency, wavelength, 2 * offset, start_x + 2 * offset, start_y, num_waypoints)
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:24:10,104 - INFO - Total time taken for transcription: 2295.74 ms
+2024-08-09 17:24:10,105 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 17:24:10,105 - INFO - Retrying... (5/10)
+2024-08-09 17:24:10,180 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:24:10,180 - INFO - Retrying in 0.82 seconds...
+2024-08-09 17:24:11,074 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:24:11,074 - INFO - Retrying in 0.73 seconds...
+2024-08-09 17:24:11,880 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:24:11,880 - INFO - Retrying in 1.09 seconds...
+2024-08-09 17:24:13,043 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:24:13,043 - INFO - Retrying in 0.87 seconds...
+2024-08-09 17:24:13,983 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:24:13,983 - INFO - Retrying in 1.74 seconds...
+2024-08-09 17:24:18,776 - INFO - Generated response:
+
+ ```python
+
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+amplitude = 5  # Adjust the amplitude as needed
+frequency = 1   # Adjust the frequency as needed
+x_offset = 0 
+y_offset = 0 
+z = 10 # Constant altitude
+t = np.linspace(0, 2*np.pi, 50)
+x1 = amplitude * np.sin(frequency * t) + x_offset
+y1 = t + y_offset
+z1 = np.full_like(x1, z) 
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+amplitude = 5  # Adjust the amplitude as needed
+frequency = 1   # Adjust the frequency as needed
+x_offset = (2*np.pi/3)/frequency # Offset for the second drone
+y_offset = 0 
+z = 10 # Constant altitude
+t = np.linspace(0, 2*np.pi, 50)
+x2 = amplitude * np.sin(frequency * t) + x_offset
+y2 = t + y_offset
+z2 = np.full_like(x2, z) 
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+amplitude = 5  # Adjust the amplitude as needed
+frequency = 1   # Adjust the frequency as needed
+x_offset = (4*np.pi/3)/frequency # Offset for the third drone
+y_offset = 0 
+z = 10 # Constant altitude
+t = np.linspace(0, 2*np.pi, 50)
+x3 = amplitude * np.sin(frequency * t) + x_offset
+y3 = t + y_offset
+z3 = np.full_like(x3, z) 
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+
+```
+2024-08-09 17:24:18,777 - INFO - Total time taken for transcription: 8670.74 ms
+2024-08-09 17:24:19,086 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot.png
+2024-08-09 17:24:37,072 - INFO - Total time taken for plot analysis with 5 critics: 17985.06 ms
+2024-08-09 17:24:40,052 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Summary of Critic Feedback:
+
+The critics are still in agreement that the drone trajectories are **NOT VALID**.  While some aspects have shown slight improvement, like the continuity of each drone's path, the overall formation still falls short of the requirements. 
+
+Here are the major issues:
+
+* **Synchronization:** The drones are still not synchronized, which prevents them from forming a continuous wave shape. The required 1/3 wavelength offset is inconsistent.
+* **Trajectory Completeness:** The drones do not fully complete the sine waves, leading to an incomplete formation.
+* **Overall Shape:** The overall shape of the formation is still not a continuous wave, as specified in the requirements.
+* **Potential Collision:** There is a potential collision between some of the drones. 
+
+## Score Comparison:
+
+The **previous score** was **50/100**. The **current score** is **40/100**. 
+
+Therefore, the score has **decreased** by **-10**, making the current performance **WORSE** than the previous attempt. 
+
+2024-08-09 17:24:40,052 - INFO - Retrying... (6/10)
+2024-08-09 17:24:41,956 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define parameters
+num_drones = 3
+amplitude = 5  # Amplitude of the sine wave
+frequency = 1  # Frequency of the sine wave
+wavelength = 2 * np.pi / frequency  # Wavelength of the sine wave
+horizontal_offset = wavelength / num_drones  # Offset between drones in the horizontal direction
+altitude = 10  # Constant altitude of the drones
+
+# Generate waypoints for each drone
+waypoints1 = []
+for x in np.linspace(0, wavelength, 100):
+    y = amplitude * np.sin(frequency * x)
+    waypoints1.append([x, y, altitude])
+
+waypoints2 = []
+for x in np.linspace(horizontal_offset, wavelength + horizontal_offset, 100):
+    y = amplitude * np.sin(frequency * x)
+    waypoints2.append([x, y, altitude])
+
+waypoints3 = []
+for x in np.linspace(2 * horizontal_offset, wavelength + 2 * horizontal_offset, 100):
+    y = amplitude * np.sin(frequency * x)
+    waypoints3.append([x, y, altitude])
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:24:41,956 - INFO - Total time taken for transcription: 1902.90 ms
+2024-08-09 17:24:42,335 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot.png
+2024-08-09 17:24:57,567 - INFO - Total time taken for plot analysis with 5 critics: 15231.24 ms
+2024-08-09 17:24:59,217 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Summary of Critic Feedback:
+
+The consensus among the critics is that the drone trajectories are still **NOT VALID**.  While there have been some minor improvements, the overall formation continues to fall short of the requirements.
+
+Here are the persistent issues:
+
+* **Synchronization:**  The drones remain unsynchronized, failing to create the necessary continuous wave shape with a consistent 1/3 wavelength offset.
+* **Trajectory Completeness:**  The drones do not complete the full sine wave path, resulting in an incomplete formation.
+* **Overall Shape:**  The overall shape formed by the drones does not match the requirement of a continuous wave.
+* **Potential Collisions:**  There remains a risk of collision between some drones, highlighting the need for further trajectory adjustments.
+
+## Score Comparison:
+
+The **previous score** was **50/100**. The **current score** is **20/100**. 
+
+Therefore, the score has **decreased** by **-30**, making the current performance **WORSE** than the previous attempt. 
+
+2024-08-09 17:24:59,217 - INFO - Retrying... (7/10)
+2024-08-09 17:25:01,651 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+amplitude = 5  # Adjust as desired
+frequency = 1  # Adjust as desired
+wavelength = 2 * np.pi / frequency
+horizontal_offset = wavelength / 3
+start_x = 0  # Adjust as desired
+altitude = 10  # Adjust as desired
+
+x1 = np.linspace(start_x, start_x + wavelength, 50)
+y1 = amplitude * np.sin(2 * np.pi * frequency * x1)
+z1 = np.full_like(x1, altitude)
+waypoints1 = np.column_stack((x1, y1, z1))
+
+# Drone 2 waypoints
+x2 = np.linspace(start_x + horizontal_offset, start_x + wavelength + horizontal_offset, 50)
+y2 = amplitude * np.sin(2 * np.pi * frequency * x2)
+z2 = np.full_like(x2, altitude)
+waypoints2 = np.column_stack((x2, y2, z2))
+
+# Drone 3 waypoints
+x3 = np.linspace(start_x + 2 * horizontal_offset, start_x + wavelength + 2 * horizontal_offset, 50)
+y3 = amplitude * np.sin(2 * np.pi * frequency * x3)
+z3 = np.full_like(x3, altitude)
+waypoints3 = np.column_stack((x3, y3, z3))
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:25:01,652 - INFO - Total time taken for transcription: 2434.04 ms
+2024-08-09 17:25:01,892 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot.png
+2024-08-09 17:25:08,692 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:25:08,692 - INFO - Retrying in 0.93 seconds...
+2024-08-09 17:25:09,705 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:25:09,705 - INFO - Retrying in 0.91 seconds...
+2024-08-09 17:25:10,694 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:25:10,695 - INFO - Retrying in 0.85 seconds...
+2024-08-09 17:25:11,620 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:25:11,620 - INFO - Retrying in 1.02 seconds...
+2024-08-09 17:25:12,712 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:25:12,712 - INFO - Retrying in 1.87 seconds...
+2024-08-09 17:25:14,653 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:25:14,653 - INFO - Retrying in 3.57 seconds...
+2024-08-09 17:25:24,834 - INFO - Total time taken for plot analysis with 5 critics: 22940.39 ms
+2024-08-09 17:25:26,834 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Summary of Critic Feedback:
+
+The critics largely agree that the drone trajectories are still **NOT VALID**, despite some improvements.  They consistently point out the following issues:
+
+* **Synchronization:** The drones remain unsynchronized, failing to form a continuous wave shape with a consistent 1/3 wavelength offset. This is a major issue for most critics.
+* **Trajectory Completeness:** The drones often do not complete the full sine wave path, resulting in an incomplete formation. This is a major issue for some critics and a minor issue for others.
+* **Overall Shape:**  The overall shape formed by the drones still does not match the requirement of a continuous wave. This is a major issue for most critics.
+* **Potential Collisions:**  Some critics highlight the risk of collisions between some drones, especially if their movement is not adjusted. This is a minor issue for most.
+
+## Score Comparison:
+
+The **previous score** was **50/100**. The **current score** is **20/100**. 
+
+Therefore, the score has **decreased** by **-30**, making the current performance **WORSE** than the previous attempt. 
+
+2024-08-09 17:25:26,834 - INFO - Retrying... (8/10)
+2024-08-09 17:25:29,168 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+amplitude = 5  # Adjust amplitude as desired
+frequency = 1 # Adjust frequency as desired
+wavelength = 2 * np.pi / frequency
+horizontal_offset = wavelength / 3
+start_x = 0  # Adjust starting point as desired
+start_y = 0  # Adjust starting point as desired
+num_waypoints = 100 
+x_values = np.linspace(start_x, start_x + wavelength, num_waypoints)
+y_values = amplitude * np.sin(frequency * x_values) + start_y
+waypoints1 = [[x, y, 0] for x, y in zip(x_values, y_values)]
+
+# Drone 2 waypoints
+x_values = np.linspace(start_x + horizontal_offset, start_x + wavelength + horizontal_offset, num_waypoints)
+y_values = amplitude * np.sin(frequency * x_values) + start_y
+waypoints2 = [[x, y, 0] for x, y in zip(x_values, y_values)]
+
+# Drone 3 waypoints
+x_values = np.linspace(start_x + 2 * horizontal_offset, start_x + wavelength + 2 * horizontal_offset, num_waypoints)
+y_values = amplitude * np.sin(frequency * x_values) + start_y
+waypoints3 = [[x, y, 0] for x, y in zip(x_values, y_values)]
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:25:29,168 - INFO - Total time taken for transcription: 2333.94 ms
+2024-08-09 17:25:29,363 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot.png
+2024-08-09 17:25:48,262 - INFO - Total time taken for plot analysis with 5 critics: 18898.01 ms
+2024-08-09 17:25:49,928 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Summary of Critic Feedback:
+
+The critics are in agreement that the drone trajectories still fall short of meeting the requirements, despite some improvements.  The key issues consistently raised are:
+
+* **Synchronization:** The drones remain unsynchronized, failing to create a continuous wave shape with the required 1/3 wavelength offset. This is a significant issue.
+* **Trajectory Completeness:** Many critics point out that the drones fail to complete a full sine wave cycle, leading to an incomplete formation. 
+* **Overall Shape:** The overall shape created by the drone trajectories does not accurately match the requirement of a continuous wave.
+
+## Score Comparison:
+
+The **previous score** was **50/100**. The **current score** is **20/100**. 
+
+Therefore, the score has **decreased** by **-30**, making the current performance **WORSE** than the previous attempt. 
+
+2024-08-09 17:25:49,928 - INFO - Retrying... (9/10)
+2024-08-09 17:25:52,906 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+amplitude = 5 # adjust as needed
+frequency = 1 # adjust as needed
+x_offset = 0
+y_offset = 0
+z_offset = 0
+x_start = 0 # adjust as needed
+x_end = 10 # adjust as needed
+num_waypoints = 20 # adjust as needed
+x_values = np.linspace(x_start, x_end, num_waypoints)
+waypoints1 = [[x, amplitude * np.sin(2 * np.pi * frequency * x) + y_offset, z_offset] for x in x_values] 
+
+# Drone 2 waypoints
+amplitude = 5 # adjust as needed
+frequency = 1 # adjust as needed
+x_offset = 1/3 * (x_end - x_start) 
+y_offset = 0
+z_offset = 0
+x_start = 0 # adjust as needed
+x_end = 10 # adjust as needed
+num_waypoints = 20 # adjust as needed
+x_values = np.linspace(x_start, x_end, num_waypoints)
+waypoints2 = [[x, amplitude * np.sin(2 * np.pi * frequency * x) + y_offset, z_offset] for x in x_values] 
+
+# Drone 3 waypoints
+amplitude = 5 # adjust as needed
+frequency = 1 # adjust as needed
+x_offset = 2/3 * (x_end - x_start) 
+y_offset = 0
+z_offset = 0
+x_start = 0 # adjust as needed
+x_end = 10 # adjust as needed
+num_waypoints = 20 # adjust as needed
+x_values = np.linspace(x_start, x_end, num_waypoints)
+waypoints3 = [[x, amplitude * np.sin(2 * np.pi * frequency * x) + y_offset, z_offset] for x in x_values] 
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:25:52,907 - INFO - Total time taken for transcription: 2978.15 ms
+2024-08-09 17:25:53,142 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot.png
+2024-08-09 17:26:02,210 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:26:02,210 - INFO - Retrying in 0.84 seconds...
+2024-08-09 17:26:03,144 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:26:03,144 - INFO - Retrying in 0.71 seconds...
+2024-08-09 17:26:03,930 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:26:03,930 - INFO - Retrying in 0.47 seconds...
+2024-08-09 17:26:04,479 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:26:04,479 - INFO - Retrying in 1.47 seconds...
+2024-08-09 17:26:06,052 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:26:06,053 - INFO - Retrying in 2.00 seconds...
+2024-08-09 17:26:13,773 - INFO - Total time taken for plot analysis with 5 critics: 20630.46 ms
+2024-08-09 17:26:13,852 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:26:13,852 - INFO - Retrying in 0.92 seconds...
+2024-08-09 17:26:14,847 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:26:14,847 - INFO - Retrying in 1.14 seconds...
+2024-08-09 17:26:17,633 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (1/5)
+ Feedback Summary:
+## Summary of Critic Feedback:
+
+The critics are in unanimous agreement that the provided trajectory plot is still inadequate. They consistently highlight the following issues:
+
+* **Missing Trajectories:** The most significant issue is the lack of trajectories for Drones 1 and 2.  The plot only shows Drone 3's trajectory, making it impossible to assess the formation and overall shape.
+* **Incorrect Shape:** Even Drone 3's trajectory does not accurately follow a sine wave pattern, failing to meet the specified requirement. 
+* **Synchronization:**  Without the trajectories of Drones 1 and 2, it's impossible to evaluate if the drones are properly synchronized to create the required wave shape. 
+
+## Score Comparison:
+
+The **previous score** was **0/100**. The **current score** is **10/100**. 
+
+Therefore, the score has **improved** by **+10**, making the current performance **BETTER** than the previous attempt. 
+
+2024-08-09 17:26:17,817 - INFO - Trajectory plot saved at experiments/sine_wave_20240809_172221/trial_1/waypoints_plot_best.png
+2024-08-09 17:26:17,817 - INFO - Retrying... (10/10)
+2024-08-09 17:26:17,817 - ERROR - Maximum number of retries reached. Failed to process waypoints.
+2024-08-09 17:26:17,817 - ERROR - Experiment 1 for sine_wave failed.

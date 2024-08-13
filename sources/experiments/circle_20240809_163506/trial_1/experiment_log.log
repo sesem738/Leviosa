@@ -1,0 +1,136 @@
+2024-08-09 16:35:08,390 - INFO - Interpreted requirements:
+
+ ## Drone Trajectory Requirements:
+
+**Interpretation:** The command requests a synchronized flight pattern for two drones, creating a complete circle by each drone flying half the circumference. This implies a coordinated, symmetrical movement with both drones maintaining consistent relative positions.
+
+[REQ] Number of drones: 2
+[REQ] Starting formation: The two drones should start at opposite ends of a diameter of the intended circle. This ensures they begin in the correct relative positions for synchronized movement.
+[REQ] Flight path: 
+    - Each drone will trace a semi-circular path, with the two paths forming a complete circle. 
+    - The drones should maintain a constant distance from each other, with their paths mirroring each other across the center of the circle. 
+    - The drones should move at the same speed and maintain synchronization throughout the flight, ensuring they complete their respective semicircles simultaneously.
+[REQ] Flight direction: The drones can either move clockwise or counter-clockwise, as long as they move in the same direction. 
+[REQ] Desired shape: The complete trajectory forms a perfect circle.
+[REQ] Synchronization: Both drones need to maintain consistent relative positions and complete their respective half-circles at the same time. 
+
+2024-08-09 16:35:10,774 - INFO - Generated response:
+
+ ```python
+
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5  # Radius of the circle
+center_x = 0
+center_y = 0
+num_waypoints = 50  # Number of waypoints for each drone
+angle_start = 0  # Start angle for drone 1
+angle_end = np.pi  # End angle for drone 1 
+angles1 = np.linspace(angle_start, angle_end, num_waypoints)
+x1 = center_x + radius * np.cos(angles1)
+y1 = center_y + radius * np.sin(angles1)
+z1 = np.zeros(num_waypoints) # Assuming constant altitude
+waypoints1 = np.array([x1, y1, z1]).T 
+
+# Drone 2 waypoints
+angle_start = np.pi  # Start angle for drone 2
+angle_end = 2 * np.pi  # End angle for drone 2
+angles2 = np.linspace(angle_start, angle_end, num_waypoints)
+x2 = center_x + radius * np.cos(angles2)
+y2 = center_y + radius * np.sin(angles2)
+z2 = np.zeros(num_waypoints)  # Assuming constant altitude
+waypoints2 = np.array([x2, y2, z2]).T 
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 16:35:10,775 - INFO - Total time taken for transcription: 2383.57 ms
+2024-08-09 16:35:11,287 - INFO - Trajectory plot saved at experiments/circle_20240809_163506/trial_1/waypoints_plot.png
+2024-08-09 16:35:26,461 - INFO - Total time taken for plot analysis with 5 critics: 15173.21 ms
+2024-08-09 16:35:28,306 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (1/5)
+ Feedback Summary:
+The feedback is mixed. While all critics agree that the trajectories are not valid because they do not form a complete circle, there is some disagreement about how close the current trajectories are to meeting the requirements.
+
+**Common Points:**
+
+* **Incorrect Trajectories:** All critics agree that the trajectories are incorrect because they do not form a complete circle. 
+* **Drone 1:**  All critics agree that Drone 1's trajectory is a successful semicircle. 
+* **Drone 2:** All critics agree that Drone 2's trajectory is the problem. It does not form a semicircle. 
+* **Starting Positions:** All critics agree that the drones start at the correct positions.
+* **Synchronization:** Some critics note that the drones are not synchronized, while others do not comment on it. 
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid and need significant improvement. The main issue is Drone 2's trajectory, which does not form a semicircle. 
+
+**Score:**
+
+* **Previous Score:** 10/100 
+* **Current Score:** 20/100
+* **Improvement:** +10  **BETTER** 
+
+2024-08-09 16:35:28,488 - INFO - Trajectory plot saved at experiments/circle_20240809_163506/trial_1/waypoints_plot_best.png
+2024-08-09 16:35:28,488 - INFO - Retrying... (1/10)
+2024-08-09 16:35:30,259 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5  # Radius of the circle
+center = [0, 0] # Center of the circle
+num_points = 50 # Number of waypoints for each drone
+t = np.linspace(0, np.pi, num_points)
+x1 = radius * np.cos(t) + center[0]
+y1 = radius * np.sin(t) + center[1]
+z1 = np.zeros(num_points)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t + np.pi) + center[0]
+y2 = radius * np.sin(t + np.pi) + center[1]
+z2 = np.zeros(num_points)
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 16:35:30,259 - INFO - Total time taken for transcription: 1770.73 ms
+2024-08-09 16:35:30,430 - INFO - Trajectory plot saved at experiments/circle_20240809_163506/trial_1/waypoints_plot.png
+2024-08-09 16:35:47,494 - INFO - Total time taken for plot analysis with 5 critics: 17063.82 ms
+2024-08-09 16:35:49,309 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback is mixed, but leaning towards a slight improvement in the trajectories. 
+
+**Common Points:**
+
+* **Incorrect Trajectories:** All critics agree that the trajectories are incorrect, primarily because they do not form a complete circle.
+* **Drone 1:** Most critics agree that Drone 1's trajectory is a successful semicircle. 
+* **Drone 2:** All critics agree that Drone 2's trajectory is the problem. It does not form a semicircle or in some cases, even a quarter circle. 
+* **Starting Positions:** All critics agree that the drones start at the correct positions. 
+* **Synchronization:** Some critics comment on the lack of synchronization, while others don't mention it explicitly.
+
+**Overall Consensus:**
+
+The overall consensus is that the trajectories require significant improvement. While some progress has been made (Drone 1's trajectory being a successful semicircle),  Drone 2's trajectory remains the main obstacle. 
+
+**Score:**
+
+* **Previous Score:** 10/100
+* **Current Score:**  20/100 
+* **Improvement:** +10 **BETTER** 
+
+2024-08-09 16:35:49,566 - INFO - Trajectory plot saved at experiments/circle_20240809_163506/trial_1/waypoints_plot_best.png
+2024-08-09 16:35:49,566 - INFO - Retrying... (2/10)
+2024-08-09 16:35:51,316 - ERROR - An error occurred during Gemini API call: Invalid operation: The `response.text` quick accessor requires the response to contain a valid `Part`, but none were returned. Please check the `candidate.safety_ratings` to determine if the response was blocked.
+2024-08-09 16:35:51,316 - ERROR - Failed to get a valid response from the Gemini API.
+2024-08-09 16:35:51,317 - ERROR - An error occurred during experiment 1 for circle: 'NoneType' object has no attribute 'text'

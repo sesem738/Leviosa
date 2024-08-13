@@ -48,11 +48,11 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 # Continuous Experiment Types and Their Prompts
 experiment_types = {
-    "circle": "Create a circular trajectory using 2 drones, where each drone traces out one half of the circle. The drones should move in perfect synchronization to form a complete circle.",
-    "hyperbola": "Design a hyperbolic path using 2 drones, with each drone tracing one branch of the hyperbola. The drones should maintain symmetry and smoothness in their paths.",
-    "3petal_rose": "Generate a 3-petal rose curve using 3 drones, where each drone is responsible for tracing out one petal. The drones should coordinate to form a seamless rose pattern.",
-    "4petal_rose": "Create a 4-petal rose curve using 4 drones, with each drone tracing one petal. The drones should work together to ensure the rose curve is smooth and continuous.",
-    "5petal_rose": "Design a 5-petal rose curve using 5 drones, where each drone forms one petal. The drones should synchronize their movements to create a harmonious rose shape.",
+    # "circle": "Create a circular trajectory using 2 drones, where each drone traces out one half of the circle. The drones should move in perfect synchronization to form a complete circle.",
+    # "hyperbola": "Design a hyperbolic path using 2 drones, with each drone tracing one branch of the hyperbola. The drones should maintain symmetry and smoothness in their paths.",
+    # "3petal_rose": "Generate a 3-petal rose curve using 3 drones, where each drone is responsible for tracing out one petal. The drones should coordinate to form a seamless rose pattern.",
+    # "4petal_rose": "Create a 4-petal rose curve using 4 drones, with each drone tracing one petal. The drones should work together to ensure the rose curve is smooth and continuous.",
+    # "5petal_rose": "Design a 5-petal rose curve using 5 drones, where each drone forms one petal. The drones should synchronize their movements to create a harmonious rose shape.",
     "sine_wave": "Construct a sine wave pattern using 3 drones, where each drone covers a separate section of the wave. The drones should ensure a continuous and smooth wave formation.",
     "helix": "Draw a helical path using 1 drone, creating a spiral in three-dimensional space. The drone should maintain a consistent radius and pitch throughout the helix.",
     "double_helix": "Create a double helix trajectory using 2 drones, with each drone forming one strand of the helix. The drones should maintain parallel paths and synchronized movement.",
@@ -429,7 +429,7 @@ def main():
     """
 
     # Number of trials per experiment type
-    num_trials = 3
+    num_trials = 10
 
     # Run experiments
     for experiment_type, experiment_prompt in experiment_types.items():

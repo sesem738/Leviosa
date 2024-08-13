@@ -1,0 +1,217 @@
+2024-08-12 20:30:42,658 - INFO - Interpreted requirements:
+
+ Here are the structured requirements for the drone trajectory:
+
+[REQ] Number of drones: 2
+[REQ] Starting formation: The drones should start at opposite ends of a diameter of the intended circle. This ensures they are equidistant from the center and will form a complete circle when moving. 
+[REQ] Flight path: 
+    - Each drone will fly in a semicircular path.
+    - The two semicircles should be perfectly symmetrical, forming a complete circle.
+    - Drones should maintain a constant distance from the center of the circle throughout their flight.
+    - The drones should move in perfect synchronization, meaning they should be at the same point in their respective semicircles at the same time. This will create the appearance of a single, complete circle being traced by the drones. 
+
+2024-08-12 20:30:45,173 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+radius = 5  # Radius of the circle
+num_waypoints = 50  # Number of waypoints for each drone
+center_x = 0  # X-coordinate of the circle's center
+center_y = 0  # Y-coordinate of the circle's center
+drone_separation = np.pi  # Separation angle between drones (in radians)
+
+# Drone 1 waypoints
+theta1 = np.linspace(0, np.pi, num_waypoints)  # Angle for drone 1 (semicircle)
+x1 = center_x + radius * np.cos(theta1) 
+y1 = center_y + radius * np.sin(theta1)
+z1 = np.zeros_like(x1)  # Assuming constant altitude 
+waypoints1 = np.array([x1, y1, z1]).T 
+
+# Drone 2 waypoints
+theta2 = np.linspace(np.pi, 2 * np.pi, num_waypoints)  # Angle for drone 2 (semicircle)
+x2 = center_x + radius * np.cos(theta2)
+y2 = center_y + radius * np.sin(theta2)
+z2 = np.zeros_like(x2)  # Assuming constant altitude 
+waypoints2 = np.array([x2, y2, z2]).T 
+
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:30:45,173 - INFO - Total time taken for transcription: 2514.18 ms
+2024-08-12 20:30:45,373 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_5/waypoints_plot.png
+2024-08-12 20:30:49,322 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:49,322 - INFO - Retrying in 0.20 seconds...
+2024-08-12 20:30:49,609 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:49,610 - INFO - Retrying in 1.03 seconds...
+2024-08-12 20:30:50,720 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:50,721 - INFO - Retrying in 1.31 seconds...
+2024-08-12 20:30:52,123 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:52,123 - INFO - Retrying in 1.56 seconds...
+2024-08-12 20:30:53,764 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:53,764 - INFO - Retrying in 2.52 seconds...
+2024-08-12 20:30:56,378 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:56,378 - INFO - Retrying in 4.08 seconds...
+2024-08-12 20:31:00,571 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:31:00,571 - INFO - Retrying in 6.99 seconds...
+2024-08-12 20:31:20,453 - INFO - Total time taken for plot analysis with 5 critics: 35079.58 ms
+2024-08-12 20:31:22,989 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback consistently highlights several major issues:
+
+* **Incomplete trajectories:** The drones are not flying in complete semicircles, failing to form a complete circle. 
+* **Synchronization:** The drones are not moving in perfect synchronization, resulting in an uneven and incomplete shape.
+* **Starting positions:** The drones are not starting at opposite ends of a diameter, leading to an inaccurate starting point for the circular trajectory.
+
+While there is no specific mention of a collision risk in every analysis, it's implied due to the drones' lack of synchronization and overlapping paths. 
+
+Overall, the consensus is that the trajectories are **significantly flawed** and do not meet the requirements. 
+
+Based on the provided feedback, the **previous score was 20/100**. As the current feedback indicates the same score of **20/100**, the score has **NOT IMPROVED** or **DECREASED**. 
+
+2024-08-12 20:31:22,989 - INFO - Retrying... (1/10)
+2024-08-12 20:31:25,449 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define circle parameters
+radius = 5  # Radius of the circle in meters
+center_x = 0  # X-coordinate of the circle's center
+center_y = 0  # Y-coordinate of the circle's center
+
+# Drone 1 waypoints
+angle1 = np.linspace(0, np.pi, 50)  # Angles for Drone 1's semicircle
+x1 = radius * np.cos(angle1) + center_x  # X-coordinates for Drone 1
+y1 = radius * np.sin(angle1) + center_y  # Y-coordinates for Drone 1
+z1 = np.zeros(len(x1))  # Assuming a constant altitude of 0 meters
+waypoints1 = np.array([x1, y1, z1]).T  # Combine coordinates into a list of waypoints
+
+# Drone 2 waypoints
+angle2 = np.linspace(np.pi, 2 * np.pi, 50)  # Angles for Drone 2's semicircle
+x2 = radius * np.cos(angle2) + center_x  # X-coordinates for Drone 2
+y2 = radius * np.sin(angle2) + center_y  # Y-coordinates for Drone 2
+z2 = np.zeros(len(x2))  # Assuming a constant altitude of 0 meters
+waypoints2 = np.array([x2, y2, z2]).T  # Combine coordinates into a list of waypoints
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:31:25,450 - INFO - Total time taken for transcription: 2459.75 ms
+2024-08-12 20:31:25,647 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_5/waypoints_plot.png
+2024-08-12 20:31:39,184 - INFO - Total time taken for plot analysis with 5 critics: 13536.90 ms
+2024-08-12 20:31:42,038 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback is mixed, with some critics highlighting progress while others maintaining their concerns. 
+
+**Common Points:**
+
+* **Synchronization:**  The lack of perfect synchronization between the drones remains a consistent issue, preventing the formation of a complete, smooth circle. 
+* **Starting Positions:**  The starting positions of the drones are still a point of contention, with some critics noting that they are not at opposite ends of a diameter.
+
+**Improvements:**
+
+* **Continuity:** Several critics acknowledge that the drones' paths are continuous, indicating an improvement in this aspect.
+* **Collision Risk:**  While not always explicitly mentioned, there seems to be a general consensus that the risk of collision has been mitigated. 
+
+**Areas for Further Improvement:**
+
+* **Completeness:** The drones are still not tracing full semicircles, resulting in an incomplete circle.  
+* **Synchronization:** Synchronization needs to be improved so that both drones are at the same point in their respective circles simultaneously. 
+
+**Overall Consensus:**
+
+While some progress has been made, there is still significant room for improvement.  The drones are not yet forming a complete, synchronized circle, preventing a score significantly higher than the current feedback.
+
+**Previous Score:** 20/100
+**Current Score:** 20/100
+**Change:** NOT IMPROVED 
+
+2024-08-12 20:31:42,038 - INFO - Retrying... (2/10)
+2024-08-12 20:31:43,719 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5
+center_x = 0
+center_y = 0
+num_waypoints = 50
+theta1 = np.linspace(0, np.pi, num_waypoints)
+x1 = radius*np.cos(theta1) + center_x
+y1 = radius*np.sin(theta1) + center_y
+z1 = np.zeros(num_waypoints)
+waypoints1 = np.array([x1, y1, z1]).transpose()
+
+# Drone 2 waypoints
+theta2 = np.linspace(np.pi, 2*np.pi, num_waypoints)
+x2 = radius*np.cos(theta2) + center_x
+y2 = radius*np.sin(theta2) + center_y
+z2 = np.zeros(num_waypoints)
+waypoints2 = np.array([x2, y2, z2]).transpose()
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:31:43,719 - INFO - Total time taken for transcription: 1679.94 ms
+2024-08-12 20:31:43,934 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_5/waypoints_plot.png
+2024-08-12 20:31:52,749 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:31:52,749 - INFO - Retrying in 0.17 seconds...
+2024-08-12 20:31:52,997 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:31:52,997 - INFO - Retrying in 1.14 seconds...
+2024-08-12 20:31:54,225 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:31:54,225 - INFO - Retrying in 1.11 seconds...
+2024-08-12 20:31:55,423 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:31:55,423 - INFO - Retrying in 1.10 seconds...
+2024-08-12 20:31:56,613 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:31:56,613 - INFO - Retrying in 2.36 seconds...
+2024-08-12 20:31:59,052 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:31:59,053 - INFO - Retrying in 3.26 seconds...
+2024-08-12 20:32:02,393 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:32:02,394 - INFO - Retrying in 6.92 seconds...
+2024-08-12 20:32:15,800 - INFO - Total time taken for plot analysis with 5 critics: 31864.91 ms
+2024-08-12 20:32:18,288 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback remains largely consistent, with critics consistently pointing out the lack of a perfect synchronized circular path. 
+
+**Common Points:**
+
+* **Synchronization:**  The lack of perfect synchronization between the drones remains a significant issue.  
+* **Trajectory Shape:**  The drone trajectories are not forming a complete circle, with some drones not completing full semicircles. 
+* **Starting Positions:**  Critics still find inconsistencies in the starting positions of the drones, with some not being placed at opposite ends of a diameter. 
+
+**Improvements:**
+
+* **Continuity:** There is a general consensus that the drone paths are continuous and smooth, showing improvement from previous iterations. 
+* **Collision Risk:**  There is no longer a concern for collision between the drones.
+
+**Areas for Further Improvement:**
+
+* **Completeness:**  The drone trajectories still need to be adjusted to form a complete circle.  
+* **Synchronization:**  Synchronization must be improved to ensure both drones move in perfect unison. 
+* **Starting Positions:**  Precise placement of the drones at opposite ends of a diameter is essential. 
+
+**Overall Consensus:**
+
+Despite some improvements, particularly in continuity and collision avoidance, there is still a significant need for improvement in forming a complete and synchronized circular path. The drones are not yet meeting the requirements for a successful flight formation.
+
+**Previous Score:** 20/100
+**Current Score:** 20/100
+**Change:** NOT IMPROVED 
+
+2024-08-12 20:32:18,289 - INFO - Retrying... (3/10)
+2024-08-12 20:32:20,113 - ERROR - An error occurred during Gemini API call: Invalid operation: The `response.text` quick accessor requires the response to contain a valid `Part`, but none were returned. Please check the `candidate.safety_ratings` to determine if the response was blocked.
+2024-08-12 20:32:20,113 - ERROR - Failed to get a valid response from the Gemini API.
+2024-08-12 20:32:20,113 - ERROR - An error occurred during experiment 5 for circle: 'NoneType' object has no attribute 'text'

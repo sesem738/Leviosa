@@ -1,0 +1,636 @@
+2024-08-12 20:27:21,927 - INFO - Interpreted requirements:
+
+ Here are the structured requirements for the given text prompt:
+
+[REQ] Number of drones: 2
+[REQ] Starting positions: The two drones should be positioned at opposite ends of a diameter of the desired circle. This ensures they are equidistant from the center of the circle and start their trajectories in sync.
+[REQ] Flight path: 
+    - Each drone will fly in a semicircular trajectory.
+    - The two semicircles should be flown in a mirrored fashion to form a complete circle.
+    - The drones should maintain a constant distance from each other throughout the flight. This distance will correspond to the diameter of the complete circle.
+    - The drones should maintain a constant speed and altitude to ensure synchronization. 
+[REQ] Synchronization: The two drones must be perfectly synchronized to ensure they reach their designated positions on the semicircle at the same time. This will allow them to create a continuous circle. 
+
+2024-08-12 20:27:24,114 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define circle parameters
+radius = 5  # meters
+center_x = 0  # meters
+center_y = 0  # meters
+altitude = 2  # meters
+
+# Calculate starting positions
+angle1 = 0  # radians
+angle2 = np.pi  # radians
+
+x1 = center_x + radius * np.cos(angle1)
+y1 = center_y + radius * np.sin(angle1)
+x2 = center_x + radius * np.cos(angle2)
+y2 = center_y + radius * np.sin(angle2)
+
+# Drone 1 waypoints
+waypoints1 = []
+for angle in np.linspace(angle1, angle1 + np.pi, 100):
+    x = center_x + radius * np.cos(angle)
+    y = center_y + radius * np.sin(angle)
+    waypoints1.append([x, y, altitude])
+
+# Drone 2 waypoints
+waypoints2 = []
+for angle in np.linspace(angle2, angle2 + np.pi, 100):
+    x = center_x + radius * np.cos(angle)
+    y = center_y + radius * np.sin(angle)
+    waypoints2.append([x, y, altitude])
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:27:24,114 - INFO - Total time taken for transcription: 2187.04 ms
+2024-08-12 20:27:24,299 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_4/waypoints_plot.png
+2024-08-12 20:27:37,102 - INFO - Total time taken for plot analysis with 5 critics: 12802.53 ms
+2024-08-12 20:27:39,315 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback consistently highlights several issues with the drone trajectories:
+
+* **Incomplete Trajectories:**  The drones are not forming a complete circle as required. Most often, one drone flies a full circle while the other only flies a semicircle.
+* **Mirrored Trajectories:**  The drones are not flying in a mirrored fashion to create a complete circle. One drone might fly clockwise while the other flies in a straight line or a different direction. 
+* **Incorrect Starting Positions:** The drones are not starting at opposite ends of a diameter of the desired circle.  
+
+**Suggestions for Correction:**
+
+The critics consistently recommend the following corrections:
+
+* **Adjust Trajectories:** The drones should fly in mirrored semicircles, with one drone flying clockwise and the other counterclockwise. 
+* **Maintain Constant Distance:** The drones should maintain a constant distance from each other throughout the flight, corresponding to the diameter of the circle.
+* **Correct Starting Positions:** The drones should start at opposite ends of a diameter of the circle. 
+
+**Overall Consensus:**
+
+The critics largely agree that the drone trajectories are incorrect and do not meet the requirements. The most common errors are the incomplete trajectories, lack of mirrored flight paths, and incorrect starting positions.  
+
+**Previous Score:** 30/100
+
+**Current Score:** 20/100 
+
+**Score Change:** -10  **WORSE** 
+
+2024-08-12 20:27:39,315 - INFO - Retrying... (1/10)
+2024-08-12 20:27:41,931 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_semicircle_waypoints(radius, start_angle, end_angle, num_waypoints, altitude):
+    """Generates waypoints for a semicircular trajectory.
+
+    Args:
+        radius (float): The radius of the semicircle.
+        start_angle (float): The starting angle of the semicircle in radians.
+        end_angle (float): The ending angle of the semicircle in radians.
+        num_waypoints (int): The number of waypoints to generate.
+        altitude (float): The altitude of the semicircle.
+
+    Returns:
+        list: A list of waypoints in the format [x, y, z].
+    """
+    angles = np.linspace(start_angle, end_angle, num_waypoints)
+    x = radius * np.cos(angles)
+    y = radius * np.sin(angles)
+    z = np.full_like(x, altitude)
+    return np.array([x, y, z]).T
+
+# Drone 1 waypoints
+radius = 5  # Radius of the circle
+altitude = 2  # Altitude of the drones
+num_waypoints = 20  # Number of waypoints for each drone
+waypoints1 = generate_semicircle_waypoints(radius, 0, np.pi, num_waypoints, altitude)
+
+# Drone 2 waypoints
+waypoints2 = generate_semicircle_waypoints(radius, np.pi, 2*np.pi, num_waypoints, altitude)
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:27:41,932 - INFO - Total time taken for transcription: 2615.88 ms
+2024-08-12 20:27:41,935 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-12 20:27:41,935 - INFO - Retrying... (2/10)
+2024-08-12 20:27:43,577 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5  # Radius of the circle
+diameter = 2 * radius
+num_waypoints = 50  # Number of waypoints for each drone
+angle = np.linspace(0, np.pi, num_waypoints)
+x1 = radius * np.cos(angle)
+y1 = radius * np.sin(angle)
+z1 = np.zeros_like(x1)  # Constant altitude
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(angle)
+y2 = radius * np.sin(angle)
+z2 = np.zeros_like(x2)  # Constant altitude
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:27:43,580 - INFO - Total time taken for transcription: 1640.89 ms
+2024-08-12 20:27:43,914 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_4/waypoints_plot.png
+2024-08-12 20:27:53,518 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:27:53,519 - INFO - Retrying in 0.81 seconds...
+2024-08-12 20:27:54,403 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:27:54,403 - INFO - Retrying in 1.15 seconds...
+2024-08-12 20:27:55,639 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:27:55,640 - INFO - Retrying in 0.51 seconds...
+2024-08-12 20:27:56,224 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:27:56,224 - INFO - Retrying in 1.23 seconds...
+2024-08-12 20:27:57,533 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:27:57,533 - INFO - Retrying in 2.13 seconds...
+2024-08-12 20:27:59,747 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:27:59,748 - INFO - Retrying in 3.82 seconds...
+2024-08-12 20:28:03,652 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:28:03,654 - INFO - Retrying in 6.40 seconds...
+2024-08-12 20:28:17,083 - INFO - Total time taken for plot analysis with 5 critics: 33167.72 ms
+2024-08-12 20:28:19,209 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback suggests that the drone trajectories have **worsened** since the previous evaluation. 
+
+**Previous Score:** 30/100
+
+**Current Score:** 20/100
+
+**Score Change:** -10 **WORSE**
+
+The critics are still largely in agreement that the trajectories are not valid. The main problems are:
+
+* **Incomplete Trajectories:**  Similar to the previous feedback, the drones are not forming a complete circle.  
+* **Mirrored Trajectories:** The drones are still not flying in a mirrored fashion. 
+* **Incorrect Starting Positions:** The drones are still not starting at opposite ends of a diameter.
+
+While the previous feedback mentioned issues with the trajectories, the current feedback shows that the trajectory of Drone 2 has actually become **worse**, as it now flies in a straight line instead of a semicircle. This leads to a significant drop in score. 
+
+The critics are consistent in their suggestions for improvement:
+
+* **Correct Trajectories:**  The drones need to follow mirrored semicircular paths to form a complete circle. 
+* **Maintain Distance:** The drones must maintain a constant distance from each other throughout the flight.
+* **Fix Starting Positions:**  The drones should be placed at opposite ends of a diameter of the circle. 
+
+2024-08-12 20:28:19,209 - INFO - Retrying... (3/10)
+2024-08-12 20:28:21,294 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define the radius of the circle
+radius = 5
+
+# Define the number of waypoints
+num_waypoints = 50
+
+# Define the starting angle for drone 1
+start_angle1 = 0
+
+# Define the starting angle for drone 2
+start_angle2 = np.pi
+
+# Generate the waypoints for drone 1
+theta1 = np.linspace(start_angle1, start_angle1 + np.pi, num_waypoints)
+x1 = radius * np.cos(theta1)
+y1 = radius * np.sin(theta1)
+z1 = np.zeros(num_waypoints)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Generate the waypoints for drone 2
+theta2 = np.linspace(start_angle2, start_angle2 + np.pi, num_waypoints)
+x2 = radius * np.cos(theta2)
+y2 = radius * np.sin(theta2)
+z2 = np.zeros(num_waypoints)
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:28:21,295 - INFO - Total time taken for transcription: 2084.15 ms
+2024-08-12 20:28:21,542 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_4/waypoints_plot.png
+2024-08-12 20:28:38,773 - INFO - Total time taken for plot analysis with 5 critics: 17230.10 ms
+2024-08-12 20:28:41,646 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback suggests that the drone trajectories have **worsened** since the previous evaluation. 
+
+**Previous Score:** 40/100
+
+**Current Score:** 20/100
+
+**Score Change:** -20 **WORSE**
+
+The critics are still largely in agreement that the trajectories are not valid. The main problems are:
+
+* **Incomplete Trajectories:** Similar to the previous feedback, the drones are not forming a complete circle.
+* **Mirrored Trajectories:** The drones are still not flying in a mirrored fashion.
+* **Incorrect Starting Positions:** The drones are still not starting at opposite ends of a diameter.
+* **Synchronization Issues:** The drones are not maintaining a constant distance from each other and are not synchronized in their movements.
+
+While the previous feedback mentioned issues with the trajectories, the current feedback shows that the trajectory of Drone 2 has actually become **worse**, as it now flies in a straight line instead of a semicircle. This leads to a significant drop in score. 
+
+The critics are consistent in their suggestions for improvement:
+
+* **Correct Trajectories:**  The drones need to follow mirrored semicircular paths to form a complete circle. 
+* **Maintain Distance:** The drones must maintain a constant distance from each other throughout the flight.
+* **Fix Starting Positions:**  The drones should be placed at opposite ends of a diameter of the circle. 
+* **Synchronization:** The drones need to be perfectly synchronized to ensure they maintain a constant distance and avoid collisions. 
+
+2024-08-12 20:28:41,647 - INFO - Retrying... (4/10)
+2024-08-12 20:28:43,369 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5
+center_x = 0
+center_y = 0
+altitude = 2
+num_waypoints = 50
+angle = np.linspace(0, np.pi, num_waypoints) 
+x1 = radius * np.cos(angle) + center_x
+y1 = radius * np.sin(angle) + center_y
+z1 = np.full(num_waypoints, altitude)
+waypoints1 = np.array([x1, y1, z1]).transpose()
+
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(angle) + center_x
+y2 = -radius * np.sin(angle) + center_y
+z2 = np.full(num_waypoints, altitude)
+waypoints2 = np.array([x2, y2, z2]).transpose()
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:28:43,370 - INFO - Total time taken for transcription: 1722.36 ms
+2024-08-12 20:28:43,592 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_4/waypoints_plot.png
+2024-08-12 20:28:57,896 - INFO - Total time taken for plot analysis with 5 critics: 14303.38 ms
+2024-08-12 20:28:57,978 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:28:57,978 - INFO - Retrying in 0.72 seconds...
+2024-08-12 20:28:58,785 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:28:58,785 - INFO - Retrying in 0.42 seconds...
+2024-08-12 20:28:59,297 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:28:59,297 - INFO - Retrying in 1.25 seconds...
+2024-08-12 20:29:00,625 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:29:00,625 - INFO - Retrying in 0.97 seconds...
+2024-08-12 20:29:01,676 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:29:01,676 - INFO - Retrying in 1.79 seconds...
+2024-08-12 20:29:03,561 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:29:03,561 - INFO - Retrying in 3.98 seconds...
+2024-08-12 20:29:09,922 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback suggests that the drone trajectories have **worsened** since the previous evaluation. 
+
+**Previous Score:** 40/100
+
+**Current Score:** 20/100
+
+**Score Change:** -20 **WORSE**
+
+The critics are still largely in agreement that the trajectories are not valid.  The main problems are:
+
+* **Incomplete Trajectories:** Similar to the previous feedback, the drones are not forming a complete circle.
+* **Mirrored Trajectories:** The drones are still not flying in a mirrored fashion.
+* **Incorrect Starting Positions:** While the previous feedback noted the starting positions were correct, the current feedback states they are incorrect. 
+* **Synchronization Issues:**  The drones are not maintaining a constant distance from each other and are not synchronized in their movements.
+
+While the previous feedback mentioned issues with the trajectories, the current feedback shows that the trajectory of Drone 2 has actually become **worse**, as it now flies in a straight line instead of a semicircle. This leads to a significant drop in score. 
+
+The critics are consistent in their suggestions for improvement:
+
+* **Correct Trajectories:** The drones need to follow mirrored semicircular paths to form a complete circle. 
+* **Maintain Distance:** The drones must maintain a constant distance from each other throughout the flight.
+* **Fix Starting Positions:** The drones should be placed at opposite ends of a diameter of the circle. 
+* **Synchronization:** The drones need to be perfectly synchronized to ensure they maintain a constant distance and avoid collisions. 
+
+2024-08-12 20:29:09,923 - INFO - Retrying... (5/10)
+2024-08-12 20:29:12,520 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define the radius of the circle
+radius = 5
+
+# Define the number of waypoints for each drone
+num_waypoints = 100
+
+# Define the starting positions of the drones
+start_position1 = [radius, 0, 1]  # Drone 1 starts at the rightmost point of the circle
+start_position2 = [-radius, 0, 1]  # Drone 2 starts at the leftmost point of the circle
+
+# Calculate the angles for each waypoint
+angles = np.linspace(0, np.pi, num_waypoints)  # Generates angles from 0 to pi radians
+
+# Generate the waypoints for Drone 1
+waypoints1 = np.array([radius * np.cos(angles), radius * np.sin(angles), np.ones(num_waypoints)])
+waypoints1 = waypoints1.transpose()
+waypoints1[:, 0] += start_position1[0]
+waypoints1[:, 1] += start_position1[1]
+waypoints1[:, 2] += start_position1[2]
+
+# Generate the waypoints for Drone 2
+waypoints2 = np.array([-radius * np.cos(angles), radius * np.sin(angles), np.ones(num_waypoints)])
+waypoints2 = waypoints2.transpose()
+waypoints2[:, 0] += start_position2[0]
+waypoints2[:, 1] += start_position2[1]
+waypoints2[:, 2] += start_position2[2]
+
+# Combine the waypoints for both drones
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:29:12,520 - INFO - Total time taken for transcription: 2596.79 ms
+2024-08-12 20:29:12,751 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_4/waypoints_plot.png
+2024-08-12 20:29:29,819 - INFO - Total time taken for plot analysis with 5 critics: 17068.28 ms
+2024-08-12 20:29:32,855 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback suggests that the drone trajectories have **worsened** since the previous evaluation. 
+
+**Previous Score:** 40/100
+
+**Current Score:** 20/100
+
+**Score Change:** -20 **WORSE** 
+
+The critics are still largely in agreement that the trajectories are not valid.  The main problems are:
+
+* **Incomplete Trajectories:** Similar to the previous feedback, the drones are not forming a complete circle.  Drone 1's trajectory is incomplete, and Drone 2's trajectory is not even a semicircle.
+* **Mirrored Trajectories:** The drones are still not flying in a mirrored fashion.
+* **Incorrect Starting Positions:** While the previous feedback noted the starting positions were correct, the current feedback states they are incorrect. 
+* **Synchronization Issues:**  The drones are not maintaining a constant distance from each other and are not synchronized in their movements. 
+
+While the previous feedback mentioned issues with the trajectories, the current feedback shows that the trajectory of Drone 2 has actually become **worse**, as it now flies in a straight line instead of a semicircle. This leads to a significant drop in score. 
+
+The critics are consistent in their suggestions for improvement:
+
+* **Correct Trajectories:** The drones need to follow mirrored semicircular paths to form a complete circle. 
+* **Maintain Distance:** The drones must maintain a constant distance from each other throughout the flight.
+* **Fix Starting Positions:** The drones should be placed at opposite ends of a diameter of the circle. 
+* **Synchronization:** The drones need to be perfectly synchronized to ensure they maintain a constant distance and avoid collisions. 
+
+2024-08-12 20:29:32,856 - INFO - Retrying... (6/10)
+2024-08-12 20:29:34,786 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define the circle's radius
+radius = 5
+
+# Define the number of waypoints for each drone
+num_waypoints = 50
+
+# Define the starting positions for the drones
+start_angle1 = 0
+start_angle2 = np.pi
+
+# Generate waypoints for drone 1
+theta1 = np.linspace(start_angle1, start_angle1 + np.pi, num_waypoints)
+x1 = radius * np.cos(theta1)
+y1 = radius * np.sin(theta1)
+z1 = np.zeros(num_waypoints)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Generate waypoints for drone 2
+theta2 = np.linspace(start_angle2, start_angle2 + np.pi, num_waypoints)
+x2 = radius * np.cos(theta2)
+y2 = radius * np.sin(theta2)
+z2 = np.zeros(num_waypoints)
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+
+```
+2024-08-12 20:29:34,787 - INFO - Total time taken for transcription: 1930.59 ms
+2024-08-12 20:29:34,975 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_4/waypoints_plot.png
+2024-08-12 20:29:50,037 - INFO - Total time taken for plot analysis with 5 critics: 15060.91 ms
+2024-08-12 20:29:52,859 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback suggests that the drone trajectories have **worsened** since the previous evaluation. 
+
+**Previous Score:** 40/100
+
+**Current Score:** 20/100
+
+**Score Change:** -20 **WORSE** 
+
+The critics are still largely in agreement that the trajectories are not valid.  The main problems are:
+
+* **Incomplete Trajectories:** Similar to the previous feedback, the drones are not forming a complete circle.  Drone 1's trajectory is incomplete, and Drone 2's trajectory is not even a semicircle.  Drone 2's trajectory has actually regressed from a partial semicircle to a straight line, making the situation worse.
+* **Mirrored Trajectories:** The drones are still not flying in a mirrored fashion.
+* **Incorrect Starting Positions:**  While the previous feedback noted the starting positions were correct, the current feedback states they are incorrect. 
+* **Synchronization Issues:**  The drones are not maintaining a constant distance from each other and are not synchronized in their movements. 
+
+While the previous feedback mentioned issues with the trajectories, the current feedback shows that the trajectory of Drone 2 has actually become **worse**, as it now flies in a straight line instead of a semicircle. This leads to a significant drop in score. 
+
+The critics are consistent in their suggestions for improvement:
+
+* **Correct Trajectories:** The drones need to follow mirrored semicircular paths to form a complete circle. 
+* **Maintain Distance:** The drones must maintain a constant distance from each other throughout the flight.
+* **Fix Starting Positions:** The drones should be placed at opposite ends of a diameter of the circle. 
+* **Synchronization:** The drones need to be perfectly synchronized to ensure they maintain a constant distance and avoid collisions. 
+
+2024-08-12 20:29:52,859 - INFO - Retrying... (7/10)
+2024-08-12 20:29:55,798 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5 # Set the radius of the circle
+diameter = 2 * radius 
+# Define the starting position of the first drone. This assumes the center of the circle is at (0, 0)
+x_start1 = radius 
+y_start1 = 0
+z_start1 = 2 # Set the altitude of the drones 
+waypoints1 = [[x_start1, y_start1, z_start1]]
+
+# Create waypoints for drone 1 along the semicircle 
+num_waypoints = 20
+theta = np.linspace(0, np.pi, num_waypoints) # Generate angles from 0 to pi to cover a semicircle
+for i in range(len(theta)): 
+    x = radius * np.cos(theta[i]) + x_start1
+    y = radius * np.sin(theta[i]) + y_start1 
+    waypoints1.append([x, y, z_start1])
+
+# Drone 2 waypoints
+# Define the starting position of the second drone. 
+x_start2 = -radius
+y_start2 = 0
+z_start2 = 2 # Set the altitude of the drones 
+waypoints2 = [[x_start2, y_start2, z_start2]]
+
+# Create waypoints for drone 2 along the semicircle
+for i in range(len(theta)):
+    x = radius * np.cos(theta[i]) + x_start2
+    y = -radius * np.sin(theta[i]) + y_start2
+    waypoints2.append([x, y, z_start2])
+
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:29:55,799 - INFO - Total time taken for transcription: 2938.89 ms
+2024-08-12 20:29:56,149 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_4/waypoints_plot.png
+2024-08-12 20:29:57,400 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:29:57,400 - INFO - Retrying in 0.24 seconds...
+2024-08-12 20:30:01,222 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:01,224 - INFO - Retrying in 0.90 seconds...
+2024-08-12 20:30:02,199 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:02,200 - INFO - Retrying in 0.39 seconds...
+2024-08-12 20:30:02,668 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:02,668 - INFO - Retrying in 1.15 seconds...
+2024-08-12 20:30:03,900 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-12 20:30:03,901 - INFO - Retrying in 1.49 seconds...
+2024-08-12 20:30:17,917 - INFO - Total time taken for plot analysis with 5 critics: 21766.91 ms
+2024-08-12 20:30:20,999 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback indicates a **worsening** of the drone trajectories since the previous evaluation. 
+
+**Previous Score:** 40/100
+
+**Current Score:** 20/100
+
+**Score Change:** -20 **WORSE**
+
+While the previous feedback had some positive aspects, the current feedback highlights several critical issues that have worsened the overall score. 
+
+* **Incomplete Trajectories:** The main problem is that the drones are still not forming a complete circle. The trajectories are incomplete, with Drone 1 failing to complete a semicircle and Drone 2's trajectory regressing from a partial semicircle to a straight line. 
+* **Mirrored Trajectories:** The drones are still not flying in a mirrored fashion, which is essential for creating a complete circle.
+* **Starting Positions:**  The critics now disagree on whether the starting positions are correct, with some suggesting they are not positioned at opposite ends of a diameter. 
+* **Synchronization Issues:**  The drones are still not maintaining a constant distance from each other, and there are concerns about their synchronization.
+
+The main suggestions for improvement remain consistent:
+
+* **Correct Trajectories:**  Drones must follow mirrored semicircular paths to form a complete circle. 
+* **Maintain Distance:** Drones need to maintain a constant distance from each other throughout the flight.
+* **Fix Starting Positions:**  Drones should be placed at opposite ends of a diameter of the circle. 
+* **Synchronization:** Drones need to be perfectly synchronized to ensure they maintain a constant distance and avoid collisions. 
+
+2024-08-12 20:30:20,999 - INFO - Retrying... (8/10)
+2024-08-12 20:30:23,028 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define the radius of the circle
+radius = 5
+
+# Define the number of waypoints for each drone
+num_waypoints = 50
+
+# Define the starting angle for each drone (0 and pi for opposite ends)
+start_angle1 = 0
+start_angle2 = np.pi
+
+# Calculate the angles for each waypoint
+angles1 = np.linspace(start_angle1, start_angle1 + np.pi, num_waypoints)
+angles2 = np.linspace(start_angle2, start_angle2 + np.pi, num_waypoints)
+
+# Calculate the x and y coordinates for each waypoint
+x1 = radius * np.cos(angles1)
+y1 = radius * np.sin(angles1)
+x2 = radius * np.cos(angles2)
+y2 = radius * np.sin(angles2)
+
+# Set the altitude to a constant value
+z = 5
+
+# Drone 1 waypoints
+waypoints1 = np.array([x1, y1, z]).T
+
+# Drone 2 waypoints
+waypoints2 = np.array([x2, y2, z]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:30:23,028 - INFO - Total time taken for transcription: 2028.24 ms
+2024-08-12 20:30:23,030 - ERROR - An error occurred while processing waypoints: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (3,) + inhomogeneous part.
+2024-08-12 20:30:23,030 - INFO - Retrying... (9/10)
+2024-08-12 20:30:24,939 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5 # Define the radius of the circle
+diameter = 2*radius
+num_waypoints = 50  # Define the number of waypoints for each drone
+angle = np.linspace(0, np.pi, num_waypoints)  # Generate angles for semicircle
+
+x_coords1 = radius*np.cos(angle) + diameter/2 # Generate x coordinates for drone 1
+y_coords1 = radius*np.sin(angle) 
+z_coords1 = np.zeros(num_waypoints) # Assume a constant altitude of 0 meters
+
+waypoints1 = np.array([x_coords1, y_coords1, z_coords1]).T
+
+# Drone 2 waypoints
+x_coords2 = radius*np.cos(angle) - diameter/2 # Generate x coordinates for drone 2
+y_coords2 = radius*np.sin(angle)
+z_coords2 = np.zeros(num_waypoints) 
+
+waypoints2 = np.array([x_coords2, y_coords2, z_coords2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:30:24,940 - INFO - Total time taken for transcription: 1908.88 ms
+2024-08-12 20:30:25,134 - INFO - Trajectory plot saved at experiments/circle_20240812_201504/trial_4/waypoints_plot.png
+2024-08-12 20:30:39,235 - INFO - Total time taken for plot analysis with 5 critics: 14100.74 ms
+2024-08-12 20:30:41,222 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback highlights a **worsening** of the drone trajectories since the previous evaluation.  The main issues persisting from the previous feedback include the incomplete trajectories, lack of mirrored flight paths, and questionable starting positions. The  addition of  synchronization concerns further compounds the problem.  While there is still no risk of collisions, the trajectory's failure to form a complete circle remains the most significant problem.
+
+**Previous Score:** 40/100
+
+**Current Score:** 20/100
+
+**Score Change:** -20 **WORSE** 
+
+2024-08-12 20:30:41,223 - INFO - Retrying... (10/10)
+2024-08-12 20:30:41,223 - ERROR - Maximum number of retries reached. Failed to process waypoints.
+2024-08-12 20:30:41,223 - ERROR - Experiment 4 for circle failed.

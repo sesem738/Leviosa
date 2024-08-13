@@ -1,0 +1,123 @@
+2024-08-12 20:57:26,116 - INFO - Interpreted requirements:
+
+ Here are the structured requirements for the drone trajectory based on the prompt:
+
+[REQ] Number of drones: 2
+[REQ] Starting formation: The two drones should begin at the two foci of the hyperbola. This ensures they are symmetrically placed and positioned to start tracing their respective branches.
+[REQ] Flight path: Each drone will trace one branch of a hyperbolic path. The branches should be symmetrical about the central axis of the hyperbola. The drones should maintain a constant relative velocity to ensure smoothness of the trajectory. The path should be designed with a smooth transition between the starting position at the foci and the hyperbolic path. 
+[REQ] Path parameters: The hyperbola's equation needs to be defined, specifying its eccentricity and the location of its center. These parameters will dictate the exact shape and size of the hyperbola and thus the trajectory of the drones. 
+[REQ] Constraints: The trajectory generation should ensure the drones maintain a minimum safe distance from each other to avoid collisions. 
+
+2024-08-12 20:57:28,445 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define hyperbola parameters
+a = 5  # Semi-major axis
+b = 4  # Semi-minor axis
+c = np.sqrt(a**2 + b**2)  # Distance from center to foci
+center_x = 0  # X-coordinate of the center
+center_y = 0  # Y-coordinate of the center
+
+# Calculate foci coordinates
+focus1_x = center_x + c
+focus1_y = center_y
+focus2_x = center_x - c
+focus2_y = center_y
+
+# Define the range for the parameter 't'
+t_range = np.linspace(-5, 5, 100)
+
+# Calculate the hyperbolic trajectory for each drone
+def hyperbola_trajectory(t, focus_x):
+  x = a * np.cosh(t) + focus_x
+  y = b * np.sinh(t) + center_y
+  return x, y
+
+# Drone 1 waypoints (right branch)
+waypoints1 = np.array([hyperbola_trajectory(t, focus1_x) for t in t_range])
+
+# Drone 2 waypoints (left branch)
+waypoints2 = np.array([hyperbola_trajectory(t, focus2_x) for t in t_range])
+
+# Combine waypoints for both drones
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:57:28,445 - INFO - Total time taken for transcription: 2328.10 ms
+2024-08-12 20:57:28,450 - ERROR - An error occurred while processing waypoints: name 'a' is not defined
+2024-08-12 20:57:28,451 - INFO - Retrying... (1/10)
+2024-08-12 20:57:33,371 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_hyperbolic_path(center_x, center_y, a, b, eccentricity, num_waypoints, start_focus_x, start_focus_y):
+    """Generates waypoints along a hyperbolic path.
+
+    Args:
+        center_x (float): X-coordinate of the hyperbola's center.
+        center_y (float): Y-coordinate of the hyperbola's center.
+        a (float): Distance from the center to a vertex of the hyperbola.
+        b (float): Distance from the center to a co-vertex of the hyperbola.
+        eccentricity (float): Eccentricity of the hyperbola.
+        num_waypoints (int): Number of waypoints to generate.
+        start_focus_x (float): X-coordinate of the starting focus.
+        start_focus_y (float): Y-coordinate of the starting focus.
+
+    Returns:
+        list: A list of waypoints [x, y, z] along the hyperbolic path.
+    """
+    # Calculate the distance from the center to the focus
+    c = np.sqrt(a**2 + b**2)
+
+    # Determine the branch based on the starting focus's x-coordinate
+    if start_focus_x > center_x:
+        branch = 1  # Right branch
+    else:
+        branch = -1  # Left branch
+
+    # Generate x-coordinates evenly spaced between the starting focus and the vertex
+    x_values = np.linspace(start_focus_x, center_x + branch * a, num_waypoints)
+
+    # Calculate corresponding y-coordinates using the hyperbola equation
+    y_values = b * np.sqrt((x_values - center_x)**2 / a**2 - 1)
+
+    # Add the center offset to the y-coordinates
+    y_values += center_y
+
+    # Generate waypoints
+    waypoints = [[x, y, 0] for x, y in zip(x_values, y_values)]
+
+    return waypoints
+
+# Define hyperbola parameters
+center_x = 0
+center_y = 0
+a = 5
+b = 3
+eccentricity = np.sqrt(a**2 + b**2) / a
+
+# Define starting focus positions
+start_focus_x1 = center_x + np.sqrt(a**2 + b**2)
+start_focus_y1 = center_y
+start_focus_x2 = center_x - np.sqrt(a**2 + b**2)
+start_focus_y2 = center_y
+
+# Set the number of waypoints per drone
+num_waypoints = 20
+
+# Generate waypoints for each drone
+waypoints1 = generate_hyperbolic_path(center_x, center_y, a, b, eccentricity, num_waypoints, start_focus_x1, start_focus_y1)
+waypoints2 = generate_hyperbolic_path(center_x, center_y, a, b, eccentricity, num_waypoints, start_focus_x2, start_focus_y2)
+
+# Combine waypoints for all drones
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-12 20:57:33,371 - INFO - Total time taken for transcription: 4919.77 ms
+2024-08-12 20:57:33,374 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-12 20:57:33,374 - INFO - Retrying... (2/10)
+2024-08-12 20:57:35,811 - ERROR - An error occurred during Gemini API call: Invalid operation: The `response.text` quick accessor requires the response to contain a valid `Part`, but none were returned. Please check the `candidate.safety_ratings` to determine if the response was blocked.
+2024-08-12 20:57:35,812 - ERROR - Failed to get a valid response from the Gemini API.
+2024-08-12 20:57:35,812 - ERROR - An error occurred during experiment 4 for hyperbola: 'NoneType' object has no attribute 'text'
