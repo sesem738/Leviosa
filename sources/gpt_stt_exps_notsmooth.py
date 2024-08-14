@@ -529,7 +529,7 @@ def main():
     """
 
     # Number of trials per experiment type
-    num_trials = 3
+    num_trials = 10
 
     # Run experiments
     for experiment_type, experiment_prompt in experiment_types.items():
@@ -537,7 +537,7 @@ def main():
         timestamped_experiment_type = f"{experiment_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
         # Setup directories using absolute paths
-        experiment_type_dir = os.path.abspath(os.path.join("experiments", timestamped_experiment_type))
+        experiment_type_dir = os.path.abspath(os.path.join("experiments_gpt2", timestamped_experiment_type))
         os.makedirs(experiment_type_dir, exist_ok=True)
 
         for trial_id in range(1, num_trials + 1):
