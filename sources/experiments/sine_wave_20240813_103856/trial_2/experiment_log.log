@@ -1,0 +1,125 @@
+2024-08-13 10:42:34,238 - INFO - Interpreted requirements:
+
+ ## Requirements for Sine Wave Formation with 3 Drones:
+
+**[REQ] Number of drones:** 3
+
+**[REQ] Starting formation:**  The drones should begin in a staggered, horizontal line, positioned at the peaks of the sine wave pattern.  This will allow for a smooth and continuous transition into the wave formation.
+
+**[REQ] Flight path:** 
+* **Overall shape:** The drones will form a continuous sine wave pattern. Each drone will cover a distinct section of the wave, ensuring that there are no gaps or overlapping areas.
+* **Individual drone paths:** Each drone will follow a sinusoidal trajectory, with the peaks and troughs of each drone's path being staggered relative to the others. The distance between the peak and trough of each drone's path should be consistent.
+* **Synchronization:** The drones must synchronize their movements to ensure a smooth and continuous wave formation.  They should move in unison to create a seamless, ripple-like effect.
+* **Wave amplitude:** The amplitude of the sine wave should be consistent across all drones, ensuring a uniform visual effect. 
+* **Wave frequency:** The frequency of the sine wave should be consistent across all drones, ensuring a smooth, rhythmic flow. 
+
+**[REQ] Flight speed:** The drones should maintain a constant speed throughout their flight paths to ensure a smooth transition between the peaks and troughs of the sine wave.
+
+**[REQ] Altitude:** The drones should maintain a consistent altitude throughout their flight paths. 
+
+2024-08-13 10:42:36,957 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+amplitude = 5
+frequency = 1
+phase_shift = 0
+altitude = 10
+speed = 1
+time = np.linspace(0, 2*np.pi, 50)
+x1 = amplitude * np.sin(frequency * time + phase_shift)
+y1 = time * speed
+z1 = np.full_like(x1, altitude)
+waypoints1 = np.column_stack((x1, y1, z1))
+
+# Drone 2 waypoints
+amplitude = 5
+frequency = 1
+phase_shift = 2*np.pi/3
+altitude = 10
+speed = 1
+time = np.linspace(0, 2*np.pi, 50)
+x2 = amplitude * np.sin(frequency * time + phase_shift)
+y2 = time * speed
+z2 = np.full_like(x2, altitude)
+waypoints2 = np.column_stack((x2, y2, z2))
+
+# Drone 3 waypoints
+amplitude = 5
+frequency = 1
+phase_shift = 4*np.pi/3
+altitude = 10
+speed = 1
+time = np.linspace(0, 2*np.pi, 50)
+x3 = amplitude * np.sin(frequency * time + phase_shift)
+y3 = time * speed
+z3 = np.full_like(x3, altitude)
+waypoints3 = np.column_stack((x3, y3, z3))
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-13 10:42:36,957 - INFO - Total time taken for transcription: 2718.80 ms
+2024-08-13 10:42:37,209 - INFO - Trajectory plot saved at experiments/sine_wave_20240813_103856/trial_2/waypoints_plot.png
+2024-08-13 10:42:50,047 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:42:50,048 - INFO - Retrying in 0.96 seconds...
+2024-08-13 10:42:51,087 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:42:51,088 - INFO - Retrying in 0.97 seconds...
+2024-08-13 10:42:52,154 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:42:52,155 - INFO - Retrying in 1.33 seconds...
+2024-08-13 10:42:53,566 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:42:53,566 - INFO - Retrying in 1.18 seconds...
+2024-08-13 10:42:54,823 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:42:54,823 - INFO - Retrying in 2.16 seconds...
+2024-08-13 10:42:57,068 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:42:57,070 - INFO - Retrying in 3.55 seconds...
+2024-08-13 10:43:00,705 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:43:00,705 - INFO - Retrying in 7.18 seconds...
+2024-08-13 10:43:07,972 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:43:07,973 - INFO - Retrying in 13.12 seconds...
+2024-08-13 10:43:21,237 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:43:21,239 - INFO - Retrying in 26.36 seconds...
+2024-08-13 10:43:47,756 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:43:47,759 - INFO - Retrying in 51.42 seconds...
+2024-08-13 10:44:39,286 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:44:39,287 - INFO - Retrying in 103.02 seconds...
+2024-08-13 10:46:22,413 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:46:22,414 - INFO - Retrying in 205.45 seconds...
+2024-08-13 10:49:48,054 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:49:48,056 - INFO - Retrying in 409.95 seconds...
+2024-08-13 10:56:41,407 - INFO - Total time taken for plot analysis with 5 critics: 844196.15 ms
+2024-08-13 10:56:41,521 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:56:41,521 - INFO - Retrying in 0.38 seconds...
+2024-08-13 10:56:42,026 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:56:42,026 - INFO - Retrying in 0.34 seconds...
+2024-08-13 10:56:42,492 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:56:42,492 - INFO - Retrying in 0.83 seconds...
+2024-08-13 10:56:43,441 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:56:43,442 - INFO - Retrying in 0.80 seconds...
+2024-08-13 10:56:44,340 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:56:44,340 - INFO - Retrying in 1.75 seconds...
+2024-08-13 10:56:46,183 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:56:46,183 - INFO - Retrying in 3.93 seconds...
+2024-08-13 10:56:50,212 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:56:50,214 - INFO - Retrying in 6.48 seconds...
+2024-08-13 10:56:56,782 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:56:56,783 - INFO - Retrying in 13.66 seconds...
+2024-08-13 10:57:10,566 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:57:10,566 - INFO - Retrying in 25.81 seconds...
+2024-08-13 10:57:36,476 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:57:36,478 - INFO - Retrying in 51.39 seconds...
+2024-08-13 10:58:27,974 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 10:58:27,975 - INFO - Retrying in 102.91 seconds...
+2024-08-13 11:00:11,002 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 11:00:11,004 - INFO - Retrying in 204.95 seconds...
+2024-08-13 11:03:36,133 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 11:03:36,135 - INFO - Retrying in 410.48 seconds...
+2024-08-13 11:10:26,959 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 11:10:26,960 - INFO - Retrying in 819.99 seconds...
+2024-08-13 11:24:07,312 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 11:24:07,314 - INFO - Retrying in 1638.64 seconds...
+2024-08-13 11:51:26,401 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-13 11:51:26,404 - INFO - Retrying in 3277.30 seconds...

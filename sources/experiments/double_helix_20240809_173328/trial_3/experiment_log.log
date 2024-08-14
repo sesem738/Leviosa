@@ -1,0 +1,624 @@
+2024-08-09 17:38:56,245 - INFO - Interpreted requirements:
+
+ ## Drone Trajectory Requirements: Double Helix
+
+This prompt describes a synchronized flight pattern with two drones, each tracing one strand of a double helix. Here's a breakdown of the requirements:
+
+[REQ] Number of drones: 2
+[REQ] Starting formation: The drones should start at the base of the helix, positioned on opposite sides of the central axis. This ensures each drone begins its ascent along a separate helix strand. 
+[REQ] Flight path: 
+    - Each drone will follow a helical path, ascending along a spiral trajectory.
+    - The helix should have a consistent radius and pitch. 
+    - The drones maintain parallel paths, meaning they ascend at the same rate and maintain a constant horizontal distance from each other.
+    - The drones should move in synchronization, meaning their movements should be coordinated to ensure they maintain their parallel paths and ascent rate. 
+[REQ] Drone movement:
+    - The drones should maintain a constant speed throughout their flight. 
+    - The drones should maintain a consistent altitude differential, ensuring that they do not collide. 
+[REQ] Trajectory shape: The overall trajectory should resemble a double helix, with each drone tracing a single helix strand. 
+
+This set of requirements ensures the creation of a double helix trajectory using two drones. 
+
+2024-08-09 17:38:57,927 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 1 # meters
+pitch = 2 # meters
+height = 10 # meters
+num_points = 20
+t = np.linspace(0, 2*np.pi*num_points, num_points)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = pitch * t / (2*np.pi)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t + np.pi) 
+y2 = radius * np.sin(t + np.pi) 
+z2 = pitch * t / (2*np.pi)
+waypoints2 = np.array([x2, y2, z2]).T
+
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 17:38:57,928 - INFO - Total time taken for transcription: 1681.37 ms
+2024-08-09 17:38:58,114 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot.png
+2024-08-09 17:39:03,205 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:39:03,206 - INFO - Retrying in 1.00 seconds...
+2024-08-09 17:39:04,290 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:39:04,291 - INFO - Retrying in 1.15 seconds...
+2024-08-09 17:39:05,528 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:39:05,528 - INFO - Retrying in 1.02 seconds...
+2024-08-09 17:39:06,633 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:39:06,633 - INFO - Retrying in 1.26 seconds...
+2024-08-09 17:39:07,972 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:39:07,972 - INFO - Retrying in 2.28 seconds...
+2024-08-09 17:39:10,329 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:39:10,331 - INFO - Retrying in 3.54 seconds...
+2024-08-09 17:39:13,953 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:39:13,954 - INFO - Retrying in 7.00 seconds...
+2024-08-09 17:39:31,857 - INFO - Total time taken for plot analysis with 5 critics: 33741.78 ms
+2024-08-09 17:39:34,808 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback suggests the following:
+
+**Common Points:**
+
+* **The most critical issue is that the drones are not following a double helix trajectory.** They are either moving in circles, or their ascent is not synchronized, resulting in a shape that doesn't resemble a double helix.
+* **The starting positions of the drones are generally considered appropriate.** 
+* **The continuity of each drone's path is generally satisfactory.**
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid. They fail to meet the most critical requirement of forming a double helix. 
+
+**Scores:**
+
+* **Previous Score:**  The previous score is **20/100**.
+* **Current Score:** The current score is **40/100**.
+
+**Score Improvement:**  **BETTER** 
+
+2024-08-09 17:39:35,037 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot_best.png
+2024-08-09 17:39:35,038 - INFO - Retrying... (1/10)
+2024-08-09 17:39:37,121 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define helix parameters
+radius = 1  # meters
+pitch = 2  # meters
+num_turns = 3
+altitude_differential = 1  # meters
+
+# Define the number of waypoints for each drone
+num_waypoints = 100
+
+# Define the starting position for each drone
+start_position1 = [radius, 0, 0]
+start_position2 = [-radius, 0, 0]
+
+# Generate waypoints for Drone 1
+t = np.linspace(0, num_turns * 2 * np.pi, num_waypoints)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = pitch * t / (2 * np.pi) + start_position1[2]
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Generate waypoints for Drone 2
+x2 = -radius * np.cos(t)
+y2 = -radius * np.sin(t)
+z2 = pitch * t / (2 * np.pi) + start_position2[2] + altitude_differential
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Combine waypoints for both drones
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 17:39:37,121 - INFO - Total time taken for transcription: 2082.93 ms
+2024-08-09 17:39:37,385 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot.png
+2024-08-09 17:39:54,051 - INFO - Total time taken for plot analysis with 5 critics: 16665.57 ms
+2024-08-09 17:39:55,882 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+**Common Points:**
+
+* **The trajectories are not a valid double helix.** The drones fail to maintain the required helical shape, either moving in circular paths or not ascending in a synchronized manner.
+* **The drones are not following complete helical paths.** They often stop short of completing the helical trajectory or deviate from the desired shape.
+* **The starting positions of the drones are generally considered appropriate.** Most critics agree that the starting positions are correct, though some suggest minor adjustments.
+* **The continuity of the paths is satisfactory.** There are no breaks or sudden jumps in the trajectories.
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid and do not meet the requirements for a double helix. While the starting positions are generally considered correct, the drones need to follow a complete and accurate helical path.
+
+**Scores:**
+
+* **Previous Score:**  The previous score is **20/100**.
+* **Current Score:** The current score is **36/100**.
+
+**Score Improvement:**  **BETTER** 
+
+2024-08-09 17:39:56,067 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot_best.png
+2024-08-09 17:39:56,067 - INFO - Retrying... (2/10)
+2024-08-09 17:39:58,250 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define helix parameters
+radius = 1  # Radius of the helix
+pitch = 2  # Distance between helix turns
+height = 10  # Total height of the helix
+num_turns = 5  # Number of helix turns
+
+# Define time parameter for trajectory generation
+t = np.linspace(0, num_turns * 2 * np.pi, 50)
+
+# Preprocessing functions 
+def helix_coordinates(radius, pitch, t):
+    """Generates helix coordinates for a given time parameter.
+    
+    Args:
+        radius: Radius of the helix.
+        pitch: Distance between helix turns.
+        t: Time parameter.
+    
+    Returns:
+        A tuple of x, y, and z coordinates for the helix.
+    """
+    x = radius * np.cos(t)
+    y = radius * np.sin(t)
+    z = pitch * t / (2 * np.pi)
+    return x, y, z
+
+# Drone 1 waypoints
+x1, y1, z1 = helix_coordinates(radius, pitch, t)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2, y2, z2 = helix_coordinates(radius, pitch, t + np.pi) 
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 17:39:58,250 - INFO - Total time taken for transcription: 2182.20 ms
+2024-08-09 17:39:58,252 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 17:39:58,252 - INFO - Retrying... (3/10)
+2024-08-09 17:39:59,897 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 1 # Radius of the helix
+pitch = 2 # Pitch of the helix
+num_turns = 5 # Number of turns for the helix
+altitude_differential = 1 # Altitude differential between the drones
+t = np.linspace(0, 2*np.pi*num_turns, 100)
+x1 = radius*np.cos(t)
+y1 = radius*np.sin(t)
+z1 = pitch*t/ (2*np.pi)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius*np.cos(t)
+y2 = -radius*np.sin(t)
+z2 = pitch*t/ (2*np.pi) + altitude_differential
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 17:39:59,897 - INFO - Total time taken for transcription: 1644.20 ms
+2024-08-09 17:40:00,093 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot.png
+2024-08-09 17:40:07,231 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:40:07,233 - INFO - Retrying in 0.19 seconds...
+2024-08-09 17:40:07,503 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:40:07,503 - INFO - Retrying in 0.56 seconds...
+2024-08-09 17:40:08,148 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:40:08,149 - INFO - Retrying in 0.46 seconds...
+2024-08-09 17:40:08,691 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:40:08,691 - INFO - Retrying in 1.35 seconds...
+2024-08-09 17:40:10,128 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:40:10,129 - INFO - Retrying in 2.01 seconds...
+2024-08-09 17:40:12,220 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:40:12,221 - INFO - Retrying in 3.34 seconds...
+2024-08-09 17:40:25,224 - INFO - Total time taken for plot analysis with 5 critics: 25130.10 ms
+2024-08-09 17:40:27,508 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+**Common Points:**
+
+* **The trajectories are not a valid double helix.** The drones fail to maintain the required helical shape, either moving in circular paths or not ascending in a synchronized manner.
+* **The drones are not following complete helical paths.** They often stop short of completing the helical trajectory or deviate from the desired shape. 
+* **The starting positions of the drones are generally considered appropriate.** Most critics agree that the starting positions are correct, though some suggest minor adjustments.
+* **The continuity of the paths is satisfactory.** There are no breaks or sudden jumps in the trajectories. 
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid and do not meet the requirements for a double helix. While the starting positions are generally considered correct, the drones need to follow a complete and accurate helical path.
+
+**Scores:**
+
+* **Previous Score:**  The previous score is **20/100**.
+* **Current Score:** The current score is **30/100**.
+
+**Score Improvement:**  **WORSE** 
+
+2024-08-09 17:40:27,508 - INFO - Retrying... (4/10)
+2024-08-09 17:40:29,329 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 2  # Radius of the helix
+pitch = 1.5  # Pitch of the helix
+height = 10  # Total height of the helix
+num_turns = 2  # Number of turns for the helix
+t = np.linspace(0, num_turns * 2 * np.pi, 100)  # Parameter for the helix equation
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = pitch * t / (2 * np.pi) + height/2 # add height/2 to start at the bottom
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t)
+y2 = -radius * np.sin(t) # change the sign of y to create the second helix
+z2 = pitch * t / (2 * np.pi) + height/2
+waypoints2 = np.array([x2, y2, z2]).T
+
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 17:40:29,329 - INFO - Total time taken for transcription: 1820.38 ms
+2024-08-09 17:40:29,533 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot.png
+2024-08-09 17:40:46,894 - INFO - Total time taken for plot analysis with 5 critics: 17359.80 ms
+2024-08-09 17:40:48,853 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+**Common Points:**
+
+* **The trajectories are not a valid double helix.** The drones fail to maintain the required helical shape, either moving in circular paths or not ascending in a synchronized manner.
+* **The trajectories are not complete.**  The drones often stop short of completing the helical trajectory or deviate from the desired shape. 
+* **The starting positions of the drones are generally considered appropriate.** Most critics agree that the starting positions are correct, though some suggest minor adjustments.
+* **The continuity of the paths is satisfactory.** There are no breaks or sudden jumps in the trajectories.
+* **The drones often have a high potential for collision.**  The paths intersect in multiple places or the drones are too close, indicating a safety concern.
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid and do not meet the requirements for a double helix.  While the starting positions are generally considered correct, the drones need to follow a complete and accurate helical path, maintain a safe distance from each other, and avoid collisions.
+
+**Scores:**
+
+* **Previous Score:**  The previous score is **20/100**.
+* **Current Score:** The current score is **30/100**.
+
+**Score Improvement:**  **BETTER** 
+
+2024-08-09 17:40:49,039 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot_best.png
+2024-08-09 17:40:49,039 - INFO - Retrying... (5/10)
+2024-08-09 17:40:50,694 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 1  # Radius of the helix
+pitch = 2  # Pitch of the helix
+height = 10  # Total height of the helix
+num_turns = 2  # Number of turns of the helix
+t = np.linspace(0, num_turns * 2 * np.pi, 100)  # Parameter for the helix equation
+waypoints1 = np.array([radius * np.cos(t), radius * np.sin(t), pitch * t / (2 * np.pi)])
+waypoints1 = waypoints1.transpose() 
+
+# Drone 2 waypoints
+waypoints2 = np.array([-radius * np.cos(t), -radius * np.sin(t), pitch * t / (2 * np.pi)])
+waypoints2 = waypoints2.transpose() 
+
+waypoints = [waypoints1, waypoints2] 
+```
+2024-08-09 17:40:50,694 - INFO - Total time taken for transcription: 1654.57 ms
+2024-08-09 17:40:50,944 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot.png
+2024-08-09 17:41:04,343 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:41:04,345 - INFO - Retrying in 0.73 seconds...
+2024-08-09 17:41:05,158 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:41:05,158 - INFO - Retrying in 1.07 seconds...
+2024-08-09 17:41:06,352 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:41:06,352 - INFO - Retrying in 1.01 seconds...
+2024-08-09 17:41:07,444 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:41:07,444 - INFO - Retrying in 1.68 seconds...
+2024-08-09 17:41:09,208 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:41:09,208 - INFO - Retrying in 1.91 seconds...
+2024-08-09 17:41:11,199 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:41:11,200 - INFO - Retrying in 3.24 seconds...
+2024-08-09 17:41:14,528 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:41:14,528 - INFO - Retrying in 6.92 seconds...
+2024-08-09 17:41:24,536 - INFO - Total time taken for plot analysis with 5 critics: 33590.94 ms
+2024-08-09 17:41:26,592 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+**Common Points:**
+
+* **The trajectories do not form a double helix.** The drones fail to maintain the required helical shape, either moving in circular paths, not ascending in a synchronized manner, or not maintaining a constant horizontal distance. 
+* **The trajectories are not complete.** The drones often stop short of completing the helical trajectory or deviate from the desired shape.
+* **The starting positions of the drones are generally considered appropriate.** Most critics agree that the starting positions are correct, though some suggest minor adjustments.
+* **The continuity of the paths is satisfactory.** There are no breaks or sudden jumps in the trajectories.
+* **The drones have a high potential for collision.** The paths intersect in multiple places or the drones are too close, indicating a safety concern.
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid and do not meet the requirements for a double helix. While the starting positions are generally considered correct, the drones need to follow a complete and accurate helical path, maintain a safe distance from each other, and avoid collisions.
+
+**Scores:**
+
+* **Previous Score:**  The previous score is **20/100**.
+* **Current Score:** The current score is **20/100**.
+
+**Score Improvement:**  **NO CHANGE** 
+
+2024-08-09 17:41:26,592 - INFO - Retrying... (6/10)
+2024-08-09 17:41:28,041 - INFO - Generated response:
+
+ ```python
+
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 1
+pitch = 2
+num_turns = 2
+height_offset = 0
+t = np.linspace(0, num_turns * 2 * np.pi, 50)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = pitch * t / (2 * np.pi) + height_offset
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t)
+y2 = -radius * np.sin(t) 
+z2 = pitch * t / (2 * np.pi) - height_offset
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 17:41:28,041 - INFO - Total time taken for transcription: 1448.26 ms
+2024-08-09 17:41:28,291 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot.png
+2024-08-09 17:41:42,349 - INFO - Total time taken for plot analysis with 5 critics: 14057.67 ms
+2024-08-09 17:41:44,581 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+**Common Points:**
+
+* **The trajectories do not form a double helix.** All critics agree that the drones' paths do not follow a helical trajectory, instead forming circles, ellipses, or other shapes.
+* **The drones do not maintain a consistent distance from each other.** This leads to potential collisions and prevents the creation of a distinct double helix shape.
+* **The drones do not ascend at a consistent rate.**  The lack of synchronization between the drones results in a distorted, non-uniform double helix.
+* **The drones do not complete the required helical trajectory.**  The drones often stop short of completing a full helix, further contributing to the invalid trajectory.
+* **The starting positions are generally acceptable.** Most critics agree that the starting positions are appropriate, though there are some suggestions for minor adjustments.
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid and do not meet the requirements for a double helix. The drones fail to follow a helical path, maintain a constant distance from each other, and ascend at a consistent rate. While the starting positions are generally deemed acceptable, the overall shape formed by the trajectories is significantly flawed.
+
+**Scores:**
+
+* **Previous Score:** The previous score is **20/100**.
+* **Current Score:** The current score is **20/100**.
+
+**Score Improvement:** **NO CHANGE** 
+
+2024-08-09 17:41:44,581 - INFO - Retrying... (7/10)
+2024-08-09 17:41:46,348 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 1  # Radius of the helix
+pitch = 2  # Distance between helix turns
+height = 10  # Total height of the helix
+num_turns = 5  # Number of turns in the helix
+t = np.linspace(0, num_turns * 2 * np.pi, 100)  # Parameter for the helix equation
+
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = (pitch * t) / (2 * np.pi)
+
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(t)
+y2 = -radius * np.sin(t)
+z2 = (pitch * t) / (2 * np.pi)
+
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 17:41:46,348 - INFO - Total time taken for transcription: 1766.23 ms
+2024-08-09 17:41:46,539 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot.png
+2024-08-09 17:42:03,058 - INFO - Total time taken for plot analysis with 5 critics: 16517.49 ms
+2024-08-09 17:42:05,204 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+**Common Points:**
+
+* **The trajectories do not form a double helix.** All critics agree that the drones' paths do not follow a helical trajectory, instead forming circles, ellipses, or other shapes.
+* **The drones do not maintain a consistent distance from each other.** This leads to potential collisions and prevents the creation of a distinct double helix shape.
+* **The drones do not ascend at a consistent rate.**  The lack of synchronization between the drones results in a distorted, non-uniform double helix.
+* **The drones do not complete the required helical trajectory.**  The drones often stop short of completing a full helix, further contributing to the invalid trajectory.
+* **The starting positions are generally acceptable.** Most critics agree that the starting positions are appropriate, though there are some suggestions for minor adjustments.
+
+**Overall Consensus:**
+
+The consensus is that the trajectories are not valid and do not meet the requirements for a double helix. The drones fail to follow a helical path, maintain a constant distance from each other, and ascend at a consistent rate. While the starting positions are generally deemed acceptable, the overall shape formed by the trajectories is significantly flawed.
+
+**Scores:**
+
+* **Previous Score:** The previous score is **20/100**.
+* **Current Score:** The current score is **25/100**.
+
+**Score Improvement:** **BETTER** 
+
+2024-08-09 17:42:05,412 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot_best.png
+2024-08-09 17:42:05,412 - INFO - Retrying... (8/10)
+2024-08-09 17:42:05,496 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:42:05,496 - INFO - Retrying in 0.55 seconds...
+2024-08-09 17:42:06,128 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:42:06,129 - INFO - Retrying in 1.17 seconds...
+2024-08-09 17:42:07,382 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:42:07,382 - INFO - Retrying in 0.78 seconds...
+2024-08-09 17:42:08,244 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:42:08,245 - INFO - Retrying in 1.58 seconds...
+2024-08-09 17:42:09,913 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:42:09,913 - INFO - Retrying in 2.55 seconds...
+2024-08-09 17:42:12,541 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:42:12,542 - INFO - Retrying in 3.48 seconds...
+2024-08-09 17:42:17,515 - INFO - Generated response:
+
+ ```python
+
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 1 # meters
+pitch = 2 # meters
+height = 10 # meters
+num_turns = 2
+t = np.linspace(0, num_turns*2*np.pi, 100)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = pitch * t / (2 * np.pi) + height
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(t)
+y2 = -radius * np.sin(t)
+z2 = pitch * t / (2 * np.pi) + height
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 17:42:17,516 - INFO - Total time taken for transcription: 12102.32 ms
+2024-08-09 17:42:17,778 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot.png
+2024-08-09 17:42:33,705 - INFO - Total time taken for plot analysis with 5 critics: 15926.03 ms
+2024-08-09 17:42:35,547 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+**Common Points:**
+
+* **The trajectories do not form a double helix.** While the drones exhibit helical paths, they do not create the distinct double helix structure required.
+* **The drones do not maintain a consistent distance from each other.** They either intersect or maintain an inconsistent distance, which negatively impacts the double helix formation. 
+* **The drones do not ascend at a consistent rate.** This lack of synchronization disrupts the formation of a proper double helix.
+* **The starting positions need adjustment.** The majority of critics agree that the starting positions, while somewhat appropriate, need to be fine-tuned for a proper double helix. 
+
+**Overall Consensus:**
+
+The overall consensus is that the trajectories are not valid and need significant improvement. While the drones partially exhibit helical movements, they fail to meet the crucial criteria for creating a proper double helix.
+
+**Scores:**
+
+* **Previous Score:** 20/100
+* **Current Score:** 25/100
+
+**Score Improvement:** BETTER 
+
+2024-08-09 17:42:35,740 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot_best.png
+2024-08-09 17:42:35,741 - INFO - Retrying... (9/10)
+2024-08-09 17:42:37,390 - INFO - Generated response:
+
+ ```python
+
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 1  # Radius of the helix
+pitch = 2  # Vertical distance between helix turns
+num_turns = 5  # Number of turns for the helix
+t = np.linspace(0, num_turns * 2 * np.pi, 100)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = pitch * t / (2 * np.pi)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(t)
+y2 = -radius * np.sin(t)
+z2 = pitch * t / (2 * np.pi)
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-09 17:42:37,391 - INFO - Total time taken for transcription: 1649.54 ms
+2024-08-09 17:42:37,580 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot.png
+2024-08-09 17:42:52,651 - INFO - Total time taken for plot analysis with 5 critics: 15070.07 ms
+2024-08-09 17:42:54,373 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+**Common Points:**
+
+* **The trajectories do not form a double helix.**  While the drones exhibit helical paths, they do not create the distinct double helix structure required.
+* **The drones do not maintain a consistent distance from each other.** They either intersect or maintain an inconsistent distance, which negatively impacts the double helix formation. 
+* **The drones do not ascend at a consistent rate.** This lack of synchronization disrupts the formation of a proper double helix.
+* **The starting positions need adjustment.** The majority of critics agree that the starting positions, while somewhat appropriate, need to be fine-tuned for a proper double helix. 
+
+**Overall Consensus:**
+
+The overall consensus is that the trajectories are not valid and need significant improvement. While the drones partially exhibit helical movements, they fail to meet the crucial criteria for creating a proper double helix.
+
+**Scores:**
+
+* **Previous Score:** 20/100
+* **Current Score:** 25/100
+
+**Score Improvement:** BETTER 
+
+2024-08-09 17:42:54,561 - INFO - Trajectory plot saved at experiments/double_helix_20240809_173328/trial_3/waypoints_plot_best.png
+2024-08-09 17:42:54,561 - INFO - Retrying... (10/10)
+2024-08-09 17:42:54,561 - ERROR - Maximum number of retries reached. Failed to process waypoints.
+2024-08-09 17:42:54,561 - ERROR - Experiment 3 for double_helix failed.

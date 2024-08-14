@@ -8,6 +8,7 @@ import pybullet_data
 from PIL import Image, ImageDraw, ImageFont
 from dotenv import load_dotenv
 from langchain.chat_models import ChatOpenAI
+from langchain.schema import HumanMessage, SystemMessage
 import base64
 import threading
 import queue
@@ -21,22 +22,27 @@ os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
 class GPT4Interface:
     def __init__(self):
-        self.model = ChatOpenAI(model_name="gpt-4", max_tokens=300)
+        self.model = ChatOpenAI(model_name="gpt-4o", max_tokens=300)
 
     def process_input(self, system_prompt: str, user_prompt: str, image_path: str) -> str:
         with open(image_path, "rb") as image_file:
             encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+        
         messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-            {"role": "image", "content": f"data:image/png;base64,{encoded_image}"}
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=[
+                {"type": "text", "text": user_prompt},
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{encoded_image}"
+                    }
+                }
+            ])
         ]
 
-        print("Messages:")
-        print(messages)
-
-        response = self.model(messages)
-        return response['choices'][0]['message']['content']
+        response = self.model.invoke(messages)
+        return response.content
 
     def get_llm_feedback(self, observations: str, rgb_image_path: str, depth_image_path: str, user_prompt: str) -> str:
         """ Sends observations and images to the GPT model and retrieves feedback. """
@@ -54,18 +60,51 @@ class GPT4Interface:
         return feedback
 
 def save_image_with_grid(image: np.ndarray, path: str, maze_layout: np.ndarray) -> None:
-    """ Save the image as a PNG file with a grid of numbers overlayed. """
+    """
+    Save the image as a PNG file with a grid of numbers overlayed, using a 1.25 grid resolution.
+
+    Args:
+        image (np.ndarray): The image data.
+        path (str): The path where the image will be saved.
+        maze_layout (np.ndarray): The maze layout with the grid numbers.
+    """
+    image = image.astype(np.uint8)  # Convert to uint8
     img = Image.fromarray(image)
     draw = ImageDraw.Draw(img)
+
+    # Use a moderate font size for better readability
+    font_size = 12
+    # font = ImageFont.truetype("arial.ttf", font_size)  # You may need to specify the path to a TTF file
     font = ImageFont.load_default()
-    cell_width = img.width // len(maze_layout[0])
-    cell_height = img.height // len(maze_layout)
-    for i, row in enumerate(maze_layout):
-        for j, cell in enumerate(row):
-            text = str(cell)
-            text_x = j * cell_width + cell_width // 2
-            text_y = i * cell_height + cell_height // 2
+    # Set the grid resolution to 1.25
+    grid_resolution = 1.25
+
+    # Calculate the size of each cell
+    cell_width = img.width // (len(maze_layout[0]) * grid_resolution)
+    cell_height = img.height // (len(maze_layout) * grid_resolution)
+
+    num_rows = int(len(maze_layout) * grid_resolution)
+    num_cols = int(len(maze_layout[0]) * grid_resolution)
+
+    counter = 1
+    for i in range(num_rows):
+        for j in range(num_cols):
+            text = str(counter)
+            # Calculate position to draw the text
+            text_bbox = draw.textbbox((0, 0), text, font=font)
+            text_width = text_bbox[2] - text_bbox[0]
+            text_height = text_bbox[3] - text_bbox[1]
+
+            text_x = int(j * cell_width + (cell_width - text_width) // 2)
+            text_y = int(i * cell_height + (cell_height - text_height) // 2)
+
+            # Draw a semi-transparent white background for better visibility
+            background_bbox = (text_x - 1, text_y - 1, text_x + text_width + 1, text_y + text_height + 1)
+            draw.rectangle(background_bbox, fill=(255, 255, 255, 160))
+
             draw.text((text_x, text_y), text, font=font, fill=(255, 0, 0))
+            counter += 1
+
     img.save(path)
 
 def save_image(image: np.ndarray, path: str) -> None:
@@ -121,9 +160,17 @@ def get_keyboard_events():
     return move_x, move_y, yaw_change
 
 def create_maze_environment() -> np.ndarray:
-    """ Creates a PyBullet simulation environment with a plane and a maze. """
+    """
+    Creates a PyBullet simulation environment with a plane and a maze.
+    Returns the maze layout with unique numbers for each cell.
+
+    Args:
+        None
+    """
     wall_thickness = 0.2
     wall_height = 1.0
+
+    # Define maze layout (1s represent walls, 0s represent empty spaces)
     maze_layout = [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
         [1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -135,24 +182,49 @@ def create_maze_environment() -> np.ndarray:
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ]
+
     numbered_maze_layout = np.zeros_like(maze_layout)
     counter = 1
     for i in range(len(maze_layout)):
         for j in range(len(maze_layout[0])):
             numbered_maze_layout[i, j] = counter
             counter += 1
-    
+
     for i, row in enumerate(maze_layout):
         for j, cell in enumerate(row):
             if cell == 1:
-                wall_visual = p.createVisualShape(p.GEOM_BOX, halfExtents=[0.5, wall_thickness / 2, wall_height / 2], rgbaColor=[0.7, 0.7, 0.7, 1])
-                wall_collision = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.5, wall_thickness / 2, wall_height / 2])
-                p.createMultiBody(baseMass=0, baseCollisionShapeIndex=wall_collision, baseVisualShapeIndex=wall_visual, basePosition=[j - len(row) / 2, i - len(maze_layout) / 2, wall_height / 2])
-                
-                wall_visual = p.createVisualShape(p.GEOM_BOX, halfExtents=[wall_thickness / 2, 0.5, wall_height / 2], rgbaColor=[0.7, 0.7, 0.7, 1])
-                wall_collision = p.createCollisionShape(p.GEOM_BOX, halfExtents=[wall_thickness / 2, 0.5, wall_height / 2])
-                p.createMultiBody(baseMass=0, baseCollisionShapeIndex=wall_collision, baseVisualShapeIndex=wall_visual, basePosition=[j - len(row) / 2, i - len(maze_layout) / 2, wall_height / 2])
-    
+                wall_visual = p.createVisualShape(
+                    p.GEOM_BOX,
+                    halfExtents=[0.5, wall_thickness / 2, wall_height / 2],
+                    rgbaColor=[0.2, 0.2, 0.2, 1]  # Darker color
+                )
+                wall_collision = p.createCollisionShape(
+                    p.GEOM_BOX,
+                    halfExtents=[0.5, wall_thickness / 2, wall_height / 2]
+                )
+                p.createMultiBody(
+                    baseMass=0,
+                    baseCollisionShapeIndex=wall_collision,
+                    baseVisualShapeIndex=wall_visual,
+                    basePosition=[j - len(row) / 2, i - len(maze_layout) / 2, wall_height / 2]
+                )
+
+                wall_visual = p.createVisualShape(
+                    p.GEOM_BOX,
+                    halfExtents=[wall_thickness / 2, 0.5, wall_height / 2],
+                    rgbaColor=[0.2, 0.2, 0.2, 1]  # Darker color
+                )
+                wall_collision = p.createCollisionShape(
+                    p.GEOM_BOX,
+                    halfExtents=[wall_thickness / 2, 0.5, wall_height / 2]
+                )
+                p.createMultiBody(
+                    baseMass=0,
+                    baseCollisionShapeIndex=wall_collision,
+                    baseVisualShapeIndex=wall_visual,
+                    basePosition=[j - len(row) / 2, i - len(maze_layout) / 2, wall_height / 2]
+                )
+
     return numbered_maze_layout
 
 # Create the maze environment

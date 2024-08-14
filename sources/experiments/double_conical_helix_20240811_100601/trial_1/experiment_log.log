@@ -1,0 +1,540 @@
+2024-08-11 10:06:03,050 - INFO - Interpreted requirements:
+
+ Here are the structured requirements for the double conical helix drone trajectory:
+
+[REQ] Number of drones: 2
+[REQ] Starting formation: The two drones should begin at the base of their respective cones, positioned symmetrically on opposite sides of the central axis.
+[REQ] Flight path: Each drone will follow a conical spiral path, ascending along the cone's surface.  The spirals should be symmetrical, meaning the drones maintain an equal distance from the central axis throughout the flight. The paths should be smooth and continuous, avoiding abrupt changes in direction or altitude.
+[REQ] Cone Shape: The cones should be identical in size and shape, with their vertices aligned vertically. This ensures symmetrical and balanced paths for both drones. 
+[REQ] Trajectory smoothness: The spirals should be defined by smooth mathematical functions to ensure a graceful and continuous flight path for the drones. 
+
+2024-08-11 10:06:05,121 - INFO - Generated response:
+
+ ```python
+
+import numpy as np
+
+# Define parameters for the double conical helix trajectory
+num_drones = 2  # Number of drones
+cone_radius = 5  # Radius of the cone's base
+cone_height = 10  # Height of the cone
+spiral_turns = 2  # Number of turns in the spiral
+start_angle = np.pi/2  # Starting angle for drone 1
+angle_offset = np.pi  # Angle offset between drones
+
+# Define the function to generate waypoints for a single drone
+def generate_cone_spiral(drone_angle):
+    t = np.linspace(0, 2 * np.pi * spiral_turns, 100)
+    x = cone_radius * np.cos(t + drone_angle) * np.sin(t)
+    y = cone_radius * np.sin(t + drone_angle) * np.sin(t)
+    z = cone_height * (t / (2 * np.pi * spiral_turns))
+    return np.array([x, y, z]).T
+
+
+# Generate waypoints for each drone
+waypoints1 = generate_cone_spiral(start_angle)
+waypoints2 = generate_cone_spiral(start_angle + angle_offset)
+
+# Combine waypoints into a list
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-11 10:06:05,121 - INFO - Total time taken for transcription: 2070.17 ms
+2024-08-11 10:06:05,122 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-11 10:06:05,122 - INFO - Retrying... (1/10)
+2024-08-11 10:06:06,903 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 2  # Radius of the cone
+height = 10  # Height of the cone
+turns = 2  # Number of turns for the spiral
+t = np.linspace(0, 2 * np.pi * turns, 100)  # Parameter for spiral generation
+x1 = radius * np.cos(t) 
+y1 = radius * np.sin(t)
+z1 = height * t / (2 * np.pi * turns)  # Linear ascent along the cone
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(t) 
+y2 = -radius * np.sin(t)
+z2 = height * t / (2 * np.pi * turns) 
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-11 10:06:06,903 - INFO - Total time taken for transcription: 1780.96 ms
+2024-08-11 10:06:07,269 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot.png
+2024-08-11 10:06:27,441 - INFO - Total time taken for plot analysis with 5 critics: 20171.41 ms
+2024-08-11 10:06:29,501 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The previous score was 30/100. The current score is 30/100. This means the score has **NOT IMPROVED OR DECREASED** (+0). 
+
+2024-08-11 10:06:29,501 - INFO - Retrying... (2/10)
+2024-08-11 10:06:31,016 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5
+height = 10
+num_turns = 2
+t = np.linspace(0, num_turns * 2 * np.pi, 100)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = height * t / (num_turns * 2 * np.pi)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(t)
+y2 = -radius * np.sin(t)
+z2 = height * t / (num_turns * 2 * np.pi)
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-11 10:06:31,016 - INFO - Total time taken for transcription: 1514.32 ms
+2024-08-11 10:06:31,226 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot.png
+2024-08-11 10:06:48,645 - INFO - Total time taken for plot analysis with 5 critics: 17418.24 ms
+2024-08-11 10:06:50,624 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The previous score was 30/100. The current score is 30/100. This means the score has **NOT IMPROVED OR DECREASED** (+0). 
+
+2024-08-11 10:06:50,624 - INFO - Retrying... (3/10)
+2024-08-11 10:06:52,419 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5  # Radius of the cone
+height = 10  # Height of the cone
+num_turns = 2  # Number of turns of the helix
+t = np.linspace(0, 2*np.pi*num_turns, 100)  # Parameter for the helix
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = height * t / (2*np.pi*num_turns)  # Linearly increasing height
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(t)
+y2 = -radius * np.sin(t)
+z2 = height * t / (2*np.pi*num_turns) 
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-11 10:06:52,419 - INFO - Total time taken for transcription: 1794.80 ms
+2024-08-11 10:06:52,607 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot.png
+2024-08-11 10:06:54,113 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:06:54,113 - INFO - Retrying in 1.10 seconds...
+2024-08-11 10:06:55,327 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:06:55,328 - INFO - Retrying in 1.14 seconds...
+2024-08-11 10:06:56,544 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:06:56,545 - INFO - Retrying in 0.86 seconds...
+2024-08-11 10:06:57,500 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:06:57,500 - INFO - Retrying in 0.90 seconds...
+2024-08-11 10:06:58,511 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:06:58,511 - INFO - Retrying in 2.38 seconds...
+2024-08-11 10:07:00,999 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:07:00,999 - INFO - Retrying in 3.98 seconds...
+2024-08-11 10:07:20,457 - INFO - Total time taken for plot analysis with 5 critics: 27849.86 ms
+2024-08-11 10:07:22,994 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The consensus is that the trajectories are **not valid** and **do not meet the requirements** for a double conical helix.  Here's a breakdown of the common points:
+
+* **Incorrect Shape:** The trajectories do not form a double conical helix as required. Instead, they form separate spirals or helices, with the cones being different sizes or even a single cylindrical helix.
+* **Starting Position Errors:** The drones are not starting in symmetrical positions on opposite sides of the central axis.
+* **Potential Collisions:** While some reviewers state there are no collisions, others note potential intersections between the trajectories, which would be unsafe in a real-world scenario.
+* **Smooth Trajectories:**  Most reviewers agree the trajectories are continuous and smooth.
+
+**Suggestions for Improvement:**
+
+* **Correct the Overall Shape:** Adjust the trajectories to form a single double conical helix, ensuring the cones are identical in size and shape.
+* **Symmetrize Starting Positions:** Position the drones symmetrically on opposite sides of the central axis at the base of their respective cones.
+* **Ensure Collision Avoidance:**  Adjust the trajectories to prevent any intersections and ensure safe flight paths.
+
+**Scores and Changes:**
+
+* **Previous Score:** 30/100
+* **Current Score:** 30/100
+* **Change:** **NOT IMPROVED OR DECREASED** (+0) 
+
+2024-08-11 10:07:22,994 - INFO - Retrying... (4/10)
+2024-08-11 10:07:24,478 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5
+height = 10
+t = np.linspace(0, 10*np.pi, 100)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = height * t / (10 * np.pi)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t)
+y2 = -radius * np.sin(t)
+z2 = height * t / (10 * np.pi)
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-11 10:07:24,478 - INFO - Total time taken for transcription: 1483.31 ms
+2024-08-11 10:07:24,757 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot.png
+2024-08-11 10:07:41,248 - INFO - Total time taken for plot analysis with 5 critics: 16491.37 ms
+2024-08-11 10:07:44,020 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The consensus is that the trajectories are still not valid and do not meet the requirements for a double conical helix, although they are closer to the goal than before.  Here's a breakdown of the common points:
+
+* **Incorrect Shape:** The trajectories still do not form a double conical helix, though they are getting closer. Issues persist with the cones not being aligned vertically and the drones not ascending at the same rate, leading to an incorrect overall shape.
+* **Symmetry Issues:**  While some reviewers acknowledge improvements in symmetry, most point out that the drones are still not positioned symmetrically on opposite sides of the central axis, or that the spirals are not perfectly symmetrical.
+* **Potential Collisions:** While some reviewers state there are no collisions, others note potential intersections between the trajectories. 
+* **Smoothness:**  Most reviewers agree the trajectories are mostly smooth and continuous, with some issues identified in the top and side views.
+
+**Suggestions for Improvement:**
+
+* **Correct the Overall Shape:** Continue to adjust the trajectories to form a single double conical helix, ensuring the cones are identical in size and shape, and that the drones ascend at the same rate.
+* **Symmetrize Starting Positions:**  Ensure the drones are positioned symmetrically on opposite sides of the central axis at the base of their respective cones. 
+* **Ensure Collision Avoidance:**  Adjust the trajectories to prevent any intersections and ensure safe flight paths.
+* **Refine Smoothness:** Focus on smoothing out the trajectories in the top and side views, particularly where kinks or abrupt changes in direction are identified.
+
+**Scores and Changes:**
+
+* **Previous Score:** 30/100
+* **Current Score:** 40/100
+* **Change:** **BETTER** (+10) 
+
+2024-08-11 10:07:44,190 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot_best.png
+2024-08-11 10:07:44,190 - INFO - Retrying... (5/10)
+2024-08-11 10:07:45,859 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5  # Radius of the cone
+height = 10 # Height of the cone
+turns = 2 # Number of turns of the helix
+t = np.linspace(0, 2*np.pi*turns, 100) # Parameter for the helix 
+x1 = radius * np.cos(t) 
+y1 = radius * np.sin(t)
+z1 = height * t / (2*np.pi*turns) # Linearly increasing height
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(t) 
+y2 = -radius * np.sin(t)
+z2 = height * t / (2*np.pi*turns)
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+
+```
+2024-08-11 10:07:45,860 - INFO - Total time taken for transcription: 1669.21 ms
+2024-08-11 10:07:46,018 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot.png
+2024-08-11 10:07:56,592 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:07:56,593 - INFO - Retrying in 1.09 seconds...
+2024-08-11 10:07:57,794 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:07:57,794 - INFO - Retrying in 0.91 seconds...
+2024-08-11 10:07:58,785 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:07:58,786 - INFO - Retrying in 1.06 seconds...
+2024-08-11 10:07:59,922 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:07:59,923 - INFO - Retrying in 1.20 seconds...
+2024-08-11 10:08:07,158 - INFO - Total time taken for plot analysis with 5 critics: 21139.88 ms
+2024-08-11 10:08:09,956 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The consensus is that the trajectories are still not valid and do not meet the requirements for a double conical helix, although they are closer to the goal than before.  Here's a breakdown of the common points:
+
+* **Incorrect Shape:** The trajectories still do not form a double conical helix, though they are getting closer. Issues persist with the cones not being aligned vertically and the drones not ascending at the same rate, leading to an incorrect overall shape.
+* **Symmetry Issues:**  While some reviewers acknowledge improvements in symmetry, most point out that the drones are still not positioned symmetrically on opposite sides of the central axis, or that the spirals are not perfectly symmetrical.
+* **Potential Collisions:** While some reviewers state there are no collisions, others note potential intersections between the trajectories. 
+* **Smoothness:**  Most reviewers agree the trajectories are mostly smooth and continuous, with some issues identified in the top and side views.
+
+**Suggestions for Improvement:**
+
+* **Correct the Overall Shape:** Continue to adjust the trajectories to form a single double conical helix, ensuring the cones are identical in size and shape, and that the drones ascend at the same rate.
+* **Symmetrize Starting Positions:**  Ensure the drones are positioned symmetrically on opposite sides of the central axis at the base of their respective cones. 
+* **Ensure Collision Avoidance:**  Adjust the trajectories to prevent any intersections and ensure safe flight paths.
+* **Refine Smoothness:** Focus on smoothing out the trajectories in the top and side views, particularly where kinks or abrupt changes in direction are identified.
+
+**Scores and Changes:**
+
+* **Previous Score:** 30/100
+* **Current Score:** 40/100
+* **Change:** **BETTER** (+10) 
+
+2024-08-11 10:08:10,116 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot_best.png
+2024-08-11 10:08:10,117 - INFO - Retrying... (6/10)
+2024-08-11 10:08:11,580 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 5
+height = 10
+num_turns = 2
+t = np.linspace(0, 2*np.pi*num_turns, 100)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = height * t / (2*np.pi*num_turns)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(t)
+y2 = -radius * np.sin(t)
+z2 = height * t / (2*np.pi*num_turns)
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-11 10:08:11,580 - INFO - Total time taken for transcription: 1462.99 ms
+2024-08-11 10:08:11,762 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot.png
+2024-08-11 10:08:29,889 - INFO - Total time taken for plot analysis with 5 critics: 18125.66 ms
+2024-08-11 10:08:32,701 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The consensus is that the trajectories are still not valid and do not meet the requirements for a double conical helix, although they are closer to the goal than before.  Here's a breakdown of the common points:
+
+* **Incorrect Shape:** The trajectories still do not form a double conical helix, though they are getting closer. Issues persist with the cones not being aligned vertically and the drones not ascending at the same rate, leading to an incorrect overall shape.
+* **Symmetry Issues:**  While some reviewers acknowledge improvements in symmetry, most point out that the drones are still not positioned symmetrically on opposite sides of the central axis, or that the spirals are not perfectly symmetrical.
+* **Potential Collisions:** While some reviewers state there are no collisions, others note potential intersections between the trajectories. 
+* **Smoothness:**  Most reviewers agree the trajectories are mostly smooth and continuous, with some issues identified in the top and side views.
+
+**Suggestions for Improvement:**
+
+* **Correct the Overall Shape:** Continue to adjust the trajectories to form a single double conical helix, ensuring the cones are identical in size and shape, and that the drones ascend at the same rate.
+* **Symmetrize Starting Positions:**  Ensure the drones are positioned symmetrically on opposite sides of the central axis at the base of their respective cones. 
+* **Ensure Collision Avoidance:**  Adjust the trajectories to prevent any intersections and ensure safe flight paths.
+* **Refine Smoothness:** Focus on smoothing out the trajectories in the top and side views, particularly where kinks or abrupt changes in direction are identified.
+
+**Scores and Changes:**
+
+* **Previous Score:** 40/100
+* **Current Score:** 60/100
+* **Change:** **BETTER** (+20) 
+
+2024-08-11 10:08:32,967 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot_best.png
+2024-08-11 10:08:32,968 - INFO - Retrying... (7/10)
+2024-08-11 10:08:34,603 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 1  # Radius of the cone
+height = 5  # Height of the cone
+num_turns = 2  # Number of turns for the spiral
+t = np.linspace(0, 2*np.pi*num_turns, 100)  # Parameter for the spiral
+
+x1 = radius*np.cos(t)
+y1 = radius*np.sin(t)
+z1 = (height/ (2*np.pi*num_turns)) * t 
+
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = -radius*np.cos(t)
+y2 = -radius*np.sin(t)
+z2 = (height/ (2*np.pi*num_turns)) * t
+
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-11 10:08:34,603 - INFO - Total time taken for transcription: 1635.09 ms
+2024-08-11 10:08:34,790 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot.png
+2024-08-11 10:08:50,585 - INFO - Total time taken for plot analysis with 5 critics: 15793.85 ms
+2024-08-11 10:08:50,664 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:08:50,665 - INFO - Retrying in 0.16 seconds...
+2024-08-11 10:08:53,649 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The consensus is that the trajectories are still not valid and do not meet the requirements for a double conical helix, although they are closer to the goal than before.  Here's a breakdown of the common points:
+
+* **Incorrect Shape:** The trajectories still do not form a double conical helix, though they are getting closer. Issues persist with the cones not being aligned vertically and the drones not ascending at the same rate, leading to an incorrect overall shape.
+* **Symmetry Issues:**  While some reviewers acknowledge improvements in symmetry, most point out that the drones are still not positioned symmetrically on opposite sides of the central axis, or that the spirals are not perfectly symmetrical.
+* **Potential Collisions:** While some reviewers state there are no collisions, others note potential intersections between the trajectories. 
+* **Smoothness:**  Most reviewers agree the trajectories are mostly smooth and continuous, with some issues identified in the top and side views.
+
+**Suggestions for Improvement:**
+
+* **Correct the Overall Shape:** Continue to adjust the trajectories to form a single double conical helix, ensuring the cones are identical in size and shape, and that the drones ascend at the same rate.
+* **Symmetrize Starting Positions:**  Ensure the drones are positioned symmetrically on opposite sides of the central axis at the base of their respective cones. 
+* **Ensure Collision Avoidance:**  Adjust the trajectories to prevent any intersections and ensure safe flight paths.
+* **Refine Smoothness:** Focus on smoothing out the trajectories in the top and side views, particularly where kinks or abrupt changes in direction are identified.
+
+**Scores and Changes:**
+
+* **Previous Score:** 40/100
+* **Current Score:** 60/100
+* **Change:** **BETTER** (+20) 
+
+2024-08-11 10:08:53,830 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot_best.png
+2024-08-11 10:08:53,830 - INFO - Retrying... (8/10)
+2024-08-11 10:08:53,950 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:08:53,950 - INFO - Retrying in 0.12 seconds...
+2024-08-11 10:08:54,163 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:08:54,164 - INFO - Retrying in 0.28 seconds...
+2024-08-11 10:08:54,518 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:08:54,519 - INFO - Retrying in 1.22 seconds...
+2024-08-11 10:08:55,825 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:08:55,825 - INFO - Retrying in 1.06 seconds...
+2024-08-11 10:08:56,956 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:08:56,956 - INFO - Retrying in 1.60 seconds...
+2024-08-11 10:08:58,641 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-11 10:08:58,641 - INFO - Retrying in 3.80 seconds...
+2024-08-11 10:09:04,298 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 2  # Radius of the cone base
+height = 10  # Height of the cone
+num_turns = 3  # Number of turns for the spiral
+t = np.linspace(0, num_turns * 2 * np.pi, 100)  # Parameter for the spiral
+
+x1 = radius * np.cos(t) 
+y1 = radius * np.sin(t)
+z1 = (height / (num_turns * 2 * np.pi)) * t  # Linearly increasing altitude
+
+waypoints1 = np.array([x1, y1, z1]).T  
+
+# Drone 2 waypoints
+x2 = -radius * np.cos(t)  
+y2 = -radius * np.sin(t)
+z2 = (height / (num_turns * 2 * np.pi)) * t
+
+waypoints2 = np.array([x2, y2, z2]).T
+
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-11 10:09:04,300 - INFO - Total time taken for transcription: 10467.53 ms
+2024-08-11 10:09:04,528 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot.png
+2024-08-11 10:09:22,791 - INFO - Total time taken for plot analysis with 5 critics: 18262.33 ms
+2024-08-11 10:09:25,484 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The consensus is that the trajectories are still not valid and do not meet the requirements for a double conical helix, although they are closer to the goal than before.  Here's a breakdown of the common points:
+
+* **Incorrect Shape:** The trajectories still do not form a double conical helix, though they are getting closer. Issues persist with the cones not being aligned vertically and the drones not ascending at the same rate, leading to an incorrect overall shape.
+* **Symmetry Issues:**  While some reviewers acknowledge improvements in symmetry, most point out that the drones are still not positioned symmetrically on opposite sides of the central axis, or that the spirals are not perfectly symmetrical.
+* **Potential Collisions:** While some reviewers state there are no collisions, others note potential intersections between the trajectories. 
+* **Smoothness:**  Most reviewers agree the trajectories are mostly smooth and continuous, with some issues identified in the top and side views.
+
+**Suggestions for Improvement:**
+
+* **Correct the Overall Shape:** Continue to adjust the trajectories to form a single double conical helix, ensuring the cones are identical in size and shape, and that the drones ascend at the same rate.
+* **Symmetrize Starting Positions:**  Ensure the drones are positioned symmetrically on opposite sides of the central axis at the base of their respective cones. 
+* **Ensure Collision Avoidance:**  Adjust the trajectories to prevent any intersections and ensure safe flight paths.
+* **Refine Smoothness:** Focus on smoothing out the trajectories in the top and side views, particularly where kinks or abrupt changes in direction are identified.
+
+**Scores and Changes:**
+
+* **Previous Score:** 35/100
+* **Current Score:** 60/100
+* **Change:** **BETTER** (+25) 
+
+2024-08-11 10:09:25,674 - INFO - Trajectory plot saved at experiments/double_conical_helix_20240811_100601/trial_1/waypoints_plot_best.png
+2024-08-11 10:09:25,675 - INFO - Retrying... (9/10)
+2024-08-11 10:09:28,529 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the cone parameters
+cone_radius = 5  # Radius of the cone's base in meters
+cone_height = 10  # Height of the cone in meters
+spiral_turns = 2  # Number of turns the drone makes around the cone
+
+# Preprocessing function to generate waypoints for a single drone
+def generate_cone_spiral_waypoints(radius, height, turns):
+    """Generates waypoints for a drone following a conical spiral path.
+
+    Args:
+        radius (float): Radius of the cone's base.
+        height (float): Height of the cone.
+        turns (int): Number of turns the drone makes around the cone.
+
+    Returns:
+        list: A list of waypoints [x, y, z] for the drone's trajectory.
+    """
+    
+    # Generate angles for the spiral path
+    theta = np.linspace(0, 2 * np.pi * turns, 100)
+
+    # Calculate the x, y, and z coordinates of the waypoints
+    x = radius * np.cos(theta)
+    y = radius * np.sin(theta)
+    z = (height / (2 * np.pi * turns)) * theta 
+
+    # Combine the coordinates into a list of waypoints
+    waypoints = np.array([x, y, z]).transpose()
+
+    return waypoints
+
+# Drone 1 waypoints
+waypoints1 = generate_cone_spiral_waypoints(cone_radius, cone_height, spiral_turns)
+
+# Drone 2 waypoints (symmetrical to Drone 1)
+waypoints2 = generate_cone_spiral_waypoints(cone_radius, cone_height, spiral_turns)
+waypoints2[:, 1] *= -1  # Mirror the y-coordinates for symmetry
+
+# Combine waypoints for both drones
+waypoints = [waypoints1, waypoints2]
+```
+2024-08-11 10:09:28,529 - INFO - Total time taken for transcription: 2853.79 ms
+2024-08-11 10:09:28,531 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-11 10:09:28,532 - INFO - Retrying... (10/10)
+2024-08-11 10:09:28,532 - ERROR - Maximum number of retries reached. Failed to process waypoints.
+2024-08-11 10:09:28,532 - ERROR - Experiment 1 for double_conical_helix failed.

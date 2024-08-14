@@ -1,0 +1,752 @@
+2024-08-09 17:03:53,276 - INFO - Interpreted requirements:
+
+ ## Drone Trajectory Requirements: 4-Petal Rose Curve
+
+Here are the structured requirements for a drone control system to generate a 4-petal rose curve using four drones:
+
+[REQ] Number of drones: 4
+[REQ] Starting formation: The drones should begin in a square formation centered on the origin of the rose curve. This ensures an even distribution and facilitates the smooth transition into the petal tracing. 
+[REQ] Flight path: Each drone will trace one petal of the rose curve. The drones will fly in a synchronized manner, with each drone's path offset by a quarter-rotation of the rose curve. This will create a continuous and smooth curve. 
+[REQ] Trajectory type: Each drone's path should be defined by a polar equation of the form: r = a * sin(n * theta), where:
+    - r is the distance from the origin.
+    - theta is the angle in radians.
+    - a is a constant that determines the size of the rose.
+    - n is the number of petals (in this case, n = 4).
+[REQ] Synchronization: The drones must maintain synchronized movements to ensure the smoothness and continuity of the overall curve. A suitable control system could employ a leader-follower approach, where one drone leads the formation, and the others follow at a pre-defined distance and angle offset.
+[REQ] Speed: The drones should maintain a consistent speed throughout the trajectory, ensuring a smooth and continuous curve. The speed can be adjusted to create different visual effects. 
+[REQ] Ending position: After completing their petal tracing, the drones should return to their initial starting position in a square formation, creating a closed-loop trajectory. 
+
+2024-08-09 17:03:56,136 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the size of the rose
+a = 5
+
+# Define the number of petals
+n = 4
+
+# Define the number of drones
+num_drones = 4
+
+# Define the starting position of the drones
+drone_positions = [
+    [a, a],
+    [-a, a],
+    [-a, -a],
+    [a, -a],
+]
+
+# Define the angle offset for each drone
+angle_offsets = [0, np.pi/2, np.pi, 3*np.pi/2]
+
+# Define the number of points to generate for each drone
+num_points = 100
+
+# Generate the waypoints for each drone
+waypoints = []
+for i in range(num_drones):
+    # Define the angle range for the drone
+    theta = np.linspace(0, 2*np.pi, num_points)
+    # Calculate the radius for each angle
+    r = a * np.sin(n * (theta + angle_offsets[i]))
+    # Convert polar coordinates to Cartesian coordinates
+    x = r * np.cos(theta)
+    y = r * np.sin(theta)
+    # Add the starting position to the waypoints
+    x = np.concatenate(([drone_positions[i][0]], x))
+    y = np.concatenate(([drone_positions[i][1]], y))
+    # Add the ending position to the waypoints
+    x = np.concatenate((x, [drone_positions[i][0]]))
+    y = np.concatenate((y, [drone_positions[i][1]]))
+    # Create a list of waypoints for the drone
+    waypoints.append(np.array([x, y, np.zeros_like(x)]).T)
+
+# Print the waypoints
+print(waypoints)
+```
+2024-08-09 17:03:56,139 - INFO - Total time taken for transcription: 2858.95 ms
+2024-08-09 17:03:56,353 - INFO - Trajectory plot saved at experiments/4petal_rose_20240809_170032/trial_2/waypoints_plot.png
+2024-08-09 17:04:10,447 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:04:10,447 - INFO - Retrying in 0.51 seconds...
+2024-08-09 17:04:11,039 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:04:11,040 - INFO - Retrying in 0.54 seconds...
+2024-08-09 17:04:15,883 - INFO - Total time taken for plot analysis with 5 critics: 19529.28 ms
+2024-08-09 17:04:18,613 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback from the critics is largely consistent in identifying the key issues with the trajectories. 
+
+**Common Points:**
+
+* **Incorrect Shape:**  All critics agree that the overall shape formed by the drones does not resemble the required 4-petal rose curve. 
+* **Drone 4 Issue:** The trajectory of Drone 4 is consistently cited as a problem, either tracing the full curve instead of a single petal or having inconsistencies in its path.
+* **Starting Positions:** The starting positions of the drones are generally acknowledged to be incorrect, with the drones not forming a square centered on the origin.
+* **Synchronization:** The need for synchronization between the drones is emphasized to ensure smooth and coordinated movement for the desired shape.
+
+**Overall Consensus:**
+
+The critics generally agree that the trajectories are not valid and do not meet the requirements. They highlight the need for improvement in the synchronization of the drones, the trajectory generation algorithm, and the starting positions. 
+
+**Score Comparison:**
+
+* **Previous Score:**  This information is not provided.  
+* **Current Score:**  The scores provided range from 15/100 to 60/100, indicating a wide range of opinions on the severity of the issues. 
+* **Score Change:**  Without the previous score, it's impossible to determine if the score has improved or worsened. 
+
+2024-08-09 17:04:18,614 - INFO - Retrying... (1/10)
+2024-08-09 17:04:21,403 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the number of drones
+N = 4
+
+# Define the rose curve parameters
+a = 10  # Size of the rose
+n = 4  # Number of petals
+
+# Define the starting positions for the drones in a square formation
+drone_positions = np.array([[a/2, a/2, 0], [-a/2, a/2, 0], [-a/2, -a/2, 0], [a/2, -a/2, 0]])
+
+# Define the angle offset for each drone
+angle_offset = np.pi / 2
+
+# Initialize the waypoints lists
+waypoints = []
+for i in range(N):
+    waypoints.append([])
+
+# Generate waypoints for each drone
+for i in range(N):
+    # Generate theta values for the petal
+    theta = np.linspace(i * angle_offset, i * angle_offset + np.pi / 2, 100)
+
+    # Calculate the radius for each theta value
+    r = a * np.sin(n * theta)
+
+    # Convert polar coordinates to Cartesian coordinates
+    x = r * np.cos(theta) + drone_positions[i, 0]
+    y = r * np.sin(theta) + drone_positions[i, 1]
+
+    # Append the waypoints to the list
+    waypoints[i] = np.column_stack((x, y, np.zeros_like(x)))
+
+# Concatenate the waypoints for each drone
+waypoints = np.array(waypoints)
+
+# Drone 1 waypoints
+waypoints1 = waypoints[0]
+
+# Drone 2 waypoints
+waypoints2 = waypoints[1]
+
+# Drone 3 waypoints
+waypoints3 = waypoints[2]
+
+# Drone 4 waypoints
+waypoints4 = waypoints[3]
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4]
+```
+2024-08-09 17:04:21,403 - INFO - Total time taken for transcription: 2788.97 ms
+2024-08-09 17:04:21,631 - INFO - Trajectory plot saved at experiments/4petal_rose_20240809_170032/trial_2/waypoints_plot.png
+2024-08-09 17:04:40,502 - INFO - Total time taken for plot analysis with 5 critics: 18870.42 ms
+2024-08-09 17:04:42,434 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics is largely consistent in identifying the key issues with the trajectories. 
+
+**Common Points:**
+
+* **Incorrect Shape:**  All critics agree that the overall shape formed by the drones does not resemble the required 4-petal rose curve. 
+* **Trajectory Incompleteness:** The trajectories are frequently criticized for being incomplete, with drones not tracing out full petals.
+* **Starting Positions:** The starting positions of the drones are generally acknowledged to be incorrect, with the drones not forming a square centered on the origin.
+* **Synchronization:** The need for synchronization between the drones is emphasized to ensure smooth and coordinated movement for the desired shape.
+
+**Overall Consensus:**
+
+The critics generally agree that the trajectories are not valid and do not meet the requirements. They highlight the need for improvement in the synchronization of the drones, the trajectory generation algorithm, and the starting positions. 
+
+**Score Comparison:**
+
+* **Previous Score:**  This information is not provided.  
+* **Current Score:**  The scores provided range from 20/100 to 75/100, indicating a wide range of opinions on the severity of the issues. 
+* **Score Change:**  Without the previous score, it's impossible to determine if the score has improved or worsened. 
+
+2024-08-09 17:04:42,435 - INFO - Retrying... (2/10)
+2024-08-09 17:04:45,898 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def rose_curve(a, n, theta):
+  """
+  Calculates the radius of the rose curve at a given angle.
+
+  Args:
+    a: The size of the rose curve.
+    n: The number of petals.
+    theta: The angle in radians.
+
+  Returns:
+    The radius of the rose curve at the given angle.
+  """
+  return a * np.sin(n * theta)
+
+# Drone 1 waypoints
+theta1 = np.linspace(0, np.pi/2, 50)
+r1 = rose_curve(1, 4, theta1)
+x1 = r1 * np.cos(theta1)
+y1 = r1 * np.sin(theta1)
+z1 = np.zeros_like(x1)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+theta2 = np.linspace(np.pi/2, np.pi, 50)
+r2 = rose_curve(1, 4, theta2)
+x2 = r2 * np.cos(theta2)
+y2 = r2 * np.sin(theta2)
+z2 = np.zeros_like(x2)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+theta3 = np.linspace(np.pi, 3*np.pi/2, 50)
+r3 = rose_curve(1, 4, theta3)
+x3 = r3 * np.cos(theta3)
+y3 = r3 * np.sin(theta3)
+z3 = np.zeros_like(x3)
+waypoints3 = np.array([x3, y3, z3]).T
+
+# Drone 4 waypoints
+theta4 = np.linspace(3*np.pi/2, 2*np.pi, 50)
+r4 = rose_curve(1, 4, theta4)
+x4 = r4 * np.cos(theta4)
+y4 = r4 * np.sin(theta4)
+z4 = np.zeros_like(x4)
+waypoints4 = np.array([x4, y4, z4]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4]
+
+```
+2024-08-09 17:04:45,899 - INFO - Total time taken for transcription: 3462.92 ms
+2024-08-09 17:04:45,901 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 17:04:45,901 - INFO - Retrying... (3/10)
+2024-08-09 17:04:49,090 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+a = 10  # Size of the rose
+n = 4  # Number of petals
+theta1 = np.linspace(0, np.pi / 2, 50)  # Angle range for one petal
+r1 = a * np.sin(n * theta1)
+x1 = r1 * np.cos(theta1)
+y1 = r1 * np.sin(theta1)
+z1 = np.zeros_like(x1)  # Assuming all drones fly at the same height
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+theta2 = np.linspace(np.pi / 2, np.pi, 50)
+r2 = a * np.sin(n * theta2)
+x2 = r2 * np.cos(theta2)
+y2 = r2 * np.sin(theta2)
+z2 = np.zeros_like(x2)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+theta3 = np.linspace(np.pi, 3 * np.pi / 2, 50)
+r3 = a * np.sin(n * theta3)
+x3 = r3 * np.cos(theta3)
+y3 = r3 * np.sin(theta3)
+z3 = np.zeros_like(x3)
+waypoints3 = np.array([x3, y3, z3]).T
+
+# Drone 4 waypoints
+theta4 = np.linspace(3 * np.pi / 2, 2 * np.pi, 50)
+r4 = a * np.sin(n * theta4)
+x4 = r4 * np.cos(theta4)
+y4 = r4 * np.sin(theta4)
+z4 = np.zeros_like(x4)
+waypoints4 = np.array([x4, y4, z4]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4]
+```
+2024-08-09 17:04:49,091 - INFO - Total time taken for transcription: 3188.31 ms
+2024-08-09 17:04:49,324 - INFO - Trajectory plot saved at experiments/4petal_rose_20240809_170032/trial_2/waypoints_plot.png
+2024-08-09 17:05:03,062 - INFO - Total time taken for plot analysis with 5 critics: 13736.34 ms
+2024-08-09 17:05:05,083 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics is largely consistent in identifying the key issues with the trajectories. 
+
+**Common Points:**
+
+* **Incorrect Shape:**  All critics agree that the overall shape formed by the drones does not resemble the required 4-petal rose curve. 
+* **Trajectory Incompleteness:** The trajectories are frequently criticized for being incomplete, with drones not tracing out full petals.
+* **Starting Positions:** The starting positions of the drones are generally acknowledged to be incorrect, with the drones not forming a square centered on the origin.
+* **Synchronization:** The need for synchronization between the drones is emphasized to ensure smooth and coordinated movement for the desired shape.
+
+**Overall Consensus:**
+
+The critics generally agree that the trajectories are not valid and do not meet the requirements. They highlight the need for improvement in the synchronization of the drones, the trajectory generation algorithm, and the starting positions. 
+
+**Score Comparison:**
+
+* **Previous Score:**  This information is not provided.  
+* **Current Score:**  The scores provided range from 30/100 to 80/100, indicating a wide range of opinions on the severity of the issues. 
+* **Score Change:**  Without the previous score, it's impossible to determine if the score has improved or worsened. 
+
+2024-08-09 17:05:05,084 - INFO - Retrying... (4/10)
+2024-08-09 17:05:05,157 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:05:05,157 - INFO - Retrying in 0.87 seconds...
+2024-08-09 17:05:06,107 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:05:06,107 - INFO - Retrying in 0.23 seconds...
+2024-08-09 17:05:06,415 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:05:06,415 - INFO - Retrying in 1.03 seconds...
+2024-08-09 17:05:07,523 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:05:07,524 - INFO - Retrying in 1.46 seconds...
+2024-08-09 17:05:12,189 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+a = 10  # Size of the rose
+n = 4  # Number of petals
+theta = np.linspace(0, 2 * np.pi, 100)
+r = a * np.sin(n * theta)
+x1 = r * np.cos(theta)
+y1 = r * np.sin(theta)
+z1 = np.zeros_like(x1)  # Assuming constant altitude for now
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+theta = np.linspace(np.pi / 4, 2 * np.pi + np.pi / 4, 100)
+r = a * np.sin(n * theta)
+x2 = r * np.cos(theta)
+y2 = r * np.sin(theta)
+z2 = np.zeros_like(x2)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+theta = np.linspace(np.pi / 2, 2 * np.pi + np.pi / 2, 100)
+r = a * np.sin(n * theta)
+x3 = r * np.cos(theta)
+y3 = r * np.sin(theta)
+z3 = np.zeros_like(x3)
+waypoints3 = np.array([x3, y3, z3]).T
+
+# Drone 4 waypoints
+theta = np.linspace(3 * np.pi / 4, 2 * np.pi + 3 * np.pi / 4, 100)
+r = a * np.sin(n * theta)
+x4 = r * np.cos(theta)
+y4 = r * np.sin(theta)
+z4 = np.zeros_like(x4)
+waypoints4 = np.array([x4, y4, z4]).T
+
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4]
+```
+2024-08-09 17:05:12,190 - INFO - Total time taken for transcription: 7104.79 ms
+2024-08-09 17:05:12,545 - INFO - Trajectory plot saved at experiments/4petal_rose_20240809_170032/trial_2/waypoints_plot.png
+2024-08-09 17:05:13,833 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:05:13,834 - INFO - Retrying in 0.20 seconds...
+2024-08-09 17:05:14,107 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:05:14,108 - INFO - Retrying in 0.70 seconds...
+2024-08-09 17:05:14,882 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:05:14,883 - INFO - Retrying in 1.23 seconds...
+2024-08-09 17:05:16,189 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:05:16,195 - INFO - Retrying in 1.78 seconds...
+2024-08-09 17:05:30,082 - INFO - Total time taken for plot analysis with 5 critics: 17536.62 ms
+2024-08-09 17:05:31,979 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics is largely consistent in identifying the key issues with the trajectories. 
+
+**Common Points:**
+
+* **Incorrect Shape:**  All critics agree that the overall shape formed by the drones does not resemble the required 4-petal rose curve. 
+* **Trajectory Incompleteness:** The trajectories are frequently criticized for being incomplete, with drones not tracing out full petals.
+* **Starting Positions:** The starting positions of the drones are generally acknowledged to be incorrect, with the drones not forming a square centered on the origin.
+* **Synchronization:** The need for synchronization between the drones is emphasized to ensure smooth and coordinated movement for the desired shape.
+
+**Overall Consensus:**
+
+The critics generally agree that the trajectories are not valid and do not meet the requirements. They highlight the need for improvement in the synchronization of the drones, the trajectory generation algorithm, and the starting positions. 
+
+**Score Comparison:**
+
+* **Previous Score:**  0/100 
+* **Current Score:**  The scores provided range from 0/100 to 20/100, indicating a wide range of opinions on the severity of the issues. 
+* **Score Change:** WORSE 
+
+2024-08-09 17:05:31,979 - INFO - Retrying... (5/10)
+2024-08-09 17:05:35,105 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+a = 2  # Size of the rose
+n = 4  # Number of petals
+theta = np.linspace(0, 2*np.pi, 100)
+r = a * np.sin(n * theta)
+x1 = r * np.cos(theta)
+y1 = r * np.sin(theta)
+z1 = np.zeros_like(x1) 
+waypoints1 = np.column_stack((x1, y1, z1))
+
+# Drone 2 waypoints
+theta = np.linspace(np.pi/4, 2*np.pi + np.pi/4, 100)
+r = a * np.sin(n * theta)
+x2 = r * np.cos(theta)
+y2 = r * np.sin(theta)
+z2 = np.zeros_like(x2) 
+waypoints2 = np.column_stack((x2, y2, z2))
+
+# Drone 3 waypoints
+theta = np.linspace(np.pi/2, 2*np.pi + np.pi/2, 100)
+r = a * np.sin(n * theta)
+x3 = r * np.cos(theta)
+y3 = r * np.sin(theta)
+z3 = np.zeros_like(x3) 
+waypoints3 = np.column_stack((x3, y3, z3))
+
+# Drone 4 waypoints
+theta = np.linspace(3*np.pi/4, 2*np.pi + 3*np.pi/4, 100)
+r = a * np.sin(n * theta)
+x4 = r * np.cos(theta)
+y4 = r * np.sin(theta)
+z4 = np.zeros_like(x4) 
+waypoints4 = np.column_stack((x4, y4, z4))
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4]
+```
+2024-08-09 17:05:35,106 - INFO - Total time taken for transcription: 3125.83 ms
+2024-08-09 17:05:35,369 - INFO - Trajectory plot saved at experiments/4petal_rose_20240809_170032/trial_2/waypoints_plot.png
+2024-08-09 17:05:51,950 - INFO - Total time taken for plot analysis with 5 critics: 16580.40 ms
+2024-08-09 17:05:53,813 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics is largely consistent in identifying the key issues with the trajectories. 
+
+**Common Points:**
+
+* **Incorrect Shape:**  All critics agree that the overall shape formed by the drones does not resemble the required 4-petal rose curve. 
+* **Trajectory Incompleteness:** The trajectories are frequently criticized for being incomplete, with drones not tracing out full petals.
+* **Starting Positions:** The starting positions of the drones are generally acknowledged to be incorrect, with the drones not forming a square centered on the origin.
+* **Synchronization:** The need for synchronization between the drones is emphasized to ensure smooth and coordinated movement for the desired shape.
+
+**Overall Consensus:**
+
+The critics generally agree that the trajectories are not valid and do not meet the requirements. They highlight the need for improvement in the synchronization of the drones, the trajectory generation algorithm, and the starting positions. 
+
+**Score Comparison:**
+
+* **Previous Score:**  0/100 
+* **Current Score:**  The scores provided range from 10/100 to 20/100, indicating a wide range of opinions on the severity of the issues. 
+* **Score Change:** WORSE 
+
+2024-08-09 17:05:53,814 - INFO - Retrying... (6/10)
+2024-08-09 17:05:56,722 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+a = 10  # Size of the rose
+n = 4  # Number of petals
+theta = np.linspace(0, 2*np.pi, 100)
+r = a * np.sin(n * theta)
+x = r * np.cos(theta)
+y = r * np.sin(theta)
+z = np.zeros_like(x)
+waypoints1 = np.array([x, y, z]).T
+
+# Drone 2 waypoints
+theta = np.linspace(np.pi/4, 2*np.pi + np.pi/4, 100)
+r = a * np.sin(n * theta)
+x = r * np.cos(theta)
+y = r * np.sin(theta)
+z = np.zeros_like(x)
+waypoints2 = np.array([x, y, z]).T
+
+# Drone 3 waypoints
+theta = np.linspace(np.pi/2, 2*np.pi + np.pi/2, 100)
+r = a * np.sin(n * theta)
+x = r * np.cos(theta)
+y = r * np.sin(theta)
+z = np.zeros_like(x)
+waypoints3 = np.array([x, y, z]).T
+
+# Drone 4 waypoints
+theta = np.linspace(3*np.pi/4, 2*np.pi + 3*np.pi/4, 100)
+r = a * np.sin(n * theta)
+x = r * np.cos(theta)
+y = r * np.sin(theta)
+z = np.zeros_like(x)
+waypoints4 = np.array([x, y, z]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4]
+```
+2024-08-09 17:05:56,722 - INFO - Total time taken for transcription: 2908.24 ms
+2024-08-09 17:05:56,981 - INFO - Trajectory plot saved at experiments/4petal_rose_20240809_170032/trial_2/waypoints_plot.png
+2024-08-09 17:06:02,894 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:06:02,895 - INFO - Retrying in 0.82 seconds...
+2024-08-09 17:06:05,973 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:06:05,974 - INFO - Retrying in 0.59 seconds...
+2024-08-09 17:06:06,636 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:06:06,636 - INFO - Retrying in 0.90 seconds...
+2024-08-09 17:06:07,622 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:06:07,622 - INFO - Retrying in 0.44 seconds...
+2024-08-09 17:06:08,136 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:06:08,137 - INFO - Retrying in 1.23 seconds...
+2024-08-09 17:06:09,446 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:06:09,447 - INFO - Retrying in 2.20 seconds...
+2024-08-09 17:06:11,724 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:06:11,724 - INFO - Retrying in 4.19 seconds...
+2024-08-09 17:06:20,935 - INFO - Total time taken for plot analysis with 5 critics: 23951.11 ms
+2024-08-09 17:06:22,745 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics is largely consistent in identifying the key issues with the trajectories. 
+
+**Common Points:**
+
+* **Incorrect Shape:**  All critics agree that the overall shape formed by the drones does not resemble the required 4-petal rose curve. 
+* **Trajectory Incompleteness:** The trajectories are frequently criticized for being incomplete, with drones not tracing out full petals.
+* **Starting Positions:** The starting positions of the drones are generally acknowledged to be incorrect, with the drones not forming a square centered on the origin.
+* **Synchronization:** The need for synchronization between the drones is emphasized to ensure smooth and coordinated movement for the desired shape.
+
+**Overall Consensus:**
+
+The critics generally agree that the trajectories are not valid and do not meet the requirements. They highlight the need for improvement in the synchronization of the drones, the trajectory generation algorithm, and the starting positions. 
+
+**Score Comparison:**
+
+* **Previous Score:**  0/100 
+* **Current Score:**  The scores provided range from 10/100 to 20/100, indicating a wide range of opinions on the severity of the issues. 
+* **Score Change:** WORSE 
+
+2024-08-09 17:06:22,746 - INFO - Retrying... (7/10)
+2024-08-09 17:06:24,651 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_rose_petal(a, n, theta_start, theta_end):
+    theta = np.linspace(theta_start, theta_end, 100)
+    r = a * np.sin(n * theta)
+    x = r * np.cos(theta)
+    y = r * np.sin(theta)
+    return np.array([x, y, np.zeros_like(x)]).T
+
+# Drone 1 waypoints
+waypoints1 = generate_rose_petal(10, 4, 0, np.pi/2)
+
+# Drone 2 waypoints
+waypoints2 = generate_rose_petal(10, 4, np.pi/2, np.pi)
+
+# Drone 3 waypoints
+waypoints3 = generate_rose_petal(10, 4, np.pi, 3*np.pi/2)
+
+# Drone 4 waypoints
+waypoints4 = generate_rose_petal(10, 4, 3*np.pi/2, 2*np.pi)
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4]
+```
+2024-08-09 17:06:24,652 - INFO - Total time taken for transcription: 1905.25 ms
+2024-08-09 17:06:24,654 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 17:06:24,654 - INFO - Retrying... (8/10)
+2024-08-09 17:06:27,714 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+a = 5 # size of the rose curve
+n = 4 # number of petals
+theta = np.linspace(0, 2*np.pi, 100)
+r = a * np.sin(n * theta)
+x1 = r * np.cos(theta)
+y1 = r * np.sin(theta)
+z1 = np.zeros_like(x1)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+theta = np.linspace(np.pi/4, 2*np.pi + np.pi/4, 100)
+r = a * np.sin(n * theta)
+x2 = r * np.cos(theta)
+y2 = r * np.sin(theta)
+z2 = np.zeros_like(x2)
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+theta = np.linspace(np.pi/2, 2*np.pi + np.pi/2, 100)
+r = a * np.sin(n * theta)
+x3 = r * np.cos(theta)
+y3 = r * np.sin(theta)
+z3 = np.zeros_like(x3)
+waypoints3 = np.array([x3, y3, z3]).T
+
+# Drone 4 waypoints
+theta = np.linspace(3*np.pi/4, 2*np.pi + 3*np.pi/4, 100)
+r = a * np.sin(n * theta)
+x4 = r * np.cos(theta)
+y4 = r * np.sin(theta)
+z4 = np.zeros_like(x4)
+waypoints4 = np.array([x4, y4, z4]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4]
+```
+2024-08-09 17:06:27,716 - INFO - Total time taken for transcription: 3059.77 ms
+2024-08-09 17:06:27,928 - INFO - Trajectory plot saved at experiments/4petal_rose_20240809_170032/trial_2/waypoints_plot.png
+2024-08-09 17:06:43,860 - INFO - Total time taken for plot analysis with 5 critics: 15926.51 ms
+2024-08-09 17:06:45,848 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics is largely consistent in identifying the key issues with the trajectories. 
+
+**Common Points:**
+
+* **Incorrect Shape:**  All critics agree that the overall shape formed by the drones does not resemble the required 4-petal rose curve. 
+* **Trajectory Incompleteness:** The trajectories are frequently criticized for being incomplete, with drones not tracing out full petals.
+* **Starting Positions:** The starting positions of the drones are generally acknowledged to be incorrect, with the drones not forming a square centered on the origin.
+* **Synchronization:** The need for synchronization between the drones is emphasized to ensure smooth and coordinated movement for the desired shape.
+
+**Overall Consensus:**
+
+The critics generally agree that the trajectories are not valid and do not meet the requirements. They highlight the need for improvement in the synchronization of the drones, the trajectory generation algorithm, and the starting positions. 
+
+**Score Comparison:**
+
+* **Previous Score:**  0/100 
+* **Current Score:**  The scores provided range from 10/100 to 20/100, indicating a wide range of opinions on the severity of the issues. 
+* **Score Change:** **WORSE** 
+
+2024-08-09 17:06:45,849 - INFO - Retrying... (9/10)
+2024-08-09 17:06:48,794 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+a = 2 # size of the rose curve
+n = 4 # number of petals
+theta = np.linspace(0, 2*np.pi, 100)
+r = a * np.sin(n*theta)
+x = r * np.cos(theta)
+y = r * np.sin(theta)
+z = np.zeros(len(x))
+waypoints1 = np.array([x, y, z]).T
+
+# Drone 2 waypoints
+theta = np.linspace(np.pi/4, 2*np.pi + np.pi/4, 100)
+r = a * np.sin(n*theta)
+x = r * np.cos(theta)
+y = r * np.sin(theta)
+z = np.zeros(len(x))
+waypoints2 = np.array([x, y, z]).T
+
+# Drone 3 waypoints
+theta = np.linspace(np.pi/2, 2*np.pi + np.pi/2, 100)
+r = a * np.sin(n*theta)
+x = r * np.cos(theta)
+y = r * np.sin(theta)
+z = np.zeros(len(x))
+waypoints3 = np.array([x, y, z]).T
+
+# Drone 4 waypoints
+theta = np.linspace(3*np.pi/4, 2*np.pi + 3*np.pi/4, 100)
+r = a * np.sin(n*theta)
+x = r * np.cos(theta)
+y = r * np.sin(theta)
+z = np.zeros(len(x))
+waypoints4 = np.array([x, y, z]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3, waypoints4]
+```
+2024-08-09 17:06:48,794 - INFO - Total time taken for transcription: 2945.27 ms
+2024-08-09 17:06:49,118 - INFO - Trajectory plot saved at experiments/4petal_rose_20240809_170032/trial_2/waypoints_plot.png
+2024-08-09 17:07:01,563 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:07:01,563 - INFO - Retrying in 0.67 seconds...
+2024-08-09 17:07:05,379 - INFO - Total time taken for plot analysis with 5 critics: 16259.85 ms
+2024-08-09 17:07:05,462 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:07:05,462 - INFO - Retrying in 0.94 seconds...
+2024-08-09 17:07:06,479 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:07:06,479 - INFO - Retrying in 0.41 seconds...
+2024-08-09 17:07:06,972 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:07:06,972 - INFO - Retrying in 0.75 seconds...
+2024-08-09 17:07:07,819 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:07:07,819 - INFO - Retrying in 0.87 seconds...
+2024-08-09 17:07:08,771 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:07:08,771 - INFO - Retrying in 2.08 seconds...
+2024-08-09 17:07:10,934 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:07:10,936 - INFO - Retrying in 3.28 seconds...
+2024-08-09 17:07:14,299 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:07:14,300 - INFO - Retrying in 6.96 seconds...
+2024-08-09 17:07:23,303 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics is largely consistent in identifying the key issues with the trajectories. 
+
+**Common Points:**
+
+* **Incorrect Shape:**  All critics agree that the overall shape formed by the drones does not resemble the required 4-petal rose curve. 
+* **Trajectory Incompleteness:** The trajectories are frequently criticized for being incomplete, with drones not tracing out full petals.
+* **Starting Positions:** The starting positions of the drones are generally acknowledged to be incorrect, with the drones not forming a square centered on the origin.
+* **Synchronization:** The need for synchronization between the drones is emphasized to ensure smooth and coordinated movement for the desired shape.
+
+**Overall Consensus:**
+
+The critics generally agree that the trajectories are not valid and do not meet the requirements. They highlight the need for improvement in the synchronization of the drones, the trajectory generation algorithm, and the starting positions. 
+
+**Score Comparison:**
+
+* **Previous Score:**  0/100 
+* **Current Score:**  The scores provided range from 10/100 to 30/100, indicating a wide range of opinions on the severity of the issues. 
+* **Score Change:** **WORSE** 
+
+2024-08-09 17:07:23,304 - INFO - Retrying... (10/10)
+2024-08-09 17:07:23,304 - ERROR - Maximum number of retries reached. Failed to process waypoints.
+2024-08-09 17:07:23,304 - ERROR - Experiment 2 for 4petal_rose failed.

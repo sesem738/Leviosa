@@ -1,0 +1,677 @@
+2024-08-09 17:42:57,568 - INFO - Interpreted requirements:
+
+ ## Drone Trajectory Requirements: Triple Helix Pattern
+
+Here are the structured requirements for generating a triple helix pattern with 3 drones:
+
+**[REQ] Number of drones:** 3
+**[REQ] Starting formation:** The drones should begin in an equilateral triangle formation, with each drone positioned at one vertex. This ensures equal spacing and a balanced start for the helix pattern.
+**[REQ] Flight path:** Each drone will follow a helical path, with the three drones forming the three strands of the helix. The helix should be oriented vertically, with the drones ascending as they spiral upwards. 
+
+**[REQ] Spacing and Synchronization:** The drones must maintain a consistent, uniform spacing between each other throughout the flight. This means the distance between drones on each strand of the helix remains constant. To achieve this, the drones should continuously adjust their speeds and positions relative to each other. Synchronization is essential for maintaining the helix shape and visual aesthetics. 
+**[REQ] Trajectory Shape:** 
+  - Each drone follows a spiral path, defined by a constant radius and a pitch angle. 
+  - The radius of the spiral should be large enough to allow for clear visual distinction between the helix strands.
+  - The pitch angle determines the steepness of the helix. 
+  - The three spirals should be offset in phase, with each drone starting its spiral at a different point in the cycle. This creates a visually appealing triple helix formation.
+**[REQ] Termination:** The drones should continue flying in the helical formation until a predefined termination point, such as reaching a specific altitude or a predefined duration.
+
+**Reasoning:**
+
+The command specifies a triple helix pattern, implying a three-dimensional shape formed by three separate strands.  The requirement for "uniform spacing and synchronization" signifies the need for precise control over each drone's position and speed to maintain the helix's visual coherence.  
+A starting equilateral triangle formation provides a balanced and symmetric initial setup for the helix pattern. The absence of specific starting points or directions allows for flexibility in the trajectory generation, as long as the three-strand helix pattern is maintained. 
+
+2024-08-09 17:43:00,843 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define parameters for the triple helix pattern
+radius = 5  # Radius of the helix
+pitch = 2  # Pitch of the helix
+height = 20 # Total height of the helix
+num_turns = 3  # Number of turns of the helix
+phase_shift = 2 * np.pi / 3  # Phase shift between drones
+
+# Define the starting positions of the drones
+# Equilateral triangle formation with side length 2*radius
+x0 = [radius, -radius, 0]
+y0 = [0, radius * np.sqrt(3), -radius * np.sqrt(3)]
+z0 = [0, 0, 0]
+
+# Generate the waypoints for each drone
+t = np.linspace(0, num_turns * 2 * np.pi, 100)  # Parameter for the helix
+waypoints1 = np.array([
+    radius * np.cos(t), 
+    radius * np.sin(t), 
+    pitch * t / (2 * np.pi)
+])
+waypoints2 = np.array([
+    radius * np.cos(t + phase_shift), 
+    radius * np.sin(t + phase_shift), 
+    pitch * (t + phase_shift) / (2 * np.pi)
+])
+waypoints3 = np.array([
+    radius * np.cos(t + 2 * phase_shift), 
+    radius * np.sin(t + 2 * phase_shift), 
+    pitch * (t + 2 * phase_shift) / (2 * np.pi)
+])
+
+# Add the starting positions to the waypoints
+waypoints1 = waypoints1 + np.array([x0[0], y0[0], z0[0]]).reshape(3,1)
+waypoints2 = waypoints2 + np.array([x0[1], y0[1], z0[1]]).reshape(3,1)
+waypoints3 = waypoints3 + np.array([x0[2], y0[2], z0[2]]).reshape(3,1)
+
+# Transpose the waypoints to get the desired format
+waypoints1 = waypoints1.T
+waypoints2 = waypoints2.T
+waypoints3 = waypoints3.T
+
+# Combine the waypoints for all drones
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:43:00,843 - INFO - Total time taken for transcription: 3273.96 ms
+2024-08-09 17:43:01,036 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot.png
+2024-08-09 17:43:02,155 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:43:02,155 - INFO - Retrying in 1.06 seconds...
+2024-08-09 17:43:03,400 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:43:03,401 - INFO - Retrying in 1.12 seconds...
+2024-08-09 17:43:04,603 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:43:04,603 - INFO - Retrying in 1.09 seconds...
+2024-08-09 17:43:05,776 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:43:05,776 - INFO - Retrying in 1.12 seconds...
+2024-08-09 17:43:06,968 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:43:06,968 - INFO - Retrying in 2.33 seconds...
+2024-08-09 17:43:09,377 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:43:09,377 - INFO - Retrying in 3.56 seconds...
+2024-08-09 17:43:13,019 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:43:13,019 - INFO - Retrying in 6.83 seconds...
+2024-08-09 17:43:40,173 - INFO - Total time taken for plot analysis with 5 critics: 39135.84 ms
+2024-08-09 17:43:42,371 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+The feedback from the critics consistently points out that the trajectories are not valid and fail to meet the requirements for a triple helix pattern. The primary issues are:
+
+* **Incorrect trajectory shape:** The drones are not following helical paths, instead forming circles in the top-down view. This is a fundamental flaw that prevents the formation of a triple helix.
+* **Lack of synchronization and spacing:** The drones are not moving at the same speed or maintaining consistent distances from each other, resulting in an uneven and visually unappealing helix.
+* **Starting position errors:** While the drones sometimes start close to an equilateral triangle, they rarely achieve perfect symmetry, impacting the helix's overall appearance.
+
+**Overall Consensus:** The trajectories are significantly flawed and require extensive revisions to achieve a triple helix pattern. 
+
+Based on the provided feedback, the previous score was **20/100**, and the current score is **20/100**. 
+
+The score has **not improved or decreased** (**SAME**). 
+
+2024-08-09 17:43:42,371 - INFO - Retrying... (1/10)
+2024-08-09 17:43:45,114 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define helix parameters
+radius = 5 # meters
+pitch = 2 # meters per revolution
+amplitude = 1 # meters
+num_turns = 5 # Number of helix turns
+
+# Define helix offset for each drone
+phase_offset = 2*np.pi/3 # Offset for each drone in the helix
+
+# Define starting positions for each drone (equilateral triangle formation)
+x0 = [radius*np.cos(0), radius*np.cos(2*np.pi/3), radius*np.cos(4*np.pi/3)]
+y0 = [radius*np.sin(0), radius*np.sin(2*np.pi/3), radius*np.sin(4*np.pi/3)]
+z0 = [0, 0, 0] 
+
+# Define time intervals
+t = np.linspace(0, num_turns * 2 * np.pi, 100)
+
+# Generate waypoints for each drone
+waypoints1 = np.array([radius*np.cos(t), radius*np.sin(t), pitch*t/ (2*np.pi) + amplitude*np.sin(t)])
+waypoints2 = np.array([radius*np.cos(t + phase_offset), radius*np.sin(t + phase_offset), pitch*t/ (2*np.pi) + amplitude*np.sin(t + phase_offset)]) 
+waypoints3 = np.array([radius*np.cos(t + 2*phase_offset), radius*np.sin(t + 2*phase_offset), pitch*t/ (2*np.pi) + amplitude*np.sin(t + 2*phase_offset)])
+
+# Combine waypoints into a list
+waypoints = [waypoints1.T, waypoints2.T, waypoints3.T]
+```
+2024-08-09 17:43:45,115 - INFO - Total time taken for transcription: 2742.70 ms
+2024-08-09 17:43:45,424 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot.png
+2024-08-09 17:44:06,551 - INFO - Total time taken for plot analysis with 5 critics: 21126.13 ms
+2024-08-09 17:44:08,271 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics shows a mixed picture. While the trajectories demonstrate improvement in some areas, they still fall short of meeting all the requirements for a perfect triple helix pattern. 
+
+**Common Points:**
+
+* **Continuity:**  All critics agree that the paths are continuous with no sudden jumps or breaks. 
+* **Starting Positions:**  The starting positions are generally considered to be acceptable, forming an equilateral triangle.
+* **Triple Helix:** The overall shape of the trajectories is not a true triple helix. The drones fail to maintain consistent spacing and synchronization, resulting in a less visually appealing and less accurate representation of the desired pattern.
+
+**Overall Consensus:** 
+
+The trajectories show progress towards achieving a triple helix pattern, but they still require significant improvements in spacing, synchronization, and helix shape.
+
+**Previous Score:** 20/100
+**Current Score:** 65/100
+
+The score has **improved** (**BETTER**) by +45. 
+
+2024-08-09 17:44:08,469 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot_best.png
+2024-08-09 17:44:08,469 - INFO - Retrying... (2/10)
+2024-08-09 17:44:11,285 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Number of drones
+N = 3
+
+# Helix parameters
+radius = 2
+pitch = 1
+height = 10
+
+# Define the starting positions for the equilateral triangle formation
+def equilateral_triangle_formation(N, radius):
+    """Generates the starting positions for N drones in an equilateral triangle formation."""
+    angle = 2 * np.pi / N
+    positions = []
+    for i in range(N):
+        x = radius * np.cos(i * angle)
+        y = radius * np.sin(i * angle)
+        positions.append([x, y, 0])
+    return positions
+
+# Calculate waypoints for each drone
+def helix_trajectory(radius, pitch, height, N, start_position):
+    """Generates waypoints for a helix trajectory."""
+    t = np.linspace(0, height, 100)
+    x = radius * np.cos(2 * np.pi * t / pitch) + start_position[0]
+    y = radius * np.sin(2 * np.pi * t / pitch) + start_position[1]
+    z = t + start_position[2]
+    return np.array([x, y, z]).T
+
+# Generate starting positions
+start_positions = equilateral_triangle_formation(N, radius)
+
+# Generate helix trajectories for each drone
+waypoints = []
+for i in range(N):
+    waypoints.append(helix_trajectory(radius, pitch, height, N, start_positions[i]))
+
+# Drone 1 waypoints
+waypoints1 = waypoints[0]
+
+# Drone 2 waypoints
+waypoints2 = waypoints[1]
+
+# Drone 3 waypoints
+waypoints3 = waypoints[2]
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:44:11,286 - INFO - Total time taken for transcription: 2815.74 ms
+2024-08-09 17:44:11,289 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 17:44:11,289 - INFO - Retrying... (3/10)
+2024-08-09 17:44:13,233 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define helix parameters
+radius = 5  # Radius of the helix
+pitch = 2  # Pitch of the helix
+height = 20  # Total height of the helix
+num_turns = 5  # Number of turns of the helix
+
+# Calculate the phase offset for each drone
+phase_offset = 2 * np.pi / 3
+
+# Generate waypoints for each drone
+t = np.linspace(0, num_turns * 2 * np.pi, 100)
+
+# Drone 1 waypoints
+waypoints1 = np.array([radius * np.cos(t), radius * np.sin(t), pitch * t])
+waypoints1 = waypoints1.transpose()
+
+# Drone 2 waypoints
+waypoints2 = np.array([radius * np.cos(t + phase_offset), radius * np.sin(t + phase_offset), pitch * t])
+waypoints2 = waypoints2.transpose()
+
+# Drone 3 waypoints
+waypoints3 = np.array([radius * np.cos(t + 2 * phase_offset), radius * np.sin(t + 2 * phase_offset), pitch * t])
+waypoints3 = waypoints3.transpose()
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:44:13,234 - INFO - Total time taken for transcription: 1944.14 ms
+2024-08-09 17:44:13,425 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot.png
+2024-08-09 17:44:33,545 - INFO - Total time taken for plot analysis with 5 critics: 20119.06 ms
+2024-08-09 17:44:35,465 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics shows a mixed picture. While the trajectories demonstrate improvement in some areas, they still fall short of meeting all the requirements for a perfect triple helix pattern. 
+
+**Common Points:**
+
+* **Continuity:**  All critics agree that the paths are continuous with no sudden jumps or breaks. 
+* **Starting Positions:**  The starting positions are generally considered to be acceptable, forming an equilateral triangle.
+* **Triple Helix:** The overall shape of the trajectories is not a true triple helix. The drones fail to maintain consistent spacing and synchronization, resulting in a less visually appealing and less accurate representation of the desired pattern.
+
+**Overall Consensus:** 
+
+The trajectories show progress towards achieving a triple helix pattern, but they still require significant improvements in spacing, synchronization, and helix shape.
+
+**Previous Score:** 40/100
+**Current Score:** 65/100
+
+The score has **improved** (**BETTER**) by +25. 
+
+2024-08-09 17:44:35,675 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot_best.png
+2024-08-09 17:44:35,676 - INFO - Retrying... (4/10)
+2024-08-09 17:44:37,585 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 2
+pitch_angle = np.pi/4
+height = 10
+num_turns = 2
+t = np.linspace(0, num_turns * 2 * np.pi, 100)
+waypoints1 = np.array([radius * np.cos(t), radius * np.sin(t),  t * np.tan(pitch_angle)])
+waypoints1 = waypoints1.transpose()
+
+# Drone 2 waypoints
+waypoints2 = np.array([radius * np.cos(t + 2*np.pi/3), radius * np.sin(t + 2*np.pi/3),  t * np.tan(pitch_angle)])
+waypoints2 = waypoints2.transpose()
+
+# Drone 3 waypoints
+waypoints3 = np.array([radius * np.cos(t + 4*np.pi/3), radius * np.sin(t + 4*np.pi/3),  t * np.tan(pitch_angle)])
+waypoints3 = waypoints3.transpose()
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:44:37,585 - INFO - Total time taken for transcription: 1908.85 ms
+2024-08-09 17:44:37,794 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot.png
+2024-08-09 17:44:56,967 - INFO - Total time taken for plot analysis with 5 critics: 19172.81 ms
+2024-08-09 17:44:58,621 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics shows a mixed picture. While the trajectories demonstrate improvement in some areas, they still fall short of meeting all the requirements for a perfect triple helix pattern. 
+
+**Common Points:**
+
+* **Continuity:**  All critics agree that the paths are continuous with no sudden jumps or breaks. 
+* **Starting Positions:**  The starting positions are generally considered to be acceptable, forming an equilateral triangle.
+* **Triple Helix:** The overall shape of the trajectories is not a true triple helix. The drones fail to maintain consistent spacing and synchronization, resulting in a less visually appealing and less accurate representation of the desired pattern.
+
+**Overall Consensus:** 
+
+The trajectories show progress towards achieving a triple helix pattern, but they still require significant improvements in spacing, synchronization, and helix shape.
+
+**Previous Score:** 40/100
+**Current Score:** 55/100
+
+The score has **improved** (**BETTER**) by +15. 
+
+2024-08-09 17:44:58,875 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot_best.png
+2024-08-09 17:44:58,875 - INFO - Retrying... (5/10)
+2024-08-09 17:45:01,472 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 2  # Radius of the helix
+pitch = 1  # Pitch of the helix
+num_points = 50  # Number of waypoints
+phase_shift = 0  # Phase shift for Drone 1
+
+t = np.linspace(0, 2 * np.pi * num_points, num_points)
+x1 = radius * np.cos(t + phase_shift)
+y1 = radius * np.sin(t + phase_shift)
+z1 = pitch * t 
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+phase_shift = 2 * np.pi / 3  # Phase shift for Drone 2
+
+t = np.linspace(0, 2 * np.pi * num_points, num_points)
+x2 = radius * np.cos(t + phase_shift)
+y2 = radius * np.sin(t + phase_shift)
+z2 = pitch * t 
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+phase_shift = 4 * np.pi / 3  # Phase shift for Drone 3
+
+t = np.linspace(0, 2 * np.pi * num_points, num_points)
+x3 = radius * np.cos(t + phase_shift)
+y3 = radius * np.sin(t + phase_shift)
+z3 = pitch * t 
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:45:01,473 - INFO - Total time taken for transcription: 2596.61 ms
+2024-08-09 17:45:01,673 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot.png
+2024-08-09 17:45:14,479 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:45:14,480 - INFO - Retrying in 0.21 seconds...
+2024-08-09 17:45:21,565 - INFO - Total time taken for plot analysis with 5 critics: 19891.33 ms
+2024-08-09 17:45:23,201 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics shows a mixed picture. While the trajectories demonstrate improvement in some areas, they still fall short of meeting all the requirements for a perfect triple helix pattern. 
+
+**Common Points:**
+
+* **Continuity:**  All critics agree that the paths are continuous with no sudden jumps or breaks. 
+* **Starting Positions:**  The starting positions are generally considered to be acceptable, forming an equilateral triangle.
+* **Triple Helix:** The overall shape of the trajectories is not a true triple helix. The drones fail to maintain consistent spacing and synchronization, resulting in a less visually appealing and less accurate representation of the desired pattern.
+
+**Overall Consensus:** 
+
+The trajectories show progress towards achieving a triple helix pattern, but they still require significant improvements in spacing, synchronization, and helix shape.
+
+**Previous Score:** 20/100
+**Current Score:** 65/100
+
+The score has **improved** (**BETTER**) by +45. 
+
+2024-08-09 17:45:23,405 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot_best.png
+2024-08-09 17:45:23,406 - INFO - Retrying... (6/10)
+2024-08-09 17:45:25,551 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 2  # Radius of the helix
+pitch = 1   # Pitch of the helix
+height = 10 # Total height of the helix
+
+t = np.linspace(0, 4*np.pi, 100) # Parameter for the helix
+
+x1 = radius * np.cos(t) 
+y1 = radius * np.sin(t) 
+z1 = pitch * t 
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t + 2*np.pi/3)
+y2 = radius * np.sin(t + 2*np.pi/3)
+z2 = pitch * t
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+x3 = radius * np.cos(t + 4*np.pi/3)
+y3 = radius * np.sin(t + 4*np.pi/3)
+z3 = pitch * t 
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:45:25,551 - INFO - Total time taken for transcription: 2145.02 ms
+2024-08-09 17:45:25,753 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot.png
+2024-08-09 17:45:45,506 - INFO - Total time taken for plot analysis with 5 critics: 19751.98 ms
+2024-08-09 17:45:48,894 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics shows a mixed picture. While the trajectories demonstrate improvement in some areas, they still fall short of meeting all the requirements for a perfect triple helix pattern. 
+
+**Common Points:**
+
+* **Continuity:**  All critics agree that the paths are continuous with no sudden jumps or breaks. 
+* **Starting Positions:**  The starting positions are generally considered to be acceptable, forming an equilateral triangle.
+* **Triple Helix:** The overall shape of the trajectories is not a true triple helix. The drones fail to maintain consistent spacing and synchronization, resulting in a less visually appealing and less accurate representation of the desired pattern.
+* **Spacing and Synchronization:** All critics agree that spacing and synchronization are issues. They suggest implementing algorithms to ensure consistent spacing and synchronization.
+* **Termination Point:** Some critics suggest defining a clear termination point for the trajectories, while others don't explicitly mention it.
+
+
+**Overall Consensus:** 
+
+The trajectories show progress towards achieving a triple helix pattern, but they still require significant improvements in spacing, synchronization, and helix shape.
+
+**Previous Score:** 30/100
+**Current Score:** 65/100
+
+The score has **improved** (**BETTER**) by +35. 
+
+2024-08-09 17:45:49,175 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot_best.png
+2024-08-09 17:45:49,175 - INFO - Retrying... (7/10)
+2024-08-09 17:45:51,277 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 2
+pitch = 1
+height = 10
+num_turns = 3
+t = np.linspace(0, num_turns*2*np.pi, 100)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = pitch * t + height
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t + 2*np.pi/3)
+y2 = radius * np.sin(t + 2*np.pi/3)
+z2 = pitch * t + height
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+x3 = radius * np.cos(t + 4*np.pi/3)
+y3 = radius * np.sin(t + 4*np.pi/3)
+z3 = pitch * t + height
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:45:51,278 - INFO - Total time taken for transcription: 2102.09 ms
+2024-08-09 17:45:51,489 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot.png
+2024-08-09 17:46:11,149 - INFO - Total time taken for plot analysis with 5 critics: 19658.44 ms
+2024-08-09 17:46:11,235 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:46:11,236 - INFO - Retrying in 0.51 seconds...
+2024-08-09 17:46:11,832 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:46:11,832 - INFO - Retrying in 0.40 seconds...
+2024-08-09 17:46:12,324 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:46:12,325 - INFO - Retrying in 0.78 seconds...
+2024-08-09 17:46:13,189 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:46:13,190 - INFO - Retrying in 1.30 seconds...
+2024-08-09 17:46:14,573 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:46:14,574 - INFO - Retrying in 1.66 seconds...
+2024-08-09 17:46:18,250 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics shows a mixed picture. While the trajectories demonstrate improvement in some areas, they still fall short of meeting all the requirements for a perfect triple helix pattern. 
+
+**Common Points:**
+
+* **Continuity:**  All critics agree that the paths are continuous with no sudden jumps or breaks. 
+* **Starting Positions:**  The starting positions are generally considered to be acceptable, forming an equilateral triangle.
+* **Triple Helix:** The overall shape of the trajectories is not a true triple helix. The drones fail to maintain consistent spacing and synchronization, resulting in a less visually appealing and less accurate representation of the desired pattern.
+* **Spacing and Synchronization:** All critics agree that spacing and synchronization are issues. They suggest implementing algorithms to ensure consistent spacing and synchronization.
+* **Termination Point:** Some critics suggest defining a clear termination point for the trajectories, while others don't explicitly mention it.
+
+
+**Overall Consensus:** 
+
+The trajectories show progress towards achieving a triple helix pattern, but they still require significant improvements in spacing, synchronization, and helix shape.
+
+**Previous Score:** 20/100
+**Current Score:** 60/100
+
+The score has **improved** (**BETTER**) by +40. 
+
+2024-08-09 17:46:18,500 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot_best.png
+2024-08-09 17:46:18,500 - INFO - Retrying... (8/10)
+2024-08-09 17:46:20,663 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define parameters for the helix
+radius = 2  # Radius of the helix
+pitch = 1  # Pitch of the helix
+height = 10  # Height of the helix
+num_turns = 3  # Number of turns in the helix
+phase_offset = 2*np.pi/3  # Phase offset between drones
+
+# Preprocessing to calculate the angle and height for each drone
+t = np.linspace(0, num_turns * 2*np.pi, 100)
+x = radius * np.cos(t)
+y = radius * np.sin(t)
+z = pitch * t / (2 * np.pi) 
+
+# Drone 1 waypoints
+waypoints1 = np.array([x, y, z]).T
+
+# Drone 2 waypoints
+waypoints2 = np.array([x * np.cos(phase_offset) - y * np.sin(phase_offset), 
+                       x * np.sin(phase_offset) + y * np.cos(phase_offset), z]).T
+
+# Drone 3 waypoints
+waypoints3 = np.array([x * np.cos(2 * phase_offset) - y * np.sin(2 * phase_offset), 
+                       x * np.sin(2 * phase_offset) + y * np.cos(2 * phase_offset), z]).T
+
+# Combine waypoints into a list
+waypoints = [waypoints1, waypoints2, waypoints3]
+
+```
+2024-08-09 17:46:20,663 - INFO - Total time taken for transcription: 2162.08 ms
+2024-08-09 17:46:20,864 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot.png
+2024-08-09 17:46:40,905 - INFO - Total time taken for plot analysis with 5 critics: 20040.17 ms
+2024-08-09 17:46:42,970 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics shows a mixed picture. While the trajectories demonstrate improvement in some areas, they still fall short of meeting all the requirements for a perfect triple helix pattern. 
+
+**Common Points:**
+
+* **Continuity:**  All critics agree that the paths are continuous with no sudden jumps or breaks. 
+* **Starting Positions:**  The starting positions are generally considered to be acceptable, forming an equilateral triangle.
+* **Triple Helix:** The overall shape of the trajectories is not a true triple helix. The drones fail to maintain consistent spacing and synchronization, resulting in a less visually appealing and less accurate representation of the desired pattern.
+* **Spacing and Synchronization:** All critics agree that spacing and synchronization are issues. They suggest implementing algorithms to ensure consistent spacing and synchronization.
+* **Termination Point:** Some critics suggest defining a clear termination point for the trajectories, while others don't explicitly mention it.
+
+
+**Overall Consensus:** 
+
+The trajectories show progress towards achieving a triple helix pattern, but they still require significant improvements in spacing, synchronization, and helix shape.
+
+**Previous Score:** 25/100
+**Current Score:** 60/100
+
+The score has **improved** (**BETTER**) by +35. 
+
+2024-08-09 17:46:43,257 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot_best.png
+2024-08-09 17:46:43,257 - INFO - Retrying... (9/10)
+2024-08-09 17:46:45,832 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Drone 1 waypoints
+radius = 2
+pitch = 1
+num_turns = 3
+height = 10  # Total height of the helix
+num_waypoints = 100
+
+t = np.linspace(0, num_turns * 2 * np.pi, num_waypoints)
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = pitch * t / (2 * np.pi) + height * t / (num_turns * 2 * np.pi)
+
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t + 2 * np.pi / 3)
+y2 = radius * np.sin(t + 2 * np.pi / 3)
+z2 = pitch * t / (2 * np.pi) + height * t / (num_turns * 2 * np.pi)
+
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+x3 = radius * np.cos(t + 4 * np.pi / 3)
+y3 = radius * np.sin(t + 4 * np.pi / 3)
+z3 = pitch * t / (2 * np.pi) + height * t / (num_turns * 2 * np.pi)
+
+waypoints3 = np.array([x3, y3, z3]).T
+
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:46:45,832 - INFO - Total time taken for transcription: 2574.18 ms
+2024-08-09 17:46:46,035 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot.png
+2024-08-09 17:47:04,969 - INFO - Total time taken for plot analysis with 5 critics: 18933.22 ms
+2024-08-09 17:47:06,999 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Feedback Summary:
+
+The feedback from the critics shows a mixed picture. While the trajectories demonstrate improvement in some areas, they still fall short of meeting all the requirements for a perfect triple helix pattern. 
+
+**Common Points:**
+
+* **Continuity:**  All critics agree that the paths are continuous with no sudden jumps or breaks. 
+* **Starting Positions:**  The starting positions are generally considered to be acceptable, forming an equilateral triangle.
+* **Triple Helix:** The overall shape of the trajectories is not a true triple helix. The drones fail to maintain consistent spacing and synchronization, resulting in a less visually appealing and less accurate representation of the desired pattern.
+* **Spacing and Synchronization:** All critics agree that spacing and synchronization are issues. They suggest implementing algorithms to ensure consistent spacing and synchronization.
+* **Termination Point:** Some critics suggest defining a clear termination point for the trajectories, while others don't explicitly mention it.
+
+
+**Overall Consensus:** 
+
+The trajectories show progress towards achieving a triple helix pattern, but they still require significant improvements in spacing, synchronization, and helix shape.
+
+**Previous Score:** 25/100
+**Current Score:** 55/100
+
+The score has **improved** (**BETTER**) by +30. 
+
+2024-08-09 17:47:07,200 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_1/waypoints_plot_best.png
+2024-08-09 17:47:07,200 - INFO - Retrying... (10/10)
+2024-08-09 17:47:07,200 - ERROR - Maximum number of retries reached. Failed to process waypoints.
+2024-08-09 17:47:07,200 - ERROR - Experiment 1 for triple_helix failed.

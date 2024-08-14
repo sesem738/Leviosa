@@ -1,0 +1,650 @@
+2024-08-09 17:47:09,170 - INFO - Interpreted requirements:
+
+ ## Requirements for Drone Trajectory Generation:
+
+**[REQ] Number of drones:** 3
+
+**[REQ] Starting formation:**  The drones should begin in an equilateral triangle formation, with each drone positioned at one vertex of the triangle. The size of the triangle should be large enough to allow for the drones to move freely within the trajectory. 
+
+**[REQ] Flight path:**  The drones should follow a triple helix pattern, with each drone forming one strand of the helix. The helix should have a constant radius and pitch, ensuring uniform spacing and synchronization between the drones. 
+
+**[REQ] Synchronization and spacing:** The drones should maintain uniform spacing throughout the trajectory, ensuring that they remain equidistant from each other. The movement of each drone should be synchronized with the other two drones, ensuring a smooth and coordinated flight pattern.
+
+**[REQ] Flight direction:** The drones should fly in a counter-clockwise direction along the helix, with each drone maintaining its position relative to the others.
+
+**[REQ] Trajectory termination:** The trajectory should continue until a designated end point is reached or a specific duration is elapsed.
+
+**[REQ]  Flight parameters:**  The flight parameters, such as speed and altitude, should be consistent for all drones. This will ensure the drones maintain their formation and synchronized movement throughout the trajectory. 
+
+2024-08-09 17:47:09,250 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:47:09,250 - INFO - Retrying in 0.71 seconds...
+2024-08-09 17:47:10,046 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:47:10,047 - INFO - Retrying in 0.23 seconds...
+2024-08-09 17:47:10,353 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:47:10,353 - INFO - Retrying in 0.48 seconds...
+2024-08-09 17:47:10,915 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:47:10,916 - INFO - Retrying in 1.16 seconds...
+2024-08-09 17:47:12,159 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:47:12,160 - INFO - Retrying in 2.46 seconds...
+2024-08-09 17:47:14,699 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:47:14,700 - INFO - Retrying in 3.86 seconds...
+2024-08-09 17:47:21,562 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the size of the equilateral triangle formation
+triangle_side = 10
+
+# Define the helix parameters
+radius = 5
+pitch = 5
+num_turns = 3
+
+# Calculate the height of the equilateral triangle
+height = np.sqrt(3) * triangle_side / 2
+
+# Define the starting positions of the drones in the equilateral triangle formation
+drone1_start = [0, 0, 0]
+drone2_start = [triangle_side / 2, height / 2, 0]
+drone3_start = [triangle_side / 2, -height / 2, 0]
+
+# Define the angular spacing between the drones
+angular_spacing = 2 * np.pi / 3
+
+# Calculate the number of waypoints for each drone
+num_waypoints = int(num_turns * 2 * np.pi * radius / pitch)
+
+# Generate the waypoints for each drone
+theta = np.linspace(0, num_turns * 2 * np.pi, num_waypoints)
+
+# Drone 1 waypoints
+waypoints1 = np.array([radius * np.cos(theta), radius * np.sin(theta), pitch * theta / (2 * np.pi)]).T + drone1_start
+
+# Drone 2 waypoints
+waypoints2 = np.array([radius * np.cos(theta + angular_spacing), radius * np.sin(theta + angular_spacing), pitch * theta / (2 * np.pi)]).T + drone2_start
+
+# Drone 3 waypoints
+waypoints3 = np.array([radius * np.cos(theta + 2 * angular_spacing), radius * np.sin(theta + 2 * angular_spacing), pitch * theta / (2 * np.pi)]).T + drone3_start
+
+# Combine all the waypoints
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:47:21,564 - INFO - Total time taken for transcription: 12391.38 ms
+2024-08-09 17:47:21,802 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_2/waypoints_plot.png
+2024-08-09 17:47:39,430 - INFO - Total time taken for plot analysis with 5 critics: 17626.83 ms
+2024-08-09 17:47:40,912 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Based on the provided feedback, the previous score was **50/100**. 
+
+The current score, based on the consensus of the critics, is **20/100**. 
+
+Therefore, the score has **WORSE** by **-30**. 
+
+2024-08-09 17:47:40,912 - INFO - Retrying... (1/10)
+2024-08-09 17:47:43,883 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+#define parameters
+num_drones = 3
+radius = 5  # Radius of the helix
+pitch = 10  # Pitch of the helix
+height = 10 # Altitude of the helix
+num_points = 50 # Number of waypoints per helix
+#compute  offset for equilateral triangle
+offset = np.sqrt(3)*radius
+
+# Drone 1 waypoints
+t = np.linspace(0, 3*np.pi, num_points) 
+waypoints1 = np.array([radius*np.cos(t), radius*np.sin(t), height + pitch*t/ (2*np.pi) ]).T 
+waypoints1 += [offset, 0, 0]  # Offset for Drone 1's position in the equilateral triangle
+
+# Drone 2 waypoints
+t = np.linspace(0, 3*np.pi, num_points) 
+waypoints2 = np.array([radius*np.cos(t), radius*np.sin(t), height + pitch*t/ (2*np.pi) ]).T 
+waypoints2 += [-offset/2, offset*np.sqrt(3)/2, 0] # Offset for Drone 2's position in the equilateral triangle
+
+# Drone 3 waypoints
+t = np.linspace(0, 3*np.pi, num_points) 
+waypoints3 = np.array([radius*np.cos(t), radius*np.sin(t), height + pitch*t/ (2*np.pi) ]).T 
+waypoints3 += [-offset/2, -offset*np.sqrt(3)/2, 0] # Offset for Drone 3's position in the equilateral triangle
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:47:43,883 - INFO - Total time taken for transcription: 2970.31 ms
+2024-08-09 17:47:44,071 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_2/waypoints_plot.png
+2024-08-09 17:47:59,893 - INFO - Total time taken for plot analysis with 5 critics: 15821.19 ms
+2024-08-09 17:48:01,903 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback is overwhelmingly negative. All critics agree that the drone trajectories do not meet the requirements. The main issues identified are:
+
+* **Incorrect trajectory:** The drones do not follow a triple helix pattern as specified. Instead, they fly in circles or a combination of circles and helixes.
+* **Incorrect starting positions:**  The drones do not start in a large enough equilateral triangle, hindering their ability to form the proper helix.
+* **Lack of uniform spacing and synchronization:** The drones do not maintain consistent spacing and synchronized movement throughout their flight, leading to collisions and a distorted overall shape. 
+
+**Common suggestions for improvement:**
+
+* **Correct the trajectory:**  Generate a true triple helix path using parametric equations with consistent radius and pitch.
+* **Increase the starting triangle size:**  Ensure enough space for the drones to move freely along the helix.
+* **Ensure synchronization:** Program the drones to move at the same speed and maintain uniform spacing.
+
+## Score Evaluation:
+
+Based on the previous feedback, the previous score was **50/100**.
+
+The current score, based on the consensus of the critics, is **20/100**.
+
+Therefore, the score has **WORSE** by **-30**. 
+
+2024-08-09 17:48:01,904 - INFO - Retrying... (2/10)
+2024-08-09 17:48:04,599 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define helix parameters
+radius = 5  # Radius of the helix
+pitch = 10  # Pitch of the helix
+num_turns = 3  # Number of turns of the helix
+t = np.linspace(0, 2*np.pi*num_turns, 100)  # Time parameter for the helix
+
+# Define equilateral triangle formation
+side_length = 10  # Side length of the equilateral triangle
+angle = np.pi/3  # Angle of the equilateral triangle
+
+# Drone 1 waypoints
+x1 = radius * np.cos(t) + side_length/2
+y1 = radius * np.sin(t)
+z1 = pitch * t / (2*np.pi)
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t) + side_length/2 * np.cos(angle)
+y2 = radius * np.sin(t) + side_length/2 * np.sin(angle)
+z2 = pitch * t / (2*np.pi)
+
+# Drone 3 waypoints
+x3 = radius * np.cos(t) + side_length/2 * np.cos(2*angle)
+y3 = radius * np.sin(t) + side_length/2 * np.sin(2*angle)
+z3 = pitch * t / (2*np.pi)
+
+# Combine waypoints into lists
+waypoints1 = np.array([x1, y1, z1]).T
+waypoints2 = np.array([x2, y2, z2]).T
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+
+```
+2024-08-09 17:48:04,599 - INFO - Total time taken for transcription: 2694.66 ms
+2024-08-09 17:48:04,860 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_2/waypoints_plot.png
+2024-08-09 17:48:06,022 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:48:06,022 - INFO - Retrying in 0.51 seconds...
+2024-08-09 17:48:06,616 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:48:06,616 - INFO - Retrying in 0.59 seconds...
+2024-08-09 17:48:07,328 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:48:07,329 - INFO - Retrying in 0.88 seconds...
+2024-08-09 17:48:08,285 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:48:08,286 - INFO - Retrying in 0.98 seconds...
+2024-08-09 17:48:09,344 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:48:09,344 - INFO - Retrying in 1.99 seconds...
+2024-08-09 17:48:11,418 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:48:11,419 - INFO - Retrying in 3.50 seconds...
+2024-08-09 17:48:15,003 - ERROR - An error occurred during Gemini API call: 429 Resource has been exhausted (e.g. check quota).
+2024-08-09 17:48:15,003 - INFO - Retrying in 6.72 seconds...
+2024-08-09 17:48:39,127 - INFO - Total time taken for plot analysis with 5 critics: 34265.41 ms
+2024-08-09 17:48:42,662 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback remains largely negative. While some critics acknowledge minor improvements in the continuity and starting positions of the drones, the primary issue of the incorrect triple helix formation persists. The drones still do not form a single, synchronized triple helix with consistent spacing and synchronization.
+
+**Common Issues:**
+
+* **Incorrect Triple Helix:**  The drones do not form a proper triple helix pattern, with their paths often overlapping or failing to maintain the required equidistant arrangement.
+* **Spacing and Synchronization:**  While some improvements are noted, the drones still struggle with maintaining uniform spacing and synchronized movement, leading to near-collisions and an overall distorted helix shape.
+* **Starting Position:** The starting position of the drones, while slightly better in some cases, still does not form the required large equilateral triangle, hindering their ability to achieve the correct helix formation.
+
+**Common Suggestions:**
+
+* **Refine the Trajectory Generation:** Focus on generating a true triple helix path using parametric equations to ensure proper helix formation with consistent radius and pitch.
+* **Improve Spacing and Synchronization:** Implement a robust control system to ensure consistent spacing and synchronized movement among the drones throughout their flight.
+* **Adjust Starting Positions:** Increase the size of the starting equilateral triangle to allow for the necessary space for the drones to move along the triple helix.
+
+## Score Evaluation:
+
+Based on the previous feedback, the previous score was **50/100**.
+
+The current score, based on the consensus of the critics, is **20/100**.
+
+Therefore, the score has **WORSE** by **-30**. 
+
+2024-08-09 17:48:42,662 - INFO - Retrying... (3/10)
+2024-08-09 17:48:45,240 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_helix_points(radius, pitch, turns, num_points):
+    t = np.linspace(0, turns * 2 * np.pi, num_points)
+    x = radius * np.cos(t)
+    y = radius * np.sin(t)
+    z = pitch * t / (2 * np.pi)
+    return x, y, z
+
+# Drone 1 waypoints
+radius = 5
+pitch = 2
+turns = 3
+num_points = 100
+x1, y1, z1 = generate_helix_points(radius, pitch, turns, num_points)
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2, y2, z2 = generate_helix_points(radius, pitch, turns, num_points)
+y2 = y2 + 2*radius*np.sin(np.pi/3) # Shift y coordinates for Drone 2
+z2 = z2 + pitch/3 # Shift z coordinates for Drone 2
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+x3, y3, z3 = generate_helix_points(radius, pitch, turns, num_points)
+y3 = y3 - 2*radius*np.sin(np.pi/3) # Shift y coordinates for Drone 3
+z3 = z3 + 2*pitch/3 # Shift z coordinates for Drone 3
+waypoints3 = np.array([x3, y3, z3]).T
+
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+
+```
+2024-08-09 17:48:45,241 - INFO - Total time taken for transcription: 2577.02 ms
+2024-08-09 17:48:45,243 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 17:48:45,244 - INFO - Retrying... (4/10)
+2024-08-09 17:48:49,565 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define parameters for the helix
+radius = 5  # Radius of the helix
+pitch = 2  # Pitch of the helix
+num_turns = 3  # Number of turns of the helix
+altitude = 10  # Altitude of the helix
+
+# Calculate the total length of the helix
+helix_length = np.pi * radius * 2 * num_turns
+
+# Define the starting positions of the drones in an equilateral triangle formation
+triangle_side_length = 10
+x_center = 0
+y_center = 0
+z_center = altitude
+angle = 60
+
+# Drone 1 waypoints
+x1 = x_center + triangle_side_length * np.cos(np.deg2rad(0))
+y1 = y_center + triangle_side_length * np.sin(np.deg2rad(0))
+z1 = z_center
+waypoints1 = np.array([x1, y1, z1])
+
+# Drone 2 waypoints
+x2 = x_center + triangle_side_length * np.cos(np.deg2rad(angle))
+y2 = y_center + triangle_side_length * np.sin(np.deg2rad(angle))
+z2 = z_center
+waypoints2 = np.array([x2, y2, z2])
+
+# Drone 3 waypoints
+x3 = x_center + triangle_side_length * np.cos(np.deg2rad(2 * angle))
+y3 = y_center + triangle_side_length * np.sin(np.deg2rad(2 * angle))
+z3 = z_center
+waypoints3 = np.array([x3, y3, z3])
+
+# Generate the waypoints for each drone along the helix
+num_waypoints = 100  # Number of waypoints for each drone
+t = np.linspace(0, helix_length, num_waypoints)
+
+# Drone 1 waypoints
+x1 = radius * np.cos(t)
+y1 = radius * np.sin(t)
+z1 = (pitch / (2 * np.pi)) * t
+waypoints1 = np.array([x1, y1, z1]).T
+
+# Drone 2 waypoints
+x2 = radius * np.cos(t + 2 * np.pi / 3)
+y2 = radius * np.sin(t + 2 * np.pi / 3)
+z2 = (pitch / (2 * np.pi)) * t
+waypoints2 = np.array([x2, y2, z2]).T
+
+# Drone 3 waypoints
+x3 = radius * np.cos(t + 4 * np.pi / 3)
+y3 = radius * np.sin(t + 4 * np.pi / 3)
+z3 = (pitch / (2 * np.pi)) * t
+waypoints3 = np.array([x3, y3, z3]).T
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:48:49,566 - INFO - Total time taken for transcription: 4321.40 ms
+2024-08-09 17:48:49,807 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_2/waypoints_plot.png
+2024-08-09 17:49:08,784 - INFO - Total time taken for plot analysis with 5 critics: 18975.65 ms
+2024-08-09 17:49:11,152 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback is largely negative, with the critics highlighting that the drone trajectories still fail to achieve the desired triple helix formation. While some improvement is observed in the continuity of the drone paths and their starting positions, the core issue of incorrect helix formation and synchronization remains unresolved.
+
+**Common Issues:**
+
+* **Incorrect Triple Helix:** The drones do not form a proper triple helix pattern. They either overlap significantly or form separate single helixes, failing to achieve the required synchronized flight.
+* **Spacing and Synchronization:**  While there are some improvements in spacing, the drones are not consistently spaced, leading to potential collisions and an uneven helix shape.
+* **Starting Positions:** While the drones start in an equilateral triangle formation, the triangle's size remains inadequate, limiting their ability to form the desired helix.
+
+**Common Suggestions:**
+
+* **Refine Trajectory Generation:** The generation algorithm needs a major overhaul to create a true triple helix pattern with consistent spacing and synchronization. 
+* **Improve Spacing and Synchronization:** Implement a more robust control system to maintain uniform spacing and synchronized movement throughout the flight.
+* **Adjust Starting Positions:** Increase the size of the starting equilateral triangle significantly to allow sufficient space for the drones to follow the intended triple helix.
+
+## Score Evaluation:
+
+Based on the previous feedback, the previous score was **50/100**.
+
+The current score, based on the consensus of the critics, is **20/100**.
+
+Therefore, the score has **WORSE** by **-30**. 
+
+2024-08-09 17:49:11,152 - INFO - Retrying... (5/10)
+2024-08-09 17:49:14,210 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define the helix parameters
+radius = 5  # Radius of the helix
+pitch = 2   # Pitch of the helix
+num_turns = 3 # Number of turns for the helix
+
+# Define the equilateral triangle formation parameters
+side_length = 10  # Side length of the equilateral triangle
+height = side_length * np.sqrt(3) / 2  # Height of the equilateral triangle
+
+# Calculate the starting positions for each drone
+drone1_start = [0, 0, 0]
+drone2_start = [side_length / 2, height / 2, 0]
+drone3_start = [side_length / 2, -height / 2, 0]
+
+# Define the number of waypoints for each drone
+num_waypoints = 100
+
+# Generate the waypoints for each drone
+t = np.linspace(0, num_turns * 2 * np.pi, num_waypoints)
+
+# Drone 1 waypoints
+waypoints1 = np.array([radius * np.cos(t), radius * np.sin(t), pitch * t / (2 * np.pi)]) + np.array(drone1_start)
+waypoints1 = waypoints1.T
+
+# Drone 2 waypoints
+waypoints2 = np.array([radius * np.cos(t + 2 * np.pi / 3), radius * np.sin(t + 2 * np.pi / 3), pitch * t / (2 * np.pi)]) + np.array(drone2_start)
+waypoints2 = waypoints2.T
+
+# Drone 3 waypoints
+waypoints3 = np.array([radius * np.cos(t + 4 * np.pi / 3), radius * np.sin(t + 4 * np.pi / 3), pitch * t / (2 * np.pi)]) + np.array(drone3_start)
+waypoints3 = waypoints3.T
+
+# Combine the waypoints for all drones
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:49:14,210 - INFO - Total time taken for transcription: 3057.23 ms
+2024-08-09 17:49:14,213 - ERROR - An error occurred while processing waypoints: operands could not be broadcast together with shapes (3,100) (3,) 
+2024-08-09 17:49:14,213 - INFO - Retrying... (6/10)
+2024-08-09 17:49:16,895 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the number of drones
+N = 3
+
+# Define the size of the equilateral triangle
+triangle_side = 10
+
+# Define the radius of the helix
+radius = 5
+
+# Define the pitch of the helix
+pitch = 2
+
+# Define the number of turns of the helix
+turns = 3
+
+# Define the time interval for each waypoint
+time_interval = 0.1
+
+# Calculate the coordinates of the vertices of the equilateral triangle
+vertices = np.array([[0, 0], [triangle_side/2, np.sqrt(3)/2 * triangle_side], [-triangle_side/2, np.sqrt(3)/2 * triangle_side]])
+
+# Define the starting position of each drone
+drone_start_positions = vertices + np.array([0, 2])
+
+# Generate the helix trajectory
+t = np.linspace(0, turns * 2 * np.pi, int(turns * 2 * np.pi / time_interval))
+x = radius * np.cos(t)
+y = radius * np.sin(t)
+z = pitch * t / (2 * np.pi)
+
+# Create the waypoints for each drone
+waypoints1 = np.array([x, y, z]).T + drone_start_positions[0]
+waypoints2 = np.array([x, y, z]).T + drone_start_positions[1]
+waypoints3 = np.array([x, y, z]).T + drone_start_positions[2]
+
+# Combine the waypoints into a list
+waypoints = [waypoints1, waypoints2, waypoints3]
+
+```
+2024-08-09 17:49:16,896 - INFO - Total time taken for transcription: 2681.53 ms
+2024-08-09 17:49:16,897 - ERROR - An error occurred while processing waypoints: operands could not be broadcast together with shapes (188,3) (2,) 
+2024-08-09 17:49:16,898 - INFO - Retrying... (7/10)
+2024-08-09 17:49:19,322 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+# Define the number of drones
+N = 3
+
+# Define the helix parameters
+radius = 5  # meters
+pitch = 10  # meters
+amplitude = 2  # meters
+
+# Define the flight parameters
+speed = 1  # meters per second
+altitude = 10  # meters
+
+# Define the duration of the flight
+duration = 20  # seconds
+
+# Calculate the number of waypoints
+num_waypoints = int(duration * speed / pitch) + 1
+
+# Define the initial positions of the drones
+theta = np.linspace(0, 2*np.pi, N, endpoint=False)
+x0 = radius * np.cos(theta)
+y0 = radius * np.sin(theta)
+
+# Generate the waypoints for each drone
+waypoints = []
+for i in range(N):
+    # Calculate the helix coordinates
+    t = np.linspace(0, duration, num_waypoints)
+    x = radius * np.cos(2 * np.pi * t / pitch + theta[i])
+    y = radius * np.sin(2 * np.pi * t / pitch + theta[i])
+    z = altitude + amplitude * np.sin(2 * np.pi * t / pitch)
+
+    # Create the waypoint list for the current drone
+    waypoints_i = np.column_stack((x, y, z))
+    waypoints.append(waypoints_i)
+
+# Print the waypoints for each drone
+for i in range(N):
+    print(f"Drone {i+1} waypoints:")
+    print(waypoints[i])
+
+```
+2024-08-09 17:49:19,323 - INFO - Total time taken for transcription: 2424.40 ms
+2024-08-09 17:49:19,542 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_2/waypoints_plot.png
+2024-08-09 17:49:38,099 - INFO - Total time taken for plot analysis with 5 critics: 18555.83 ms
+2024-08-09 17:49:40,597 - ERROR - An error occurred during Gemini API call: 500 An internal error has occurred. Please retry or report in https://developers.generativeai.google/guide/troubleshooting
+2024-08-09 17:49:40,598 - ERROR - Failed to get a valid response from the Gemini API.
+2024-08-09 17:49:40,598 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+Error in generating summary
+2024-08-09 17:49:40,598 - INFO - Retrying... (8/10)
+2024-08-09 17:49:43,242 - INFO - Generated response:
+
+ ```python
+
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+def generate_helix(radius, pitch, num_turns, num_points):
+  """
+  Generates a helix trajectory.
+
+  Args:
+    radius: The radius of the helix.
+    pitch: The pitch of the helix.
+    num_turns: The number of turns in the helix.
+    num_points: The number of points to generate along the helix.
+
+  Returns:
+    A NumPy array of shape (num_points, 3) representing the helix trajectory.
+  """
+  t = np.linspace(0, 2 * np.pi * num_turns, num_points)
+  x = radius * np.cos(t)
+  y = radius * np.sin(t)
+  z = pitch * t / (2 * np.pi)
+  return np.column_stack((x, y, z))
+
+# Drone 1 waypoints
+waypoints1 = generate_helix(radius=5, pitch=2, num_turns=2, num_points=188) 
+
+# Drone 2 waypoints
+waypoints2 = generate_helix(radius=5, pitch=2, num_turns=2, num_points=188) 
+waypoints2[:,0] += 5*np.cos(np.pi/3) 
+waypoints2[:,1] += 5*np.sin(np.pi/3) 
+
+# Drone 3 waypoints
+waypoints3 = generate_helix(radius=5, pitch=2, num_turns=2, num_points=188) 
+waypoints3[:,0] += 5*np.cos(5*np.pi/3) 
+waypoints3[:,1] += 5*np.sin(5*np.pi/3)
+
+waypoints = [waypoints1, waypoints2, waypoints3]
+
+```
+2024-08-09 17:49:43,242 - INFO - Total time taken for transcription: 2643.64 ms
+2024-08-09 17:49:43,245 - ERROR - An error occurred while processing waypoints: name 'np' is not defined
+2024-08-09 17:49:43,245 - INFO - Retrying... (9/10)
+2024-08-09 17:49:46,180 - INFO - Generated response:
+
+ ```python
+import numpy as np
+
+#define any preprocessing functions or steps necessary here
+
+# Define the number of drones
+N = 3
+
+# Define the triangle side length
+triangle_side = 10 
+
+# Define the helix radius
+radius = 5 
+
+# Define the helix pitch
+pitch = 10
+
+# Define the number of turns for the helix
+turns = 3
+
+# Calculate the height of the triangle
+triangle_height = np.sqrt(3) / 2 * triangle_side
+
+# Define the starting position for each drone
+drone1_start = [0, 0, 0]
+drone2_start = [triangle_side/2, triangle_height/2, 0]
+drone3_start = [triangle_side/2, -triangle_height/2, 0]
+
+# Generate the waypoints for each drone
+theta = np.linspace(0, 2*np.pi*turns, 100)
+
+waypoints1 = np.array([radius * np.cos(theta) + drone1_start[0], 
+                     radius * np.sin(theta) + drone1_start[1],
+                     pitch * theta / (2*np.pi) + drone1_start[2]]).T
+
+waypoints2 = np.array([radius * np.cos(theta + 2*np.pi/3) + drone2_start[0], 
+                     radius * np.sin(theta + 2*np.pi/3) + drone2_start[1],
+                     pitch * theta / (2*np.pi) + drone2_start[2]]).T
+
+waypoints3 = np.array([radius * np.cos(theta + 4*np.pi/3) + drone3_start[0], 
+                     radius * np.sin(theta + 4*np.pi/3) + drone3_start[1],
+                     pitch * theta / (2*np.pi) + drone3_start[2]]).T
+
+# Combine the waypoints for each drone
+waypoints = [waypoints1, waypoints2, waypoints3]
+```
+2024-08-09 17:49:46,181 - INFO - Total time taken for transcription: 2934.81 ms
+2024-08-09 17:49:46,381 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_2/waypoints_plot.png
+2024-08-09 17:50:04,092 - INFO - Total time taken for plot analysis with 5 critics: 17710.02 ms
+2024-08-09 17:50:06,530 - INFO - Aggregated feedback from multiple critics:
+
+ MAJORITY INVALID (0/5)
+ Feedback Summary:
+## Feedback Summary:
+
+The feedback consistently identifies a key issue: **the trajectories do not form a triple helix as required**.  While the drones' paths are generally continuous and there are no collisions, the overall shape fails to meet the specified requirement.  
+
+**Common Issues:**
+
+* **Triple Helix Formation:** The trajectories consistently fail to form a triple helix, often resembling intertwined spirals or circular paths. 
+* **Equilateral Triangle Formation:** The drones don't always start in a perfect equilateral triangle formation.
+* **Completeness:**  While the trajectories are continuous, they are often incomplete in terms of forming a complete helix.
+
+**Suggestions for Improvement:**
+
+* **Helix Equation:** Critics recommend using a helix equation to define the trajectory of each drone, ensuring a proper helix shape.
+* **Synchronization and Spacing:** The helix should have a constant radius and pitch to ensure uniform spacing and synchronization between the drones.
+* **Starting Formation:** The drones should start in a perfect equilateral triangle formation. 
+
+**Overall Consensus:**
+
+The feedback is generally negative, highlighting significant shortcomings in the trajectories' ability to meet the requirements. While there are positive aspects, such as the continuity of paths and lack of collisions, the failure to form a triple helix is a major drawback.
+
+**Previous Score:** MAJORITY INVALID (0/5)
+
+**Current Score:**  An average of the scores provided would be roughly 38/100. 
+
+**Score Improvement:** BETTER 
+
+2024-08-09 17:50:06,797 - INFO - Trajectory plot saved at experiments/triple_helix_20240809_174254/trial_2/waypoints_plot_best.png
+2024-08-09 17:50:06,798 - INFO - Retrying... (10/10)
+2024-08-09 17:50:06,798 - ERROR - Maximum number of retries reached. Failed to process waypoints.
+2024-08-09 17:50:06,798 - ERROR - Experiment 2 for triple_helix failed.
