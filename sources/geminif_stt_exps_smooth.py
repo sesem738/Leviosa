@@ -425,7 +425,7 @@ def retry_with_backoff(attempt, max_attempts=5, base_delay=1):
     return True  # Indicate that the retry should proceed
 
 
-def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-pro', max_attempts=25, base_delay=1):
+def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-flash', max_attempts=25, base_delay=1):
     """
     Calls the Gemini model API with retry logic and exponential backoff.
 
@@ -471,7 +471,7 @@ def main():
 
         # Setup directories using absolute paths
         experiment_type_dir = os.path.abspath(
-            os.path.join("experiments_gemini_10trials_smooth", timestamped_experiment_type))
+            os.path.join("experiments_geminif_10trials_smooth", timestamped_experiment_type))
         os.makedirs(experiment_type_dir, exist_ok=True)
 
         for trial_id in range(1, num_trials + 1):
