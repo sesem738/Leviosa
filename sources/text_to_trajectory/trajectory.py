@@ -229,37 +229,67 @@ def plot_multi_drone_3d_trajectory(waypoints_list, plot=True, save_path=None):
     # Subplot 3: Side view
     ax3 = fig.add_subplot(133, projection='3d')
 
+    num_drones = len(waypoints_list)
+
     # Generate a color map for the number of drones
-    colors = plt.cm.rainbow(np.linspace(0, 1, len(waypoints_list)))
+    colors = plt.cm.rainbow(np.linspace(0, 1, num_drones))
 
-    for i, waypoints in enumerate(waypoints_list):
-        waypoints = np.array(waypoints)
-        x = waypoints[:, 0]
-        y = waypoints[:, 1]
-        z = waypoints[:, 2]
+    if num_drones < 8:
+        # For fewer than 8 drones, show start markers and legend
+        for i, waypoints in enumerate(waypoints_list):
+            waypoints = np.array(waypoints)
+            x = waypoints[:, 0]
+            y = waypoints[:, 1]
+            z = waypoints[:, 2]
 
-        # Plotting on the first subplot (current perspective)
-        ax1.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
-        ax1.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
-        ax1.text(x[0], y[0], z[0], f'Start {i + 1}')
+            # Plotting on the first subplot (current perspective)
+            ax1.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
+            ax1.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
+            ax1.text(x[0], y[0], z[0], f'Start {i + 1}', fontsize=10)
 
-        # Plotting on the second subplot (top-down view)
-        ax2.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
-        ax2.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
-        ax2.text(x[0], y[0], z[0], f'Start {i + 1}')
-        ax2.view_init(elev=90, azim=-90)  # Top-down view
+            # Plotting on the second subplot (top-down view)
+            ax2.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
+            ax2.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
+            ax2.text(x[0], y[0], z[0], f'Start {i + 1}', fontsize=10)
+            ax2.view_init(elev=90, azim=-90)  # Top-down view
 
-        # Plotting on the third subplot (side view)
-        ax3.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
-        ax3.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
-        ax3.text(x[0], y[0], z[0], f'Start {i + 1}')
-        ax3.view_init(elev=0, azim=0)  # Side view
+            # Plotting on the third subplot (side view)
+            ax3.plot(x, y, z, color=colors[i], label=f'Drone {i + 1}')
+            ax3.scatter(x[0], y[0], z[0], color=colors[i], s=100, marker='o')
+            ax3.text(x[0], y[0], z[0], f'Start {i + 1}', fontsize=10)
+            ax3.view_init(elev=0, azim=0)  # Side view
 
-    for ax in [ax1, ax2, ax3]:
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
-        ax.legend()
+        for ax in [ax1, ax2, ax3]:
+            ax.set_xlabel('X')
+            ax.set_ylabel('Y')
+            ax.set_zlabel('Z')
+            ax.legend()
+
+    else:
+        # For 8 or more drones, use color bar and no start markers
+        for i, waypoints in enumerate(waypoints_list):
+            waypoints = np.array(waypoints)
+            x = waypoints[:, 0]
+            y = waypoints[:, 1]
+            z = waypoints[:, 2]
+
+            # Plotting on all subplots without start markers
+            ax1.plot(x, y, z, color=colors[i])
+            ax2.plot(x, y, z, color=colors[i])
+            ax2.view_init(elev=90, azim=-90)  # Top-down view
+            ax3.plot(x, y, z, color=colors[i])
+            ax3.view_init(elev=0, azim=0)  # Side view
+
+        for ax in [ax1, ax2, ax3]:
+            ax.set_xlabel('X')
+            ax.set_ylabel('Y')
+            ax.set_zlabel('Z')
+
+        # Add a color bar to represent the drone indices
+        sm = plt.cm.ScalarMappable(cmap="rainbow", norm=plt.Normalize(vmin=1, vmax=num_drones))
+        sm.set_array([])
+        cbar = fig.colorbar(sm, ax=[ax1, ax2, ax3], orientation='horizontal', fraction=0.02, pad=0.1)
+        cbar.set_label('Drone Index')
 
     ax1.set_title('Perspective View')
     ax2.set_title('Top-Down View')

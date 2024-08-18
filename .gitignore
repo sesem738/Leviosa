@@ -18,3 +18,9 @@ r2d2_images
 /experiments_geminif_10trials_smooth
 /experiments_geminiflash_10trials
 /experiments_geminiflash_10trials_smooth
+/.idea
+/ablations_maxdrones_gemini
+/ablations_maxdrones_gpt
+/.idea
+/.idea
+*.xml
