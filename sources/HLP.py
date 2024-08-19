@@ -3,12 +3,106 @@ import os
 import random
 import time
 from datetime import datetime
+from typing import Optional
+import pybullet as p
+import numpy as np
+from stable_baselines3 import PPO
 
+from gym_pybullet_drones.envs.MultiWaypointAviary import MultiWaypointAviary
+from gym_pybullet_drones.utils.utils import sync
+
+DEFAULT_GUI = True
 import google.generativeai as genai
 from dotenv import load_dotenv
 
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+
+from speech_to_text.microphone import MicrophoneRecorder
 # from speech_to_text.microphone import MicrophoneRecorder
 from text_to_trajectory.trajectory import process_waypoints, plot_multi_drone_3d_trajectory
+
+
+# def run(model_path=None, num_drones=3, waypoints: Optional[list] = None, gui=DEFAULT_GUI):
+#     # Initialize the MultiWaypointAviary environment
+#     test_env = MultiWaypointAviary(num_drones=num_drones, waypoints=waypoints, gui=gui)
+#
+#     # Load the trained model for drone at ../best_model/best_model.zip
+#     model_weights_path = model_path
+#     models = [PPO.load(model_weights_path) for i in range(num_drones)]
+#     # models = [PPO.load('best_model/best_model.zip') for i in range(num_drones)]
+#
+#     obs, info = test_env.reset(seed=42, options={})
+#     start = time.time()
+#
+#     for i in range((test_env.EPISODE_LEN_SEC + 2) * test_env.CTRL_FREQ):
+#         # Predict actions for all drones
+#         actions = []
+#         for drone in range(num_drones):
+#             drone_obs = obs[drone].reshape(1, -1)
+#             action, _states = models[drone].predict(
+#                 drone_obs,
+#                 deterministic=True
+#             )
+#             actions.append(action)
+#
+#         # Step the environment
+#         actions = np.asarray(actions)
+#         obs, rewards, terminated, truncated, info = test_env.step(actions)
+#         test_env.render()
+#
+#         print(f"Step {i}: Terminated: {terminated}, Rewards: {rewards}")
+#
+#         sync(i, start, test_env.CTRL_TIMESTEP)
+#
+#         if terminated or truncated:
+#             obs, info = test_env.reset(seed=42, options={})
+#
+#     test_env.close()
+
+
+def run(model_path=None, num_drones=3, waypoints: Optional[list] = None, gui=DEFAULT_GUI):
+    # Initialize the MultiWaypointAviary environment
+    test_env = MultiWaypointAviary(num_drones=num_drones, waypoints=waypoints, gui=gui)
+
+    # Load the trained model for drones
+    model_weights_path = model_path
+    models = [PPO.load(model_weights_path) for _ in range(num_drones)]
+
+    # Reset the environment
+    obs, info = test_env.reset(seed=42, options={})
+    start = time.time()
+
+    # Initialize lists to store drone positions for tracing
+    previous_positions = [np.array(test_env.INIT_XYZS[i]) for i in range(num_drones)]
+
+    for i in range((test_env.EPISODE_LEN_SEC + 1000) * test_env.CTRL_FREQ):
+        # Predict actions for all drones
+        actions = []
+        for drone in range(num_drones):
+            drone_obs = obs[drone].reshape(1, -1)
+            action, _states = models[drone].predict(drone_obs, deterministic=True)
+            actions.append(action)
+
+        # Step the environment
+        actions = np.asarray(actions)
+        obs, rewards, terminated, truncated, info = test_env.step(actions)
+        test_env.render()
+
+        # Draw flight traces for each drone
+        for drone in range(num_drones):
+            current_position = test_env._getDroneStateVector(drone)[0:3]  # Get current position
+            p.addUserDebugLine(previous_positions[drone], current_position, lineColorRGB=[0, 1, 0], lineWidth=1.5)
+            previous_positions[drone] = current_position  # Update the previous position
+
+        print(f"Step {i}: Terminated: {terminated}, Rewards: {rewards}")
+
+        sync(i, start, test_env.CTRL_TIMESTEP)
+
+        if terminated or truncated:
+            obs, info = test_env.reset(seed=42, options={})
+            previous_positions = [np.array(test_env.INIT_XYZS[i]) for i in range(num_drones)]  # Reset positions
+
+    test_env.close()
 
 
 def setup_logging(log_file_path):
@@ -37,25 +131,11 @@ if not GOOGLE_API_KEY:
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
+
 # Continuous Experiment Types and Their Prompts
-experiment_types = {
-    # "circle": "Create a circular trajectory using 2 drones, where each drone traces out one half of the circle. The drones should move in perfect synchronization to form a complete circle.",
-    # "hyperbola": "Design a hyperbolic path using 2 drones, with each drone tracing one branch of the hyperbola. The drones should maintain symmetry and smoothness in their paths.",
-    # "3petal_rose": "Generate a 3-petal rose curve using 3 drones, where each drone is responsible for tracing out one petal. The drones should coordinate to form a seamless rose pattern.",
-    # "4petal_rose": "Create a 4-petal rose curve using 4 drones, with each drone tracing one petal. The drones should work together to ensure the rose curve is smooth and continuous.",
-    # "5petal_rose": "Design a 5-petal rose curve using 5 drones, where each drone forms one petal. The drones should synchronize their movements to create a harmonious rose shape.",
-    # "sine_wave": "Construct a sine wave pattern using 3 drones, where each drone covers a separate section of the wave. The drones should ensure a continuous and smooth wave formation.",
-    # "helix": "Draw a helical path using 1 drone, creating a spiral in three-dimensional space. The drone should maintain a consistent radius and pitch throughout the helix.",
-    # "double_helix": "Create a double helix trajectory using 2 drones, with each drone forming one strand of the helix. The drones should maintain parallel paths and synchronized movement.",
-    # "triple_helix": "Generate a triple helix pattern using 3 drones, with each drone forming one strand. The drones should coordinate to maintain uniform spacing and synchronization.",
-    # "double_conical_helix": "Design a double conical helix using 2 drones, where each drone traces one conical spiral. The drones should ensure the cones are symmetrical and the paths are smooth."
-    'lines': 'Generate a set of parallel lines using 1000 drones. Each drone should follow a separate line, and the lines should be evenly spaced and parallel to each other.',
-    'spiral': 'Generate a spiral that tapers off using 1000 drones. The drones should start close together and gradually spread out as they move along the spiral.',
-    # 'dragon': 'Create a dragon shape using 100 drones. Figure out how to setup the drones such that the overall trajectory is a dragon shape.',
-}
 
 
-def interpret_text_request(prompt: str) -> str:
+def interpret_text_request(prompt: Optional[str] = None, audio_file: Optional[str] = None) -> str:
     """
     Interpret the text prompt into a list of requirements using the Google AI API.
 
@@ -63,8 +143,8 @@ def interpret_text_request(prompt: str) -> str:
 
     :return: The interpreted requirements.
     """
-    base_prompt = f""" You are an AI assistant specializing in translating natural language text commands into 
-    structured requirements for drone waypoint trajectories. Your task is to analyze the given text prompt and 
+    base_prompt = f""" You are an AI assistant specializing in translating natural language text or audio commands into 
+    structured requirements for drone waypoint trajectories. Your task is to analyze the given text or audio prompt and 
     extract the underlying intent, then formulate a detailed set of requirements that a drone control system could use.
 
         Please follow these guidelines:
@@ -81,12 +161,16 @@ def interpret_text_request(prompt: str) -> str:
         [REQ] Flight path: Detailed description
         ...
 
-        Reason through your interpretation, but do not restate the text content directly. 
+        Reason through your interpretation, but do not restate the content directly. 
         Focus on translating the command into actionable, technical requirements.
         """
 
     # model = genai.GenerativeModel('models/gemini-1.5-flash')
     # response = model.generate_content([base_prompt, prompt])
+    if audio_file:
+        prompt = genai.upload_file(path=audio_file)
+    else:
+        prompt = prompt
     response = call_gemini_with_retry([base_prompt, prompt])
 
     requirements = None
@@ -119,24 +203,24 @@ def fetch_waypoints_code_from_gemini(requirements: str, error: str = None):
     drones can either combine or be independent. The code should generate waypoints in the following format and be 
     enclosed within triple backticks: 
     
-```python 
-
-import numpy as np
-
-#define any preprocessing functions or steps necessary here
-
-# Drone 1 waypoints
-waypoints1 =...
-
-# Drone 2 waypoints
-waypoints2 = ...
-
-... 
-# Drone N waypoints
-waypointsN = ...
-
-waypoints = [waypoints1, waypoints2, ... waypointsN]
-```
+    ```python 
+    
+    import numpy as np
+    
+    #define any preprocessing functions or steps necessary here
+    
+    # Drone 1 waypoints
+    waypoints1 =...
+    
+    # Drone 2 waypoints
+    waypoints2 = ...
+    
+    ... 
+    # Drone N waypoints
+    waypointsN = ...
+    
+    waypoints = [waypoints1, waypoints2, ... waypointsN]
+    ```
 
     
     Make sure to import all necessary libraries you use in the code. Feel free to also use numpy functions to help you 
@@ -204,7 +288,7 @@ def analyze_plot_with_multiple_critics(
     requirements specify!
     7. Always Score the trajectories based on how well they meet the requirements from 0 to 100.
     Think step by step and be detailed in your analysis. 
-    If all trajectories are correct, please respond with the phrase "--VALID TRAJECTORIES--" and comments on why you 
+    If all trajectories are roughly correct, please respond with the phrase "--VALID TRAJECTORIES--" and comments on why you 
     think they are valid. If trajectory is incorrect, say whether it is close or not and provide suggestions on how to 
     correct it. 
     """
@@ -282,7 +366,7 @@ def aggregate_feedback(
 
 
 def process_waypoints_with_retry(
-        requirements: str,
+        commands: str,
         save_path: str = None,
         num_critics: int = 5,
         max_retries: int = 3
@@ -290,7 +374,7 @@ def process_waypoints_with_retry(
     """
     Process the waypoints with a retry mechanism.
 
-    :param requirements: The requirements for the waypoints.
+    :param commands: The text prompt or audio file path for the experiment.
     :param save_path: The path to save the plot image.
     :param num_critics: The number of critics to analyze the plot.
     :param max_retries: The maximum number of retries.
@@ -302,6 +386,11 @@ def process_waypoints_with_retry(
     feedback = None
     prev_feedback = ""
     best_waypoints = None
+
+    # Interpret the text prompt
+    requirements = interpret_text_request(audio_file=commands)
+    print(requirements)
+
     for attempt in range(max_retries):
         code_response = fetch_waypoints_code_from_gemini(requirements, error or feedback)
         try:
@@ -320,53 +409,13 @@ def process_waypoints_with_retry(
             if "MAJORITY VALID" in feedback:
                 return waypoints
 
-
         except Exception as e:
+
             logging.error(f"An error occurred while processing waypoints: {e}")
             error = str(e)
         logging.info(f"Retrying... ({attempt + 1}/{max_retries})")
     logging.error("Maximum number of retries reached. Failed to process waypoints.")
     return None
-
-
-def run_experiment(
-        experiment_type_dir: str,
-        experiment_type: str,
-        experiment_prompt: str,
-        experiment_id: int
-):
-    """
-    Run a single experiment and save outputs in the appropriate directory.
-    :param experiment_type_dir: The directory for the experiment type.
-    :param experiment_type: The type of experiment to run.
-    :param experiment_prompt: The text prompt for the experiment.
-    :param experiment_id: The ID of the experiment.
-    """
-
-    trial_dir = os.path.join(experiment_type_dir, f"trial_{experiment_id}")
-    os.makedirs(trial_dir, exist_ok=True)
-
-    # Define paths for output files
-    traj_plot_path = os.path.join(trial_dir, "waypoints_plot.png")
-    log_file_path = os.path.join(trial_dir, "experiment_log.log")
-
-    # Convert to absolute paths
-    traj_plot_path = os.path.abspath(traj_plot_path)
-    log_file_path = os.path.abspath(log_file_path)
-
-    # Setup logging for this experiment
-    setup_logging(log_file_path)
-
-    # Interpret the text prompt
-    requirements = interpret_text_request(experiment_prompt)
-
-    # Process waypoints and generate the plot
-    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=3, max_retries=10)
-
-    if waypoints:
-        logging.info(f"Experiment {experiment_id} for {experiment_type} completed successfully.")
-    else:
-        logging.error(f"Experiment {experiment_id} for {experiment_type} failed.")
 
 
 def retry_with_backoff(attempt, max_attempts=5, base_delay=1):
@@ -392,6 +441,7 @@ def retry_with_backoff(attempt, max_attempts=5, base_delay=1):
 def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-pro', max_attempts=25, base_delay=1):
     """
     Calls the Gemini model API with retry logic and exponential backoff.
+    the more recent and powerful the model is, the more retries and longer delays are needed.
 
     :param base_prompt: The prompt to send to the model.
     :param model_name: The name of the Gemini model to use.
@@ -405,7 +455,7 @@ def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-pro', max_
     for attempt in range(max_attempts):
         try:
             response = model.generate_content(base_prompt)
-            response_text = response.text
+            response_text = response
             if response_text:
                 return response  # Return the response text if successful
         except Exception as e:
@@ -424,26 +474,45 @@ def main():
     """
     Main function to run all experiments.
     """
+    # Define the path to save the recorded audio file with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    audio_cmd_path = f"data/audios/output_{timestamp}.wav"
+    traj_plot_path = f"data/plots/waypoints_{timestamp}.png"
 
-    # Number of trials per experiment type
-    num_trials = 3
+    # Create directories if they don't exist
+    os.makedirs(os.path.dirname(audio_cmd_path), exist_ok=True)
+    os.makedirs(os.path.dirname(traj_plot_path), exist_ok=True)
 
-    # Run experiments
-    for experiment_type, experiment_prompt in experiment_types.items():
-        # Get current timestamp for the experiment type folder name
-        timestamped_experiment_type = f"{experiment_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    # Specify the device index if needed
+    choice_device = 1  # specific to my system
+    recorder = MicrophoneRecorder(device_index=choice_device)
 
-        # Setup directories using absolute paths
-        experiment_type_dir = os.path.abspath(
-            os.path.join("ablations_maxdrones_gemini", timestamped_experiment_type))
-        os.makedirs(experiment_type_dir, exist_ok=True)
+    # Record audio to a file
+    try:
+        logging.info("Starting audio recording. Press Ctrl+C to stop.")
+        recorder.start_stream(save_path=audio_cmd_path)
+    except KeyboardInterrupt:
+        recorder.stop_stream()
+        logging.info(f"Recording stopped. Audio saved to {audio_cmd_path}")
 
-        for trial_id in range(1, num_trials + 1):
-            try:
-                run_experiment(experiment_type_dir, experiment_type, experiment_prompt, trial_id)
-            except Exception as e:
-                logging.error(f"An error occurred during experiment {trial_id} for {experiment_type}: {e}")
-                continue
+    # Time the process_waypoints_with_retry function
+    start_time = time.perf_counter()
+    waypoints = process_waypoints_with_retry(audio_cmd_path, max_retries=10, num_critics=3, save_path=traj_plot_path)
+    end_time = time.perf_counter()
+    elapsed_time = end_time - start_time
+
+    if waypoints:
+        logging.info(f"Successfully processed waypoints")
+        # convert list of waypoints to numpy arrays
+        waypoints = [np.array(waypoint) for waypoint in waypoints]
+        # print(waypoints)
+        model_path = 'sources/best_model/best_model.zip'
+        num_drones = len(waypoints)
+        run(model_path, num_drones, waypoints)
+    else:
+        logging.error("Failed to process waypoints after maximum retries.")
+
+    logging.info(f"Total time taken for process_waypoints_with_retry: {elapsed_time:.2f} seconds")
 
 
 if __name__ == "__main__":
