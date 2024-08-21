@@ -25,3 +25,7 @@ r2d2_images
 /.idea
 *.xml
 /ablations
+/ablations_one_critic_gemini_10trials
+/ablations_one_critic_gemini_10trials_smooth
+/ablations_one_gemini_10trials
+/ablations_one_gemini_10trials_smooth

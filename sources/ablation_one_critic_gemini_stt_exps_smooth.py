@@ -358,7 +358,7 @@ def run_experiment(
     requirements = interpret_text_request(experiment_prompt)
 
     # Process waypoints and generate the plot
-    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=3, max_retries=10)
+    waypoints = process_waypoints_with_retry(requirements, save_path=traj_plot_path, num_critics=1, max_retries=10)
 
     if waypoints:
         logging.info(f"Experiment {experiment_id} for {experiment_type} completed successfully.")
@@ -432,7 +432,7 @@ def main():
 
         # Setup directories using absolute paths
         experiment_type_dir = os.path.abspath(
-            os.path.join("experiments_gemini_10trials_smooth", timestamped_experiment_type))
+            os.path.join("ablations_one_critic_gemini_10trials_smooth", timestamped_experiment_type))
         os.makedirs(experiment_type_dir, exist_ok=True)
 
         for trial_id in range(1, num_trials + 1):

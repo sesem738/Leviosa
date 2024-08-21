@@ -8,7 +8,7 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 
 # from speech_to_text.microphone import MicrophoneRecorder
-from text_to_trajectory.trajectory import process_waypoints, plot_multi_drone_3d_trajectory
+from text_to_trajectory.trajectory import process_waypoints
 
 
 def setup_logging(log_file_path):
@@ -37,18 +37,43 @@ if not GOOGLE_API_KEY:
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# Continuous Experiment Types and Their Prompts
 experiment_types = {
-    "circle": "Create a circular trajectory using 2 drones, where each drone traces out one half of the circle. The drones should move in perfect synchronization to form a complete circle.",
-    "hyperbola": "Design a hyperbolic path using 2 drones, with each drone tracing one branch of the hyperbola. The drones should maintain symmetry and smoothness in their paths.",
-    "3petal_rose": "Generate a 3-petal rose curve using 3 drones, where each drone is responsible for tracing out one petal. The drones should coordinate to form a seamless rose pattern.",
-    "4petal_rose": "Create a 4-petal rose curve using 4 drones, with each drone tracing one petal. The drones should work together to ensure the rose curve is smooth and continuous.",
-    "5petal_rose": "Design a 5-petal rose curve using 5 drones, where each drone forms one petal. The drones should synchronize their movements to create a harmonious rose shape.",
-    "sine_wave": "Construct a sine wave pattern using 3 drones, where each drone covers a separate section of the wave. The drones should ensure a continuous and smooth wave formation.",
-    "helix": "Draw a helical path using 1 drone, creating a spiral in three-dimensional space. The drone should maintain a consistent radius and pitch throughout the helix.",
-    "double_helix": "Create a double helix trajectory using 2 drones, with each drone forming one strand of the helix. The drones should maintain parallel paths and synchronized movement.",
-    "triple_helix": "Generate a triple helix pattern using 3 drones, with each drone forming one strand. The drones should coordinate to maintain uniform spacing and synchronization.",
-    "double_conical_helix": "Design a double conical helix using 2 drones, where each drone traces one conical spiral. The drones should ensure the cones are symmetrical and the paths are smooth."
+    "star": "Generate a star-shaped trajectory using 5 drones. The drones should move in such a way that their "
+            "combined flight paths trace out a symmetrical star with equal arm lengths. Ensure that each drone covers "
+            "one arm of the star without overlapping the paths of other drones.",
+
+    "zigzag": "Create a dynamic zigzag pattern using 3 drones. The drones should move in unison, forming a "
+              "synchronized zigzag path. Each drone should follow a separate path within the zigzag, ensuring the "
+              "pattern is evenly spaced and consistent throughout the trajectory.",
+
+    "heart": "Design a geometric, angular heart-shaped path using 2 drones. Each drone should trace one half of the "
+             "heart, starting from the bottom point and meeting at the top. The heart should have an angular "
+             "appearance, with both halves perfectly mirroring each other.",
+
+    "cross": "Generate a cross-shaped path using 2 drones. Each drone should be responsible for one arm of the cross. "
+             "Ensure that the paths are perpendicular to each other and intersect at the center.",
+
+    "pentagon": "Create a pentagon using 5 drones. Each drone should trace one side of the "
+                "pentagon, with their paths combining to form the shape.",
+
+    "hexagon": "Design a hexagon-shaped path using 3 drones, each responsible for two sides of the hexagon. The "
+               "drones should work together to form a complete hexagon, ensuring that the drones' paths connect "
+               "seamlessly at the vertices to maintain the shape's integrity.",
+
+    "triangle": "Create an equilateral triangle path using 3 drones. Each drone should trace one side of the "
+                "triangle, starting from a common point and moving outward to form the triangle. The drones should "
+                "synchronize their movements to complete the triangle simultaneously.",
+
+    "square": "Generate a square trajectory using 4 drones. Each drone should be responsible for one side of the "
+              "square, ensuring that the angles at each corner are well-defined. The drones should coordinate their "
+              "movements to maintain equal side lengths and complete the square simultaneously.",
+
+    "octagon": "Design an octagon-shaped path using 8 drones. Each drone should be responsible for tracing two sides "
+               "of the octagon. Ensure that the drones' paths create a symmetric and precise overall shape.",
+
+    "pyramid": "Create a pyramid-shaped path using 4 drones. Each drone should trace one side of the pyramid, starting "
+               "from the base and converging at the apex. The drones should coordinate their movements to form a "
+               "symmetrical and well-defined pyramid shape."
 }
 
 
@@ -304,19 +329,21 @@ def process_waypoints_with_retry(
         try:
             waypoints = process_waypoints(code_response, save_path=save_path)
 
-            # Analyze the generated plot image with multiple Gemini critics
-            feedback = analyze_plot_with_multiple_critics(save_path, requirements, num_critics, prev_feedback)
+            # # Analyze the generated plot image with multiple Gemini critics
+            # feedback = analyze_plot_with_multiple_critics(save_path, requirements, num_critics, prev_feedback)
+            #
+            # prev_feedback = feedback
+            # if "BETTER" in feedback:
+            #     # save these waypoints as the best waypoints
+            #     best_waypoints = waypoints
+            #     best_save_path = save_path.replace(".png", "_best.png")
+            #     plot_multi_drone_3d_trajectory(best_waypoints, plot=False, save_path=best_save_path)
+            #
+            # if "MAJORITY VALID" in feedback:
+            #     return waypoints
 
-            prev_feedback = feedback
-            if "BETTER" in feedback:
-                # save these waypoints as the best waypoints
-                best_waypoints = waypoints
-                best_save_path = save_path.replace(".png", "_best.png")
-                plot_multi_drone_3d_trajectory(best_waypoints, plot=False, save_path=best_save_path)
-
-            if "MAJORITY VALID" in feedback:
+            if waypoints:
                 return waypoints
-
 
         except Exception as e:
             logging.error(f"An error occurred while processing waypoints: {e}")
@@ -389,6 +416,7 @@ def retry_with_backoff(attempt, max_attempts=5, base_delay=1):
 def call_gemini_with_retry(base_prompt, model_name='models/gemini-1.5-pro', max_attempts=25, base_delay=1):
     """
     Calls the Gemini model API with retry logic and exponential backoff.
+    the more recent and powerful the model is, the more retries and longer delays are needed.
 
     :param base_prompt: The prompt to send to the model.
     :param model_name: The name of the Gemini model to use.
@@ -432,7 +460,7 @@ def main():
 
         # Setup directories using absolute paths
         experiment_type_dir = os.path.abspath(
-            os.path.join("experiments_gemini_10trials_smooth", timestamped_experiment_type))
+            os.path.join("ablations_one_gemini_10trials", timestamped_experiment_type))
         os.makedirs(experiment_type_dir, exist_ok=True)
 
         for trial_id in range(1, num_trials + 1):

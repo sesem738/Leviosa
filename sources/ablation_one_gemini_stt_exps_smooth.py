@@ -304,19 +304,21 @@ def process_waypoints_with_retry(
         try:
             waypoints = process_waypoints(code_response, save_path=save_path)
 
-            # Analyze the generated plot image with multiple Gemini critics
-            feedback = analyze_plot_with_multiple_critics(save_path, requirements, num_critics, prev_feedback)
+            # # Analyze the generated plot image with multiple Gemini critics
+            # feedback = analyze_plot_with_multiple_critics(save_path, requirements, num_critics, prev_feedback)
+            #
+            # prev_feedback = feedback
+            # if "BETTER" in feedback:
+            #     # save these waypoints as the best waypoints
+            #     best_waypoints = waypoints
+            #     best_save_path = save_path.replace(".png", "_best.png")
+            #     plot_multi_drone_3d_trajectory(best_waypoints, plot=False, save_path=best_save_path)
+            #
+            # if "MAJORITY VALID" in feedback:
+            #     return waypoints
 
-            prev_feedback = feedback
-            if "BETTER" in feedback:
-                # save these waypoints as the best waypoints
-                best_waypoints = waypoints
-                best_save_path = save_path.replace(".png", "_best.png")
-                plot_multi_drone_3d_trajectory(best_waypoints, plot=False, save_path=best_save_path)
-
-            if "MAJORITY VALID" in feedback:
+            if waypoints:
                 return waypoints
-
 
         except Exception as e:
             logging.error(f"An error occurred while processing waypoints: {e}")
@@ -432,7 +434,7 @@ def main():
 
         # Setup directories using absolute paths
         experiment_type_dir = os.path.abspath(
-            os.path.join("experiments_gemini_10trials_smooth", timestamped_experiment_type))
+            os.path.join("ablations_one_gemini_10trials_smooth", timestamped_experiment_type))
         os.makedirs(experiment_type_dir, exist_ok=True)
 
         for trial_id in range(1, num_trials + 1):
