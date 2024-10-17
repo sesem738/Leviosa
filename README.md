@@ -4,27 +4,6 @@
 
 Speech To Trajectory Using Large Large Models
 
-## Journal Paper To Do List
-Overleaf: https://www.overleaf.com/7196944559gmdnbqrcyqfj#f7bb23
-
-These are the articles that we will be modeling our paper after:
-
-Language Models as Zero-Shot Trajectory Generators \
-https://arxiv.org/pdf/2310.11604 
-
-Folding and Smoothing Fabric by Leveraging Pre-Trained Foundation Models \
-https://arxiv.org/pdf/2406.09640
-
-- [ ] Abstract (Godwyll Aikins)
-- [ ] Introduction (Godwyll Aikins)
-- [ ] Related Work (Godwyll Aikins)
-- [ ] Problem Formulation and Framework (Pascal)
-- [ ] Control (Godwyll)
-- [ ] Prompt Development (Pascal)
-- [ ] Prompt Ablation including speech to text ablation (Josias)
-- [ ] *Prompt (Involving images from simulation) (Josias)
-- [ ] Conclusion (Godwyll)
-
 
 ## Installation
 
